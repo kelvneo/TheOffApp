@@ -1,0 +1,48 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+  	match /users/{uid} {
+    	allow read: if request.auth.uid == uid;
+    }
+    match /temp/{uid} {
+      allow create, read: if request.auth.uid == uid && request.auth.uid != null;
+    }
+    match /constants/{multiSegment=**} {
+    	allow read: if isVerified();
+    }
+//   	match /users/{uid} {
+//     	allow read, write: if isAdmin();
+//     	allow read, update, delete: if request.auth.uid == uid;
+//       allow create: if request.auth.uid != null;
+//     }
+//   	match /admins/{uid} {
+//     	allow read: if request.auth.uid == uid;
+//     }
+//     match /visits/{id} {
+//     	allow read, write: if isAdmin();
+//     	allow read: if request.auth.token.phone_number in resource.data.visitors;
+//       allow read, update: if request.auth.uid == resource.data.ic && request.resource.data.approved == resource.data.approved;
+//       allow create: if request.auth.uid != null && request.resource.data.approved == null;
+      
+//       function isVisitor() {
+//       	return request.auth.uid != null && request.auth.token.phone_number in get(/databases/$(database)/documents/visits/$(id)).data.visitors
+//       }
+      
+//       match /visitors/{vuid} {
+//       	allow read: if isAdmin() || isVisitor();
+//         allow update: if isAdmin() || (isVisitor() && request.resource.data.checkedIn == resource.data.checkedIn);
+//       	allow create: if isVisitor() && request.resource.data.checkedIn == null;
+//       }
+//     }
+    match /{document=**} {
+      allow read, write: if false;
+    }
+    
+    function isVerified() {
+    	return request.auth.uid != null && exists(/databases/$(database)/documents/users/$(request.auth.uid));
+    }
+    // function isAdmin() {
+    // 	return request.auth.uid != null && exists(/databases/$(database)/documents/admins/$(request.auth.uid));
+    // }
+  }
+}

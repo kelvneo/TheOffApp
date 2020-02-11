@@ -1,26 +1,136 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
+import Main from '../views/Main.vue'
 import Home from '../views/Home.vue'
+import Login from '../views/Login.vue'
+import Phone from '../components/login/Phone.vue'
+import Verify from '../components/login/Verify.vue'
+import CollectInfo from '../components/login/CollectInfo.vue'
+import WaitForApproval from '../components/login/WaitForApproval.vue'
+import Root from '../components/main/Root.vue'
+import ApproveUsers from '../components/main/ApproveUsers.vue'
+import store from '../store/'
+
+// import * as firebase from 'firebase'
+// import 'firebase/auth'
 
 Vue.use(VueRouter)
 
 const routes = [
   {
     path: '/',
-    name: 'home',
-    component: Home
-  },
-  {
-    path: '/about',
-    name: 'about',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/About.vue')
+    component: Main,
+    children: [
+      {
+        path: '/login',
+        component: Login,
+        children: [
+          {
+            path: '',
+            component: Phone,
+            beforeEnter: (to, from, next) => {
+              if (!store.state.credentials.user) {
+                next()
+              } else {
+                next('/login/info')
+              }
+            }
+          },
+          {
+            path: 'verify',
+            component: Verify,
+            beforeEnter: (to, from, next) => {
+              if (!store.state.credentials.confirmationResult) {
+                next('/login')
+              } else {
+                next()
+              }
+            }
+          },
+          {
+            path: 'info',
+            component: CollectInfo,
+            beforeEnter: (to, from, next) => {
+              if (!store.state.credentials.user) {
+                next('/login')
+              } else if (store.state.user.tempUser) {
+                next('/login/wait')
+              } else {
+                next()
+              }
+            }
+          },
+          {
+            path: 'wait',
+            component: WaitForApproval,
+            beforeEnter: (to, from, next) => {
+              if (!store.state.credentials.user) {
+                next('/login')
+              } else if (!store.state.user.tempUser) {
+                next('/login/info')
+              } else {
+                next()
+              }
+            }
+          }
+        ],
+        beforeEnter: (to, from, next) => {
+          if (store.state.user.currentUser) {
+            next('/')
+          } else {
+            next()
+          }
+        }
+      },
+      {
+        path: '/',
+        // name: 'home',
+        component: Home,
+        children: [
+          {
+            path: '',
+            name: 'Root',
+            component: Root
+          },
+          {
+            path: 'approve',
+            name: 'ApproveUsers',
+            component: ApproveUsers
+          }
+
+        ],
+        // redirect: '/login/wait',
+        beforeEnter: (to, from, next) => {
+          if (!store.state.user.currentUser) {
+            next('/login')
+          } else {
+            next()
+          }
+        }
+      }
+      // {
+      //   path: '/about',
+      //   name: 'about',
+      //   // route level code-splitting
+      //   // this generates a separate chunk (about.[hash].js) for this route
+      //   // which is lazy-loaded when the route is visited.
+      //   component: () => import(/* webpackChunkName: "about" */ '../views/About.vue')
+      // }
+    ],
+    beforeEnter: (to, from, next) => {
+      function checkLoading () {
+        if (!store.state.credentials.loading) next()
+        else {
+          setTimeout(checkLoading, 100)
+        }
+      }
+      checkLoading()
+    }
   }
 ]
 
 const router = new VueRouter({
+  mode: 'history',
   routes
 })
 
