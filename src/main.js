@@ -11,7 +11,8 @@ import 'firebase/auth'
 
 Vue.config.productionTip = false
 Vue.use(Buefy, {
-  defaultIconPack: 'fas'
+  defaultIconPack: 'fas',
+  defaultDateFormatter: (date) => date.toLocaleDateString('en-GB')
 })
 
 // Check if the user is logged into firebase

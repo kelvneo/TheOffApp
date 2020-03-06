@@ -8,7 +8,7 @@
       <h2 class="subtitle">
           Please login to continue.
       </h2>
-      <form>
+      <form action="" v-on:submit.prevent>
         <b-field :type="error ? 'is-danger' : ''"  :message="error">
           <b-field>
             <p class="control">

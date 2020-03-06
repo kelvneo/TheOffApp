@@ -9,6 +9,9 @@ import CollectInfo from '../components/login/CollectInfo.vue'
 import WaitForApproval from '../components/login/WaitForApproval.vue'
 import Root from '../components/main/Root.vue'
 import ApproveUsers from '../components/main/ApproveUsers.vue'
+import ApproveOff from '../components/main/offs/ApproveOff.vue'
+import UserOff from '../components/main/offs/UserOff.vue'
+import OffRoot from '../views/Offs.vue'
 import store from '../store/'
 
 // import * as firebase from 'firebase'
@@ -96,14 +99,36 @@ const routes = [
             path: 'approve',
             name: 'ApproveUsers',
             component: ApproveUsers
+          },
+          {
+            path: 'off',
+            component: OffRoot,
+            children: [
+              {
+                path: '',
+                name: 'UserOff',
+                component: UserOff
+              },
+              {
+                path: 'approve',
+                name: 'ApproveOff',
+                component: ApproveOff
+              }
+            ]
           }
-
         ],
         // redirect: '/login/wait',
         beforeEnter: (to, from, next) => {
           if (!store.state.user.currentUser) {
             next('/login')
           } else {
+            store.dispatch('user/getUserPermissions', store.state.credentials.user.uid).then((snapshot) => {
+              const payload = {}
+              snapshot.forEach((doc) => {
+                payload[doc.id] = doc.data()
+              })
+              store.commit('user/setPermissions', payload)
+            })
             next()
           }
         }

@@ -8,7 +8,7 @@
       <h2 class="subtitle">
           Please fill in some information for us.
       </h2>
-      <form>
+      <form action=""  v-on:submit.prevent>
         <b-field :type="error ? 'is-danger' : ''"  :message="error" label="Rank and Name" custom-class="has-text-light" horizontal>
           <b-field class="columns is-mobile is-gapless">
             <b-autocomplete v-model="rank" placeholder="3SG" :open-on-focus="true" :data="filteredRankArray"
@@ -65,8 +65,7 @@ export default {
         '3SG', 'CFC', 'CPL', 'LCP', 'PFC', 'PTE', 'REC'
       ].reverse(),
       depots: {
-        'HQ GSAB': ['S1/S4', 'S3', 'CO/RSM'],
-        'TAD': ['TAD'],
+        'HQ GSAB': ['S1/S4', 'S3', 'CO/RSM', 'TAD'],
         'PAD': ['TSU', 'Cluster', 'DCC', 'Orderly'],
         'PLAD': ['TASS', 'Storage', 'DCC', 'Orderly'],
         'PYAD': ['Storage', 'DCC', 'Orderly'],

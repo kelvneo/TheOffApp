@@ -12,7 +12,11 @@ const state = {
 }
 
 // getters
-const getters = {}
+const getters = {
+  id: (state, getters) => {
+    return state.user.uid
+  }
+}
 
 // actions
 const actions = {
@@ -44,6 +48,7 @@ const actions = {
     return firebase.auth().signOut().then(() => {
       commit('user/setCurrentUser', null, { root: true })
       commit('user/setTempUser', null, { root: true })
+      commit('user/setPermissions', {}, { root: true })
       commit('setUser', null)
     })
   }

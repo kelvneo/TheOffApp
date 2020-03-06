@@ -8,7 +8,7 @@
       <h2 class="subtitle">
           Please check your phone and key in the 6 digit OTP sent to you.
       </h2>
-      <form>
+      <form action="" v-on:submit.prevent>
         <b-field :type="error ? 'is-danger' : ''"  :message="error" horizontal>
           <b-input placeholder="OTP" type="number" v-model="otp" expanded focus :disabled="loading" :loading="loading" maxlength="6">
           </b-input>

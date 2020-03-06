@@ -1,0 +1,16 @@
+<template>
+<footer class="footer">
+  <div class="content has-text-centered">
+    <p>
+      <strong>GSAB Admin</strong> by <a href="https://github.com/kelvneo">Kelvin Neo</a>.
+    </p>
+  </div>
+</footer>
+</template>
+
+<script>
+
+export default {
+  name: 'Footer'
+}
+</script>

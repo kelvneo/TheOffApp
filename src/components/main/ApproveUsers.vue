@@ -36,10 +36,10 @@
             <section class="section">
               <div class="content has-text-grey has-text-centered">
                 <p>
-                  <b-icon icon="emoticon-sad" size="is-large">
+                  <b-icon icon="question-circle" size="is-large">
                   </b-icon>
                 </p>
-                <p>Nothing here.</p>
+                <p>No temporary users found.</p>
               </div>
             </section>
           </template>
@@ -125,8 +125,8 @@ export default {
         const data = doc.data()
         data['id'] = doc.id
         this.tempUsers.push(data)
-        this.loading = false
       })
+      this.loading = false
     }).catch((err) => {
       this.$buefy.notification.open({
         message: 'Unable to load the data',
