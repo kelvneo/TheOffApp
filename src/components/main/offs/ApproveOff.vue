@@ -1,19 +1,85 @@
 <template>
-  <div>
+  <div class="container">
     <section class="section">
       <h2 class="title">Approve Offs</h2>
       <b-tabs v-model="activeTab">
         <b-tab-item label="Awaiting Approval">
-
+          <b-message type="is-warning" role="alert" :closable="false" title="Work in Progress" size="is-small">
+            Do check back as features get implemented.
+          </b-message>
+          <b-message type="is-info" role="alert" title="How To Approve Offs" :closable="false" size="is-small">
+            Check the boxes to select the personnel to approve, and press "Approve Offs" below.
+          </b-message>
+          <div class="columns is-gapless">
+            <div class="field column">
+              <b-switch v-model="showDetails">
+                Show Extra Details
+              </b-switch>
+            </div>
+            <div class="field column">
+              <b-switch v-model="tableForm">
+                Table Mode
+              </b-switch>
+            </div>
+          </div>
+          <b-table :data="recommendedOffs" :loading="loading" default-sort="requestDate" checkable :checked-rows.sync="checkedRecommendedOffs" :mobile-cards="!tableForm">
+            <template slot-scope="props">
+              <b-table-column field="requester" label="Requester">
+                <span v-if="user[props.row.requester]">{{ user[props.row.requester]['name'] }}</span>
+                <span v-else>...</span>
+              </b-table-column>
+              <b-table-column field="useDate" label="Using On" sortable>
+                {{ props.row.useDate.toDate().toLocaleString() }}
+              </b-table-column>
+              <b-table-column field="requestDate" label="Requested On" sortable :visible="showDetails">
+                {{ props.row.requestDate.toDate().toLocaleString() }}
+              </b-table-column>
+              <b-table-column field="recommender" label="Recommender" :visible="showDetails">
+                <span v-if="user[props.row.recommender]">{{ user[props.row.recommender]['name'] }}</span>
+                <span v-else>...</span>
+              </b-table-column>
+              <b-table-column field="recommendedDate" label="Recommended On" sortable :visible="showDetails">
+                {{ props.row.recommendedDate.toDate().toLocaleString() }}
+              </b-table-column>
+              <b-table-column field="count" label="Count">
+                {{ props.row.count }}
+              </b-table-column>
+              <b-table-column field="ids" label="Actions">
+                <div class="buttons">
+                  <b-button type="is-danger" size="is-small" icon-left="times" :disabled="loading" @click="deletePendingOffs(props)">
+                    Cancel
+                  </b-button>
+                </div>
+              </b-table-column>
+            </template>
+            <template slot="empty">
+              <section class="section">
+                <div class="content has-text-grey has-text-centered">
+                  <p>
+                    <b-icon icon="check-circle" size="is-large">
+                    </b-icon>
+                  </p>
+                  <p>No Pending Offs</p>
+                </div>
+              </section>
+            </template>
+          </b-table>
+          <div class="buttons">
+            <b-button type="is-success" icon-left="check" expanded :disabled="true" @click="approveOffs()">
+              Approve Offs
+            </b-button>
+          </div>
         </b-tab-item>
         <b-tab-item label="Awaiting Award">
-
+          <b-message type="is-warning" role="alert" :closable="false" title="Work in Progress" size="is-small">
+            Do check back as features get implemented.
+          </b-message>
         </b-tab-item>
         <b-tab-item label="Award Off">
           <form action="" v-on:submit.prevent>
             <div class="columns">
               <div class="column is-half-desktop is-full-mobile">
-                <b-field label="Description">
+                <b-field label="Description" :type="awardOffForm.error ? 'is-danger' : ''"  :message="awardOffForm.error">
                   <b-input type="text" v-model="awardOffForm.description" placeholder="Jan Performance Off" required :disabled="loading" :loading="loading">
                   </b-input>
                 </b-field>
@@ -26,18 +92,15 @@
               </div>
             </div>
             <div class="field is-hidden-tablet">
-                <b-switch v-model="awardOffTable">
-                    Switch to Table
+                <b-switch v-model="tableForm">
+                    Table Mode
                 </b-switch>
             </div>
             <div class="buttons">
               <b-button type="is-success" icon-left="check" expanded @click="submit()" :disabled="loading" :loading="loading">Award Off</b-button>
             </div>
-            <b-table :data="users" :loading="loading" :mobile-cards="!awardOffTable">
+            <b-table :data="users" :loading="loading" :mobile-cards="!tableForm">
               <template slot-scope="props">
-                <b-table-column field="rank" label="Rank" sortable searchable>
-                  {{ props.row.rank }}
-                </b-table-column>
                 <b-table-column field="name" label="Name" sortable searchable>
                   {{ props.row.name }}
                 </b-table-column>
@@ -66,6 +129,11 @@
             </b-table>
           </form>
         </b-tab-item>
+        <b-tab-item label="Cancel Off">
+          <b-message type="is-warning" role="alert" :closable="false" title="Work in Progress" size="is-small">
+            Do check back as features get implemented.
+          </b-message>
+        </b-tab-item>
       </b-tabs>
     </section>
   </div>
@@ -82,11 +150,17 @@ export default {
       loading: false,
       awardOffForm: {
         description: '',
-        endDate: new Date()
+        endDate: new Date(),
+        error: ''
       },
-      awardOffTable: false,
       users: [],
-      activeTab: 0
+      activeTab: 0,
+      recommendedOffs: [],
+      rawRecommendedOffs: {},
+      checkedRecommendedOffs: [],
+      tableForm: false,
+      showDetails: false,
+      user: {}
     }
   },
   methods: {
@@ -102,15 +176,8 @@ export default {
       }
       this.users = temp
     },
-    reset () {
-      this.awardOffForm = {
-        description: '',
-        endDate: new Date()
-      }
-      this.populateUser()
-      this.activeTab = 0
-    },
     submit () {
+      this.awardOffForm.error = ''
       if (this.awardOffForm.description && this.awardOffForm.endDate) {
         this.loading = true
         const toCredit = this.users.filter((val) => val.count > 0)
@@ -151,20 +218,106 @@ export default {
           })
           console.log(payload)
         }
+      } else {
+        this.awardOffForm.error = 'All fields are required'
       }
+    },
+    deletePendingOffs (off) {
+      this.$buefy.dialog.confirm({
+        title: 'Deleting Recommended Off',
+        message: 'Are you sure you wish to delete ' + this.user[off.row.requester]['name'] +
+          '\'s off on <strong>' + off.row.useDate.toDate().toLocaleString() + '</strong>?',
+        onConfirm: () => {
+          this.loading = true
+          this.$store.dispatch('user/deleteUserPendingApprovalOffs', off.row.ids).then(() => {
+            this.$buefy.notification.open({
+              message: 'Successfully Cancelled Off!',
+              type: 'is-success'
+            })
+            this.reset(true)
+          }).catch((err) => {
+            console.error(err)
+            this.$buefy.notification.open({
+              message: 'Unable to cancel off: ' + err.message,
+              type: 'is-danger'
+            })
+            this.reset(true)
+          })
+        }
+      })
+    },
+    approveOffs () {
+      this.loading = true
+      const recommendedDate = new Date()
+      const payload = this.checkedRows.flatMap((val) => val.ids).map((val) => {
+        this.rawPendingOff[val].recommendedDate = recommendedDate
+        return this.rawPendingOff[val]
+      })
+      const ids = payload.map((val) => val.id)
+      this.$store.dispatch('user/approveOff', payload).then((val) => {
+        return this.$store.dispatch('user/deleteUserRecommendedOffs', ids).then(() => {
+          this.$buefy.notification.open({
+            message: 'Successfully recommended offs!',
+            type: 'is-success'
+          })
+          this.reset(true)
+        })
+      }).catch((err) => {
+        this.loading = false
+        console.error(err)
+        this.$buefy.notification.open({
+          message: 'Unable to recommend off: ' + err.message,
+          type: 'is-danger'
+        })
+      })
+    },
+    reset (reset) {
+      this.awardOffForm = {
+        description: '',
+        endDate: new Date()
+      }
+      this.populateUser()
+      this.activeTab = 0
+      this.$store.dispatch('user/getOffsToApprove', this.$store.getters['credentials/id']).then((val) => {
+        this.loading = false
+        this.recommendedOffs = Object.values(val.docs.map(off => {
+          const data = off.data()
+          this.rawRecommendedOffs[off.id] = data
+          data.id = off.id
+          return data
+        }).reduce((l, c) => {
+          const key = c.requester + c.requestDate.toLocaleString()
+          l[key] = l[key] || {
+            // description: c.description,
+            count: 0,
+            useDate: c.useDate,
+            requester: c.requester,
+            recommender: c.recommender,
+            approver: c.approver,
+            requestDate: c.requestDate,
+            recommendedDate: c.recommendedDate,
+            ids: []
+          }
+          l[key]['count'] += 0.5
+          l[key]['ids'].push(c.id)
+          return l
+        }, {}));
+        [...new Set(this.recommendedOffs.flatMap(data => [data.recommender, data.approver]))].forEach((id) => {
+          this.$store.dispatch('common/getUser', id).then((userData) => {
+            this.$set(this.user, id, userData)
+          })
+        })
+      })
     }
   },
-  created () {
+  mounted () {
     this.awardOffForm.endDate.setMonth(this.awardOffForm.endDate.getMonth() + 1)
-    if (Object.keys(this.$store.state.common.allUsers).length === 0) {
-      this.loading = true
-      this.$store.dispatch('common/updateAllUsers').then((users) => {
-        this.populateUser()
-        this.loading = false
-      })
-    } else {
+    this.loading = true
+    this.$store.dispatch('common/updateAllUsers').then((users) => {
       this.populateUser()
-    }
+      this.reset()
+      this.loading = false
+    })
   }
 }
 </script>

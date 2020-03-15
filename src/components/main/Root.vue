@@ -7,7 +7,7 @@
             Welcome
           </h2>
           <h1 class="title">
-            {{rank}} {{name}}
+            {{name}}
           </h1>
         </div>
       </div>
@@ -112,41 +112,22 @@
           </div>
         </div> -->
         <div class="container">
-          <b-notification type="is-warning" aria-close-label="Close notification" role="alert" :closable="false">
-            You have been approved to use this site! Do check back soon as the features get implemented.
-          </b-notification>
-          <div class="level is-mobile">
-            <div class="level-left">
-              <h4 class="level-item title is-4">Your Offs</h4>
-            </div>
-            <div class="level-right">
-              <b-button tag="router-link" class="level-item" :to="{ path: '/off' }">Details</b-button>
-              <b-button tag="router-link" class="level-item" type="is-success" :to="{ path: '/off' }" disabled>Apply</b-button>
-            </div>
-          </div>
-          <div class="columns is-mobile is-multiline">
-            <div class="column is-one-quarter-tablet is-half-mobile has-text-centered">
-              <div>
-                <p class="heading">Total</p>
-                <p class="title has-text-grey">{{ totalOffs }}</p>
+          <b-message type="is-warning" role="alert" :closable="false" title="Work in Progress" size="is-small">
+            This website is still under development and testing, apologies for the bugs!
+          </b-message>
+          <OverallUserOffs class="mb"></OverallUserOffs>
+          <h4 class="title is-4">Upcoming Off Pass</h4>
+          <div class="card">
+            <div class="card-content">
+              <div class="media">
+                <div class="media-content">
+                  <p class="title is-4">{{ name }}</p>
+                  <p class="subtitle is-6">Off Pass</p>
+                </div>
               </div>
-            </div>
-            <div class="column is-one-quarter-tablet is-half-mobile has-text-centered">
-              <div>
-                <p class="heading">Usuable</p>
-                <p class="title has-text-info">{{ totalOffs }}</p>
-              </div>
-            </div>
-            <div class="column is-one-quarter-tablet is-half-mobile has-text-centered">
-              <div>
-                <p class="heading">Recommending</p>
-                <p class="title has-text-grey-light">{{ pendingOffs }}</p>
-              </div>
-            </div>
-            <div class="column is-one-quarter-tablet is-half-mobile has-text-centered">
-              <div>
-                <p class="heading">To Approve</p>
-                <p class="title has-text-grey-light">{{ recommendedOffs }}</p>
+              <div class="content has-text-grey has-text-centered">
+                <p><b-icon icon="frown" size="is-large"></b-icon></p>
+                <p>No Off Pass Found</p>
               </div>
             </div>
           </div>
@@ -164,12 +145,16 @@
 <script>
 // import * as firebase from 'firebase'
 // import 'firebase/auth'
+import OverallUserOffs from './offs/OverallUserOffs.vue'
 
 export default {
   name: 'Root',
+  components: {
+    OverallUserOffs
+  },
   data () {
     return {
-      rank: '',
+      // rank: '',
       name: ''
       // statusLoading: true,
       // statusList: {
@@ -223,20 +208,6 @@ export default {
       // pmStatusRemarks: 'Falling In'
     }
   },
-  computed: {
-    totalOffs () {
-      return this.$store.getters['user/totalOffCount'] === null ? '...' : this.$store.getters['user/totalOffCount']
-    },
-    availableOffs () {
-      return this.$store.getters['user/availableOffCount'] === null ? '...' : this.$store.getters['user/availableOffCount']
-    },
-    pendingOffs () {
-      return this.$store.getters['user/pendingOffCount'] === null ? '...' : this.$store.getters['user/pendingOffCount']
-    },
-    recommendedOffs () {
-      return this.$store.getters['user/recommendedOffCount'] === null ? '...' : this.$store.getters['user/recommendedOffCount']
-    }
-  },
   methods: {
     // cloneToPM () {
     //   this.pmStatus = this.amStatus
@@ -262,13 +233,14 @@ export default {
     // }
   },
   created () {
-    this.rank = this.$store.state.user.currentUser.rank
+    // this.rank = this.$store.state.user.currentUser.rank
     this.name = this.$store.state.user.currentUser.name
-  },
-  mounted () {
-    this.$store.dispatch('user/getCurrentUserOffs')
-    this.$store.dispatch('user/getCurrentUserPendingOffs')
-    this.$store.dispatch('user/getCurrentUserRecommendedOffs')
   }
 }
 </script>
+
+<style lang="sass">
+.mb
+  margin-bottom: 2rem
+
+</style>

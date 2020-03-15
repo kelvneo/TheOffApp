@@ -49,6 +49,12 @@ const actions = {
       commit('user/setCurrentUser', null, { root: true })
       commit('user/setTempUser', null, { root: true })
       commit('user/setPermissions', {}, { root: true })
+      commit('user/setOffs', null, { root: true })
+      commit('user/setOffPromise', null, { root: true })
+      commit('user/setPendingOffs', null, { root: true })
+      commit('user/setPendingOffPromise', null, { root: true })
+      commit('user/setRecommendedOffs', null, { root: true })
+      commit('user/setRecommendedOffPromise', null, { root: true })
       commit('setUser', null)
     })
   }

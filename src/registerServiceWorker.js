@@ -1,6 +1,7 @@
 /* eslint-disable no-console */
 
 import { register } from 'register-service-worker'
+import { NotificationProgrammatic as Notification } from 'buefy'
 
 if (process.env.NODE_ENV === 'production') {
   register(`${process.env.BASE_URL}service-worker.js`, {
@@ -20,6 +21,11 @@ if (process.env.NODE_ENV === 'production') {
       console.log('New content is downloading.')
     },
     updated () {
+      Notification.open({
+        message: 'New content downloaded, please refresh this page.',
+        type: 'is-info',
+        indefinite: true
+      })
       console.log('New content is available; please refresh.')
     },
     offline () {

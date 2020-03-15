@@ -23,14 +23,25 @@ const getters = {
   },
   availableOffCount (state, getters) {
     return state.offs && state.pendingOffs && state.recommendedOffs
-      ? (state.offs.filter((val) => !val.approver).length + state.pendingOffs.length + state.availableOffCount.length) / 2
+      ? (state.offs.filter((val) => !val.approver).length - state.pendingOffs.length - state.recommendedOffs.length) / 2
       : null
   },
   pendingOffCount (state, getters) {
-    return state.pendingOffs ? state.pendingOffs / 2 : null
+    return state.pendingOffs ? state.pendingOffs.length / 2 : null
   },
   recommendedOffCount (state, getters) {
-    return state.recommendedOffs ? state.recommendedOffs / 2 : null
+    return state.recommendedOffs ? state.recommendedOffs.length / 2 : null
+  },
+  availableOffs (state, getters) {
+    if (state.offs && state.pendingOffs && state.recommendedOffs) {
+      const po = new Set(state.pendingOffs.map((val) => val.id))
+      const ro = new Set(state.recommendedOffs.map((val) => val.id))
+      return state.offs
+        .filter((val) => (!po.has(val.id) && !ro.has(val.id)))
+        .sort((a, b) => a.endDate.seconds - b.endDate.seconds)
+    } else {
+      return []
+    }
   }
 }
 
@@ -68,17 +79,19 @@ const actions = {
   // updateUserTemperature (context, data) {
   //   return firebase.firestore().collection('users').doc(data.id).collection('updates').doc('temperature').set(data.data)
   // },
-  getCurrentUserOffs (context) {
-    if (context.state.offs && context.state.offs.length) {
+  async getCurrentUserOffs (context, reset) {
+    if (context.state.offs && context.state.offs.length && !reset) {
       return context.state.offs
     }
     if (context.state.offPromise) {
       return context.state.offPromise
     }
+    context.commit('setOffs', null)
     const promise = firebase.firestore().collection('users').doc(context.rootGetters['credentials/id'])
       .collection('offs').where('endDate', '>=', new Date()).get().then((snapshot) => {
         if (snapshot.empty) {
           context.commit('setOffs', [])
+          context.commit('setOffPromise', null)
           return []
         } else {
           context.commit('setOffs', snapshot.docs.map((val) => {
@@ -86,24 +99,27 @@ const actions = {
             data.id = val.id
             return data
           }))
+          context.commit('setOffPromise', null)
           return context.state.offs
         }
       })
     context.commit('setOffPromise', promise)
     return promise
   },
-  getCurrentUserPendingOffs (context) {
-    if (context.state.pendingOffs && context.state.pendingOffs.length) {
+  async getCurrentUserPendingOffs (context, reset) {
+    if (context.state.pendingOffs && context.state.pendingOffs.length && !reset) {
       return context.state.pendingOffs
     }
     if (context.state.pendingOffPromise) {
       return context.state.pendingOffPromise
     }
+    context.commit('setPendingOffs', null)
     const promise = firebase.firestore().collection('pending_offs')
       .where('requester', '==', context.rootGetters['credentials/id'])
       .where('endDate', '>=', new Date()).get().then((snapshot) => {
         if (snapshot.empty) {
           context.commit('setPendingOffs', [])
+          context.commit('setPendingOffPromise', null)
           return []
         } else {
           context.commit('setPendingOffs', snapshot.docs.map((val) => {
@@ -111,24 +127,27 @@ const actions = {
             data.id = val.id
             return data
           }))
+          context.commit('setPendingOffPromise', null)
           return context.state.pendingOffs
         }
       })
     context.commit('setPendingOffPromise', promise)
     return promise
   },
-  getCurrentUserRecommendedOffs (context) {
-    if (context.state.recommendedOffs && context.state.recommendedOffs.length) {
+  async getCurrentUserRecommendedOffs (context, reset) {
+    if (context.state.recommendedOffs && context.state.recommendedOffs.length && !reset) {
       return context.state.recommendedOffs
     }
     if (context.state.recommendedOffPromise) {
       return context.state.recommendedOffPromise
     }
+    context.commit('setRecommendedOffs', null)
     const promise = firebase.firestore().collection('recommended_offs')
       .where('requester', '==', context.rootGetters['credentials/id'])
       .where('endDate', '>=', new Date()).get().then((snapshot) => {
         if (snapshot.empty) {
           context.commit('setRecommendedOffs', [])
+          context.commit('setRecommendedOffPromise', null)
           return []
         } else {
           context.commit('setRecommendedOffs', snapshot.docs.map((val) => {
@@ -136,6 +155,7 @@ const actions = {
             data.id = val.id
             return data
           }))
+          context.commit('setRecommendedOffPromise', null)
           return context.state.recommendedOffs
         }
       })
@@ -154,14 +174,37 @@ const actions = {
   getUserTotalPendingOffs (context, id) {
     return firebase.firestore().collection('pending_offs').where('requester', '==', id).get()
   },
+  deleteUserPendingOff (context, id) {
+    return firebase.firestore().collection('pending_offs').doc(id).delete()
+  },
+  deleteUserPendingOffs (context, ids) {
+    const batch = firebase.firestore().batch()
+    for (const id of ids) {
+      batch.delete(firebase.firestore().collection('pending_offs').doc(id))
+    }
+    return batch.commit()
+  },
   getUserPendingApprovalOffs (context, id) {
     return firebase.firestore().collection('recommended_offs').where('requester', '==', id).where('endDate', '>=', new Date()).get()
   },
   getUserTotalPendingApprovalOffs (context, id) {
     return firebase.firestore().collection('recommended_offs').where('requester', '==', id).get()
   },
+  deleteUserPendingApprovalOff (context, id) {
+    return firebase.firestore().collection('recommended_offs').doc(id).delete()
+  },
+  deleteUserPendingApprovalOffs (context, ids) {
+    const batch = firebase.firestore().batch()
+    for (const id of ids) {
+      batch.delete(firebase.firestore().collection('recommended_offs').doc(id))
+    }
+    return batch.commit()
+  },
   getOffsToRecommend (context, id) {
     return firebase.firestore().collection('pending_offs').where('recommender', '==', id).get()
+  },
+  getOffsToRecommendAndApprove (context, id) {
+    return firebase.firestore().collection('pending_offs').where('recommender', '==', id).where('approver', '==', id).get()
   },
   getOffsRecommended (context, id) {
     return firebase.firestore().collection('recommended_offs').where('recommender', '==', id).get()
@@ -169,11 +212,29 @@ const actions = {
   getOffsToApprove (context, id) {
     return firebase.firestore().collection('recommended_offs').where('approver', '==', id).get()
   },
-  awardOffs (context, payload) {
+  async applyOff (context, payload) {
+    const batch = firebase.firestore().batch()
+    for (const off of payload) {
+      const id = off.id
+      delete off.id
+      batch.set(firebase.firestore().collection('pending_offs').doc(id), off)
+    }
+    return batch.commit()
+  },
+  async recommendOffs (context, payload) {
+    const batch = firebase.firestore().batch()
+    for (const off of payload) {
+      const id = off.id
+      delete off.id
+      batch.set(firebase.firestore().collection('recommended_offs').doc(id), off)
+    }
+    return batch.commit()
+  },
+  async awardOffs (context, payload) {
     const batch = firebase.firestore().batch()
     for (const id in payload) {
       for (const off of payload[id]) {
-        firebase.firestore().collection('users').doc(id).collection('offs').add(off)
+        batch.set(firebase.firestore().collection('users').doc(id).collection('offs'), off)
       }
     }
     return batch.commit()

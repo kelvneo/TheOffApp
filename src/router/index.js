@@ -8,14 +8,16 @@ import Verify from '../components/login/Verify.vue'
 import CollectInfo from '../components/login/CollectInfo.vue'
 import WaitForApproval from '../components/login/WaitForApproval.vue'
 import Root from '../components/main/Root.vue'
-import ApproveUsers from '../components/main/ApproveUsers.vue'
-import ApproveOff from '../components/main/offs/ApproveOff.vue'
 import UserOff from '../components/main/offs/UserOff.vue'
 import OffRoot from '../views/Offs.vue'
 import store from '../store/'
 
 // import * as firebase from 'firebase'
 // import 'firebase/auth'
+
+const ApproveUsers = () => import('../components/main/ApproveUsers.vue')
+const RecommendOff = () => import('../components/main/offs/RecommendOff.vue')
+const ApproveOff = () => import('../components/main/offs/ApproveOff.vue')
 
 Vue.use(VueRouter)
 
@@ -106,8 +108,19 @@ const routes = [
             children: [
               {
                 path: '',
+                redirect: {
+                  name: 'UserOff'
+                }
+              },
+              {
+                path: 'stockcard',
                 name: 'UserOff',
                 component: UserOff
+              },
+              {
+                path: 'recommend',
+                name: 'RecommendOff',
+                component: RecommendOff
               },
               {
                 path: 'approve',

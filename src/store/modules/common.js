@@ -2,7 +2,10 @@ import firebase from 'firebase/app'
 import 'firebase/firestore'
 
 const state = {
-  allUsers: {}
+  allUsers: {},
+  commanders: null,
+  commandersPromise: null,
+  allUsersCollected: false
 }
 
 const getters = {
@@ -16,9 +19,15 @@ const getters = {
 
 const actions = {
   async updateAllUsers (context) {
+    if (context.state.allUsersCollected) {
+      return context.state.allUsers
+    }
     (await firebase.firestore().collection('users').get()).forEach((doc) => {
-      context.commit('setUser', { id: doc.id, data: doc.data() })
+      const data = doc.data()
+      data.id = doc.id
+      context.commit('setUser', { id: doc.id, data: data })
     })
+    context.commit('setAllUsersCollected', true)
     return context.state.allUsers
   },
   async getUser (context, id) {
@@ -31,11 +40,30 @@ const actions = {
   async updateUser (context, id) {
     const doc = await firebase.firestore().collection('users').doc(id).get()
     if (doc.exists) {
-      context.commit('setUser', { id: doc.id, data: doc.data() })
+      const data = doc.data()
+      data.id = doc.id
+      context.commit('setUser', { id: doc.id, data: data })
       return context.getters.user(id)
     } else {
       return null
     }
+  },
+  getCommanders (context) {
+    if (context.state.commanders) {
+      return context.state.commanders
+    }
+
+    const promise = firebase.firestore().collection('constants').doc('commanders').get().then((doc) => {
+      if (doc.exists) {
+        context.commit('setCommanders', doc.data())
+      } else {
+        context.commit('setCommanders', {})
+      }
+      return context.state.commanders
+    })
+
+    context.commit('setCommandersPromise', promise)
+    return promise
   }
 }
 
@@ -43,8 +71,17 @@ const mutations = {
   setAllUsers (state, data) {
     state.allUsers = data
   },
+  setAllUsersCollected (state, data) {
+    state.allUsersCollected = data
+  },
   setUser (state, { id, data }) {
     state.allUsers[id] = data
+  },
+  setCommanders (state, data) {
+    state.commanders = data
+  },
+  setCommandersPromise (state, data) {
+    state.commandersPromise = data
   }
 }
 
