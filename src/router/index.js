@@ -8,6 +8,7 @@ import Verify from '../components/login/Verify.vue'
 import CollectInfo from '../components/login/CollectInfo.vue'
 import WaitForApproval from '../components/login/WaitForApproval.vue'
 import Root from '../components/main/Root.vue'
+import About from '../views/About.vue'
 import UserOff from '../components/main/offs/UserOff.vue'
 import OffRoot from '../views/Offs.vue'
 import store from '../store/'
@@ -96,6 +97,11 @@ const routes = [
             path: '',
             name: 'Root',
             component: Root
+          },
+          {
+            path: 'about',
+            name: 'About',
+            component: About
           },
           {
             path: 'approve',

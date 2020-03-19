@@ -118,19 +118,35 @@
           <OverallUserOffs class="mb"></OverallUserOffs>
           <h4 class="title is-4">Upcoming Off Pass</h4>
           <div class="card">
-            <div class="card-content">
-              <div class="media">
-                <div class="media-content">
-                  <p class="title is-4">{{ name }}</p>
-                  <p class="subtitle is-6">Off Pass</p>
-                </div>
-              </div>
-              <div class="content has-text-grey has-text-centered">
+            <div class="card-content" v-if="currentOffPass === null">
+              <div class="content has-text-grey has-text-centered" >
                 <p><b-icon icon="frown" size="is-large"></b-icon></p>
                 <p>No Off Pass Found</p>
               </div>
             </div>
+            <div class="card-content" v-else>
+              <div class="content">
+                <p class="has-text-centered">
+                  <span class="title is-4">{{ name }}</span><br/>
+                  <span class="subtitle is-6">{{ currentOffPass.description }}</span><br/>
+                </p>
+                <p class="has-text-centered">
+                  <span class="title is-6">{{ currentOffPass.startDate.toDate().toLocaleString() }}</span><br/>
+                  <span class="subtitle is-6 has-text-grey-light">- To - </span><br/>
+                  <span class="title is-6">{{ currentOffPass.endDate.toDate().toLocaleString() }}</span>
+                </p>
+                <hr/>
+                <p class="has-text-grey">
+                  Approved By: <span class="title is-6 has-text-grey">{{ safeUser(currentOffPass.approver) }}</span><br/>
+                  Recommended By: <span class="title is-6 has-text-grey">{{ safeUser(currentOffPass.recommender) }}</span>
+                </p>
+              </div>
+            </div>
           </div>
+        </div>
+        <div class="field is-grouped">
+          <b-button expanded :disabled="!offPassCount || offPassIndex <= 0" @click="offPassIndex--"><b-icon icon="chevron-left"></b-icon></b-button>
+          <b-button expanded :disabled="!offPassCount || offPassIndex + 1 >= offPassCount" @click="offPassIndex++"><b-icon icon="chevron-right"></b-icon></b-button>
         </div>
         <!-- <div class="buttons">
           <b-button tag="router-link" to="/approve" type="is-primary" outlined icon-left="users">
@@ -155,7 +171,9 @@ export default {
   data () {
     return {
       // rank: '',
-      name: ''
+      name: '',
+      offPassIndex: 0,
+      user: {}
       // statusLoading: true,
       // statusList: {
       //   'Present': {
@@ -208,7 +226,18 @@ export default {
       // pmStatusRemarks: 'Falling In'
     }
   },
+  computed: {
+    currentOffPass () {
+      return this.$store.state.user.offPass === null || this.$store.state.user.offPass.length === 0 ? null : this.$store.state.user.offPass[this.offPassIndex]
+    },
+    offPassCount () {
+      return this.$store.state.user.offPass === null ? null : this.$store.state.user.offPass.length
+    }
+  },
   methods: {
+    safeUser (val) {
+      return this.user[val] ? this.user[val].name : '...'
+    }
     // cloneToPM () {
     //   this.pmStatus = this.amStatus
     //   this.pmStatusRemarks = this.amStatusRemarks
@@ -231,6 +260,15 @@ export default {
     //     this.pmStatusRemarks = ''
     //   }
     // }
+  },
+  mounted () {
+    this.$store.dispatch('user/getCurrentUserOffPass').then((val) => {
+      [...new Set(val.flatMap(val => [val.recommender, val.approver]))].forEach((val) => {
+        this.$store.dispatch('common/getUser', val).then((userData) => {
+          this.$set(this.user, val, userData)
+        })
+      })
+    })
   },
   created () {
     // this.rank = this.$store.state.user.currentUser.rank

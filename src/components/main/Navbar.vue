@@ -2,7 +2,7 @@
   <b-navbar type="is-dark" :fixed-top="true">
     <template slot="brand">
       <b-navbar-item tag="router-link" :to="{ path: '/' }">
-        <h2 class="title is-4 has-text-light">GSAB</h2>
+        <h2 class="title is-4 has-text-light">HQ G</h2>
       </b-navbar-item>
     </template>
     <template slot="start">

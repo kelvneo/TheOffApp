@@ -42,7 +42,7 @@
                 {{ props.row.recommendedDate.toDate().toLocaleString() }}
               </b-table-column>
               <b-table-column field="count" label="Count">
-                {{ props.row.count }}
+                {{ props.row.count }} Day(s)
               </b-table-column>
               <b-table-column field="ids" label="Actions">
                 <div class="buttons">
@@ -65,7 +65,7 @@
             </template>
           </b-table>
           <div class="buttons">
-            <b-button type="is-success" icon-left="check" expanded :disabled="true" @click="approveOffs()">
+            <b-button type="is-success" icon-left="check" expanded :disabled="loading || checkedRecommendedOffs.length === 0" @click="approveOffs()">
               Approve Offs
             </b-button>
           </div>
@@ -211,7 +211,7 @@ export default {
           }).catch((err) => {
             this.$buefy.notification.open({
               message: 'Unable to award offs',
-              type: 'is-warning'
+              type: 'is-danger'
             })
             console.error(err)
             this.loading = false
@@ -229,7 +229,7 @@ export default {
           '\'s off on <strong>' + off.row.useDate.toDate().toLocaleString() + '</strong>?',
         onConfirm: () => {
           this.loading = true
-          this.$store.dispatch('user/deleteUserPendingApprovalOffs', off.row.ids).then(() => {
+          this.$store.dispatch('user/deleteUserPendingApprovalOff', off.row.id).then(() => {
             this.$buefy.notification.open({
               message: 'Successfully Cancelled Off!',
               type: 'is-success'
@@ -248,28 +248,81 @@ export default {
     },
     approveOffs () {
       this.loading = true
-      const recommendedDate = new Date()
-      const payload = this.checkedRows.flatMap((val) => val.ids).map((val) => {
-        this.rawPendingOff[val].recommendedDate = recommendedDate
-        return this.rawPendingOff[val]
+      const approvedDate = new Date()
+      const ids1 = this.checkedRecommendedOffs.flatMap((val) => val.ids.map((val2) => { return { uid: val.requester, offId: val2 } }))
+      const ids2 = this.checkedRecommendedOffs.map((val) => val.id)
+      const payload = this.checkedRecommendedOffs.map((val) => {
+        const count = val.ids.length / 2
+        const halfday = val.ids.length % 2 === 1
+        const isPM = val.useDate.toDate().getHours() > 11
+        const passRecord = {
+          id: val.requester,
+          data: {
+            requestDate: val.requestDate,
+            recommendedDate: val.recommendedDate,
+            recommender: val.recommender,
+            approvedDate: approvedDate,
+            approver: val.approver,
+            startDate: val.useDate,
+            endDate: new Date(val.useDate.toDate().getTime()),
+            count: count
+          }
+        }
+        if (halfday) {
+          if (isPM) {
+            passRecord.data.endDate.setHours(17, 30)
+          } else {
+            passRecord.data.endDate.setHours(12, 30)
+          }
+          passRecord.data.description = 'Half Day Off'
+        } else {
+          passRecord.data.endDate.setHours(17, 30)
+          passRecord.data.description = 'Full Day Off'
+        }
+        return passRecord
       })
-      const ids = payload.map((val) => val.id)
-      this.$store.dispatch('user/approveOff', payload).then((val) => {
-        return this.$store.dispatch('user/deleteUserRecommendedOffs', ids).then(() => {
-          this.$buefy.notification.open({
-            message: 'Successfully recommended offs!',
-            type: 'is-success'
+      this.$store.dispatch('user/addToOffPass', payload).then((val) => {
+        return this.$store.dispatch('user/deleteUserPendingApprovalOffs', ids2).then(() => {
+          return this.$store.dispatch('user/deleteOffs', ids1).then(() => {
+            this.$buefy.notification.open({
+              message: 'Successfully approved offs!',
+              type: 'is-success'
+            })
+            this.reset(true)
           })
-          this.reset(true)
         })
       }).catch((err) => {
-        this.loading = false
         console.error(err)
+        this.reset(true)
         this.$buefy.notification.open({
-          message: 'Unable to recommend off: ' + err.message,
+          message: 'Unable to approve off: ' + err.message,
           type: 'is-danger'
         })
       })
+      // console.log(ids)
+      // console.log(payload)
+      // const recommendedDate = new Date()
+      // const payload = this.checkedRows.flatMap((val) => val.ids).map((val) => {
+      //   this.rawPendingOff[val].recommendedDate = recommendedDate
+      //   return this.rawPendingOff[val]
+      // })
+      // const ids = payload.map((val) => val.id)
+      // this.$store.dispatch('user/approveOff', payload).then((val) => {
+      //   return this.$store.dispatch('user/deleteUserRecommendedOffs', ids).then(() => {
+      //     this.$buefy.notification.open({
+      //       message: 'Successfully recommended offs!',
+      //       type: 'is-success'
+      //     })
+      //     this.reset(true)
+      //   })
+      // }).catch((err) => {
+      //   this.loading = false
+      //   console.error(err)
+      //   this.$buefy.notification.open({
+      //     message: 'Unable to recommend off: ' + err.message,
+      //     type: 'is-danger'
+      //   })
+      // })
     },
     reset (reset) {
       this.awardOffForm = {
@@ -280,28 +333,35 @@ export default {
       this.activeTab = 0
       this.$store.dispatch('user/getOffsToApprove', this.$store.getters['credentials/id']).then((val) => {
         this.loading = false
+        // this.recommendedOffs = Object.values(val.docs.map(off => {
+        //   const data = off.data()
+        //   this.rawRecommendedOffs[off.id] = data
+        //   data.id = off.id
+        //   return data
+        // }).reduce((l, c) => {
+        //   const key = c.requester + c.requestDate.toLocaleString()
+        //   l[key] = l[key] || {
+        //     // description: c.description,
+        //     count: 0,
+        //     useDate: c.useDate,
+        //     requester: c.requester,
+        //     recommender: c.recommender,
+        //     approver: c.approver,
+        //     requestDate: c.requestDate,
+        //     recommendedDate: c.recommendedDate,
+        //     ids: []
+        //   }
+        //   l[key]['count'] += 0.5
+        //   l[key]['ids'].push(c.id)
+        //   return l
+        // }, {}));
         this.recommendedOffs = Object.values(val.docs.map(off => {
           const data = off.data()
           this.rawRecommendedOffs[off.id] = data
           data.id = off.id
+          data.count = data.ids.length / 2
           return data
-        }).reduce((l, c) => {
-          const key = c.requester + c.requestDate.toLocaleString()
-          l[key] = l[key] || {
-            // description: c.description,
-            count: 0,
-            useDate: c.useDate,
-            requester: c.requester,
-            recommender: c.recommender,
-            approver: c.approver,
-            requestDate: c.requestDate,
-            recommendedDate: c.recommendedDate,
-            ids: []
-          }
-          l[key]['count'] += 0.5
-          l[key]['ids'].push(c.id)
-          return l
-        }, {}));
+        }));
         [...new Set(this.recommendedOffs.flatMap(data => [data.recommender, data.approver]))].forEach((id) => {
           this.$store.dispatch('common/getUser', id).then((userData) => {
             this.$set(this.user, id, userData)

@@ -11,7 +11,9 @@ const state = {
   pendingOffs: null,
   pendingOffPromise: null,
   recommendedOffs: null,
-  recommendedOffPromise: null
+  recommendedOffPromise: null,
+  offPass: null,
+  offPassPromise: null
 }
 
 const getters = {
@@ -23,25 +25,38 @@ const getters = {
   },
   availableOffCount (state, getters) {
     return state.offs && state.pendingOffs && state.recommendedOffs
-      ? (state.offs.filter((val) => !val.approver).length - state.pendingOffs.length - state.recommendedOffs.length) / 2
+      ? (state.offs.length / 2 - getters.pendingOffCount - getters.recommendedOffCount)
       : null
   },
   pendingOffCount (state, getters) {
-    return state.pendingOffs ? state.pendingOffs.length / 2 : null
+    return state.pendingOffs ? state.pendingOffs.reduce((a, b) => a + b.ids.length, 0) / 2 : null
   },
   recommendedOffCount (state, getters) {
-    return state.recommendedOffs ? state.recommendedOffs.length / 2 : null
+    return state.recommendedOffs ? state.recommendedOffs.reduce((a, b) => a + b.ids.length, 0) / 2 : null
   },
   availableOffs (state, getters) {
     if (state.offs && state.pendingOffs && state.recommendedOffs) {
-      const po = new Set(state.pendingOffs.map((val) => val.id))
-      const ro = new Set(state.recommendedOffs.map((val) => val.id))
+      const po = new Set(state.pendingOffs.flatMap((val) => val.ids))
+      const ro = new Set(state.recommendedOffs.flatMap((val) => val.ids))
       return state.offs
         .filter((val) => (!po.has(val.id) && !ro.has(val.id)))
         .sort((a, b) => a.endDate.seconds - b.endDate.seconds)
     } else {
       return []
     }
+  },
+  unavailableDates (state, getters) {
+    const payload = []
+    if (state.pendingOffs) {
+      payload.push(...state.pendingOffs.map((val) => val.useDate.toDate()))
+    }
+    if (state.recommendedOffs) {
+      payload.push(...state.recommendedOffs.map((val) => val.useDate.toDate()))
+    }
+    if (state.offPass) {
+      payload.push(...state.offPass.map((val) => val.startDate.toDate()))
+    }
+    return payload
   }
 }
 
@@ -162,6 +177,33 @@ const actions = {
     context.commit('setRecommendedOffPromise', promise)
     return promise
   },
+  async getCurrentUserOffPass (context, reset) {
+    if (context.state.offPass && context.state.offPass.length && !reset) {
+      return context.state.offPass
+    }
+    if (context.state.offPassPromise) {
+      return context.state.offPassPromise
+    }
+    context.commit('setOffPass', null)
+    const promise = firebase.firestore().collection('users').doc(context.rootGetters['credentials/id'])
+      .collection('off_pass').where('endDate', '>=', new Date()).get().then((snapshot) => {
+        if (snapshot.empty) {
+          context.commit('setOffPass', [])
+          context.commit('setOffPassPromise', null)
+          return []
+        } else {
+          context.commit('setOffPass', snapshot.docs.map((val) => {
+            const data = val.data()
+            data.id = val.id
+            return data
+          }))
+          context.commit('setOffPassPromise', null)
+          return context.state.offPass
+        }
+      })
+    context.commit('setOffPassPromise', promise)
+    return promise
+  },
   getUserConfirmedOffs (context, id) {
     return firebase.firestore().collection('users').doc(id).collection('offs').where('endDate', '>=', new Date()).get()
   },
@@ -213,13 +255,14 @@ const actions = {
     return firebase.firestore().collection('recommended_offs').where('approver', '==', id).get()
   },
   async applyOff (context, payload) {
-    const batch = firebase.firestore().batch()
-    for (const off of payload) {
-      const id = off.id
-      delete off.id
-      batch.set(firebase.firestore().collection('pending_offs').doc(id), off)
-    }
-    return batch.commit()
+    // const batch = firebase.firestore().batch()
+    // for (const off of payload) {
+    //   const id = off.id
+    //   delete off.id
+    //   batch.set(firebase.firestore().collection('pending_offs').doc(id), off)
+    // }
+    // return batch.commit()
+    return firebase.firestore().collection('pending_offs').doc().set(payload)
   },
   async recommendOffs (context, payload) {
     const batch = firebase.firestore().batch()
@@ -234,8 +277,22 @@ const actions = {
     const batch = firebase.firestore().batch()
     for (const id in payload) {
       for (const off of payload[id]) {
-        batch.set(firebase.firestore().collection('users').doc(id).collection('offs'), off)
+        batch.set(firebase.firestore().collection('users').doc(id).collection('offs').doc(), off)
       }
+    }
+    return batch.commit()
+  },
+  async addToOffPass (context, payload) {
+    const batch = firebase.firestore().batch()
+    for (const val of payload) {
+      batch.set(firebase.firestore().collection('users').doc(val.id).collection('off_pass').doc(), val.data)
+    }
+    return batch.commit()
+  },
+  async deleteOffs (context, payload) {
+    const batch = firebase.firestore().batch()
+    for (const val of payload) {
+      batch.delete(firebase.firestore().collection('users').doc(val.uid).collection('offs').doc(val.offId))
     }
     return batch.commit()
   }
@@ -268,6 +325,12 @@ const mutations = {
   },
   setRecommendedOffPromise (state, offPromise) {
     state.recommendedOffPromise = offPromise
+  },
+  setOffPass (state, offs) {
+    state.offPass = offs
+  },
+  setOffPassPromise (state, offPromise) {
+    state.offPassPromise = offPromise
   }
 }
 

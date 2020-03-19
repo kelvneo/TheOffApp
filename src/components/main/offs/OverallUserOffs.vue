@@ -14,19 +14,22 @@
       </div>
     </div>
     <div class="columns is-mobile is-multiline">
-      <div class="column is-one-quarter-tablet is-half-mobile has-text-centered">
+      <router-link :to="{ path: '/off', query: { t: 1 } }"  class="column is-one-quarter-tablet is-half-mobile has-text-centered has-text-grey"
+        replace @click.native="overallClick(1)">
         <div>
           <p class="heading">Recommending</p>
           <p class="title has-text-grey-light">{{ pendingOffs }}</p>
         </div>
-      </div>
-      <div class="column is-one-quarter-tablet is-half-mobile has-text-centered">
+      </router-link>
+      <router-link :to="{ path: '/off', query: { t: 2 } }" class="column is-one-quarter-tablet is-half-mobile has-text-centered has-text-grey"
+        replace @click.native="overallClick(2)">
         <div>
           <p class="heading">To Approve</p>
           <p class="title has-text-grey-light">{{ recommendedOffs }}</p>
         </div>
-      </div>
-      <router-link :to="{ path: '/off' }" class="column is-half-tablet is-full-mobile has-text-centered">
+      </router-link>
+      <router-link :to="{ path: '/off' }" class="column is-half-tablet is-full-mobile has-text-centered"
+        replace @click.native="overallClick(0)">
         <div>
           <p class="heading">Usable</p>
           <p class="title has-text-info">{{ availableOffs }}</p>
@@ -45,15 +48,15 @@
         <div class="columns is-mobile is-multiline">
           <b-field class="column is-half-desktop is-full-mobile" label="Date" horizontal>
             <b-datepicker placeholder="Click to select..." icon="calendar" :mobile-native="false" :disabled="submitting"
-              :min-date="new Date()" v-model="startDate" :unselectable-days-of-week="[0, 6]">
+              :min-date="minDate" v-model="startDate" :unselectable-days-of-week="[0, 6]" :events="blockedDates">
             </b-datepicker>
           </b-field>
           <b-field class="column is-half-desktop is-full-mobile" label="Time" horizontal>
-            <b-radio-button v-model="startMeridies" :disabled="availableOffs < 1 || submitting"
+            <b-radio-button v-model="startMeridies" :disabled="availableOffs < 1 || submitting || pmOnly"
               native-value="FD">
               <span>Full Day</span>
             </b-radio-button>
-            <b-radio-button v-model="startMeridies" :disabled="submitting"
+            <b-radio-button v-model="startMeridies" :disabled="submitting || pmOnly"
               native-value="AM">
               <span>AM Only</span>
             </b-radio-button>
@@ -160,6 +163,32 @@ export default {
     },
     canApplyOff () {
       return this.startDate && this.startMeridies && this.recommending && this.approving
+    },
+    minDate () {
+      const date = new Date()
+      if (date.getHours() < 18) {
+        date.setDate(date.getDate() - 1)
+      }
+      return date
+    },
+    pmOnly () {
+      const date = new Date()
+      return this.startDate && this.startDate.getDate() === date.getDate() && date.getHours() > 11
+    },
+    blockedDates () {
+      return this.$store.getters['user/unavailableDates'].map((val) => {
+        if (val.getHours() < 12) {
+          return {
+            date: val,
+            type: 'is-link'
+          }
+        } else {
+          return {
+            date: val,
+            type: 'is-danger'
+          }
+        }
+      })
     }
     // endDateDisabled () {
     //   return !(!!this.startDate && !!this.startMeridies) || this.availableOffs < 1
@@ -209,6 +238,7 @@ export default {
       this.$store.dispatch('user/getCurrentUserOffs', reset)
       this.$store.dispatch('user/getCurrentUserPendingOffs', reset)
       this.$store.dispatch('user/getCurrentUserRecommendedOffs', reset)
+      this.$store.dispatch('user/getCurrentUserOffPass', reset)
       this.applyOffOpen = false
       this.startDate = null
       this.startMeridies = null
@@ -222,35 +252,48 @@ export default {
       this.submitting = true
 
       const availableOffs = this.$store.getters['user/availableOffs']
-      const payload = [Object.assign({}, availableOffs[0])]
+      // const payload = [Object.assign({}, availableOffs[0])]
+      // payload[0].requester = this.$store.state.credentials.user.uid
+      // payload[0].recommender = this.recommending.id
+      // payload[0].approver = this.approving.id
+      // payload[0].requestDate = new Date()
 
-      payload[0].requester = this.$store.state.credentials.user.uid
-      payload[0].recommender = this.recommending.id
-      payload[0].approver = this.approving.id
-      payload[0].requestDate = new Date()
+      const payload = {
+        requester: this.$store.state.credentials.user.uid,
+        recommender: this.recommending.id,
+        approver: this.approving.id,
+        requestDate: new Date(),
+        endDate: availableOffs[0].endDate
+      }
 
       if (this.startMeridies === 'AM') {
         const date = new Date(this.startDate.getTime())
         date.setHours(8, 0)
-        payload[0].useDate = date
+        // payload[0].useDate = date
+        payload.useDate = date
+        payload.ids = [availableOffs[0].id]
       } else if (this.startMeridies === 'PM') {
         const date = new Date(this.startDate.getTime())
         date.setHours(12, 30)
+        // payload[0].useDate = date
         payload.useDate = date
+        payload.ids = [availableOffs[0].id]
       } else {
         const date1 = new Date(this.startDate.getTime())
         date1.setHours(8, 0)
-        payload[0].useDate = date1
+        // payload[0].useDate = date1
+        payload.useDate = date1
+        payload.ids = [availableOffs[0].id, availableOffs[1].id]
 
-        // Create second off
-        payload.push(Object.assign({}, availableOffs[1]))
-        payload[1].recommender = this.recommending.id
-        payload[1].requester = this.$store.state.credentials.user.uid
-        payload[1].approver = this.approving.id
-        payload[1].requestDate = payload[0].requestDate
-        const date2 = new Date(this.startDate.getTime())
-        date2.setHours(12, 30)
-        payload[1].useDate = date2
+        // // Create second off
+        // payload.push(Object.assign({}, availableOffs[1]))
+        // payload[1].recommender = this.recommending.id
+        // payload[1].requester = this.$store.state.credentials.user.uid
+        // payload[1].approver = this.approving.id
+        // payload[1].requestDate = payload[0].requestDate
+        // const date2 = new Date(this.startDate.getTime())
+        // date2.setHours(12, 30)
+        // payload[1].useDate = date2
       }
       // console.log(payload)
       this.$store.dispatch('user/applyOff', payload).then(() => {
@@ -267,6 +310,9 @@ export default {
         })
         console.error(err)
       })
+    },
+    overallClick (val) {
+      this.$emit('click-item', val)
     }
     // onStartUpdate () {
     //   this.endDate = null

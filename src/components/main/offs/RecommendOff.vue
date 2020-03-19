@@ -36,7 +36,7 @@
                 {{ props.row.requestDate.toDate().toLocaleString() }}
               </b-table-column>
               <b-table-column field="count" label="Count">
-                {{ props.row.count }}
+                {{ props.row.count }} Day(s)
               </b-table-column>
               <b-table-column field="ids" label="Actions">
                 <div class="buttons">
@@ -108,7 +108,7 @@ export default {
           '\'s off on <strong>' + off.row.useDate.toDate().toLocaleString() + '</strong>?',
         onConfirm: () => {
           this.loading = true
-          this.$store.dispatch('user/deleteUserPendingOffs', off.row.ids).then(() => {
+          this.$store.dispatch('user/deleteUserPendingOff', off.row.id).then(() => {
             this.$buefy.notification.open({
               message: 'Successfully Cancelled Off!',
               type: 'is-success'
@@ -128,9 +128,9 @@ export default {
     recommendOffs () {
       this.loading = true
       const recommendedDate = new Date()
-      const payload = this.checkedRows.flatMap((val) => val.ids).map((val) => {
-        this.rawPendingOff[val].recommendedDate = recommendedDate
-        return this.rawPendingOff[val]
+      const payload = this.checkedRows.map((val) => {
+        this.rawPendingOff[val.id].recommendedDate = recommendedDate
+        return this.rawPendingOff[val.id]
       })
       const ids = payload.map((val) => val.id)
       this.$store.dispatch('user/recommendOffs', payload).then((val) => {
@@ -153,27 +153,34 @@ export default {
     reset (reset) {
       this.$store.dispatch('user/getOffsToRecommend', this.$store.getters['credentials/id']).then((val) => {
         this.loading = false
+        // this.pendingOff = Object.values(val.docs.map(off => {
+        //   const data = off.data()
+        //   this.rawPendingOff[off.id] = data
+        //   data.id = off.id
+        //   return data
+        // }).reduce((l, c) => {
+        //   const key = c.requester + c.requestDate.toLocaleString()
+        //   l[key] = l[key] || {
+        //     // description: c.description,
+        //     count: 0,
+        //     useDate: c.useDate,
+        //     requester: c.requester,
+        //     recommender: c.recommender,
+        //     approver: c.approver,
+        //     requestDate: c.requestDate,
+        //     ids: []
+        //   }
+        //   l[key]['count'] += 0.5
+        //   l[key]['ids'].push(c.id)
+        //   return l
+        // }, {}));
         this.pendingOff = Object.values(val.docs.map(off => {
           const data = off.data()
           this.rawPendingOff[off.id] = data
           data.id = off.id
+          data.count = data.ids.length / 2
           return data
-        }).reduce((l, c) => {
-          const key = c.requester + c.requestDate.toLocaleString()
-          l[key] = l[key] || {
-            // description: c.description,
-            count: 0,
-            useDate: c.useDate,
-            requester: c.requester,
-            recommender: c.recommender,
-            approver: c.approver,
-            requestDate: c.requestDate,
-            ids: []
-          }
-          l[key]['count'] += 0.5
-          l[key]['ids'].push(c.id)
-          return l
-        }, {}));
+        }));
         [...new Set(this.pendingOff.flatMap(data => [data.recommender, data.approver]))].forEach((id) => {
           this.$store.dispatch('common/getUser', id).then((userData) => {
             this.$set(this.user, id, userData)

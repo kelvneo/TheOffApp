@@ -22,9 +22,10 @@ if (process.env.NODE_ENV === 'production') {
     },
     updated () {
       Notification.open({
-        message: 'New content downloaded, please refresh this page.',
+        message: 'New update installed, please restart the app.',
         type: 'is-info',
-        indefinite: true
+        indefinite: true,
+        closable: false
       })
       console.log('New content is available; please refresh.')
     },

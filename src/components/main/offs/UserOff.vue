@@ -5,29 +5,36 @@
       <b-message type="is-warning" role="alert" :closable="false" title="Work in Progress" size="is-small">
         This website is still under development and testing, apologies for the bugs!
       </b-message>
-      <OverallUserOffs class="mb" v-on:off-applied="reset(true)"></OverallUserOffs>
+      <OverallUserOffs class="mb" v-on:off-applied="reset(true)" v-on:click-item="activeTab = $event"></OverallUserOffs>
+      <div class="columns is-gapless">
+        <div class="field column">
+          <b-switch v-model="showDetails">
+            Show Extra Details
+          </b-switch>
+        </div>
+      </div>
       <b-tabs v-model="activeTab">
         <b-tab-item label="Awarded Offs">
           <b-table :data="off" :loading="loading" default-sort="endDate">
             <template slot-scope="props">
-              <b-table-column field="awardDate" label="Date Awarded" sortable>
-                {{ props.row.awardDate.toDate().toLocaleString() }}
+              <b-table-column field="description" label="Description">
+                {{ props.row.description }}
               </b-table-column>
               <b-table-column field="endDate" label="Expiry Date" sortable>
                 {{ props.row.endDate.toDate().toLocaleString() }}
               </b-table-column>
-              <b-table-column field="description" label="Description">
-                {{ props.row.description }}
+              <b-table-column field="awardDate" label="Date Awarded" sortable :visible="showDetails">
+                {{ props.row.awardDate.toDate().toLocaleString() }}
               </b-table-column>
-              <b-table-column field="awardRecommended" label="Recommended By">
+              <b-table-column field="awardRecommended" label="Recommended By" :visible="showDetails">
                 <span v-if="user[props.row.awardRecommended]">{{ user[props.row.awardRecommended]['name'] }}</span>
                 <span v-else>...</span>
               </b-table-column>
-              <b-table-column field="awarded" label="Awarded By">
+              <b-table-column field="awarded" label="Awarded By" :visible="showDetails">
                 <span v-if="user[props.row.awarded]">{{ user[props.row.awarded]['name'] }}</span>
                 <span v-else>...</span>
               </b-table-column>
-              <b-table-column field="count" label="Count">
+              <b-table-column field="count" label="Off Remaining">
                 {{ props.row.count }}
               </b-table-column>
             </template>
@@ -47,22 +54,22 @@
         <b-tab-item label="Offs Recommending">
           <b-table :data="pendingOff" :loading="loading" default-sort="requestDate">
             <template slot-scope="props">
-              <b-table-column field="requestDate" label="Requested On" sortable>
+              <b-table-column field="useDate" label="Using On" sortable>
+                {{ props.row.useDate.toDate().toLocaleString() }}
+              </b-table-column>
+              <b-table-column field="count" label="Half / Full Day">
+                {{ props.row.count === 1 ? 'Full Day' : 'Half Day '}}
+              </b-table-column>
+              <b-table-column field="requestDate" label="Requested On" sortable :visible="showDetails">
                 {{ props.row.requestDate.toDate().toLocaleString() }}
               </b-table-column>
               <b-table-column field="recommender" label="To Recommend">
                 <span v-if="user[props.row.recommender]">{{ user[props.row.recommender]['name'] }}</span>
                 <span v-else>...</span>
               </b-table-column>
-              <b-table-column field="approver" label="To Approve">
+              <b-table-column field="approver" label="To Approve" :visible="showDetails">
                 <span v-if="user[props.row.approver]">{{ user[props.row.approver]['name'] }}</span>
                 <span v-else>...</span>
-              </b-table-column>
-              <b-table-column field="useDate" label="Using On" sortable>
-                {{ props.row.useDate.toDate().toLocaleString() }}
-              </b-table-column>
-              <b-table-column field="count" label="Count">
-                {{ props.row.count }}
               </b-table-column>
               <b-table-column field="ids" label="Actions">
                 <b-button type="is-danger" size="is-small" icon-left="times" :disabled="loading" @click="deletePendingOffs(props)">
@@ -86,10 +93,13 @@
         <b-tab-item label="Offs to Approve">
           <b-table :data="recommendedOff" :loading="loading" default-sort="requestDate">
             <template slot-scope="props">
-              <b-table-column field="requestDate" label="Requested On" sortable>
-                {{ props.row.requestDate.toDate().toLocaleString() }}
+              <b-table-column field="useDate" label="Using On" sortable>
+                {{ props.row.useDate.toDate().toLocaleString() }}
               </b-table-column>
-              <b-table-column field="recommender" label="To Recommend">
+              <b-table-column field="count" label="Half / Full Day">
+                {{ props.row.count === 1 ? 'Full Day' : 'Half Day' }}
+              </b-table-column>
+              <b-table-column field="recommender" label="To Recommend" :visible="showDetails">
                 <span v-if="user[props.row.recommender]">{{ user[props.row.recommender]['name'] }}</span>
                 <span v-else>...</span>
               </b-table-column>
@@ -97,14 +107,11 @@
                 <span v-if="user[props.row.approver]">{{ user[props.row.approver]['name'] }}</span>
                 <span v-else>...</span>
               </b-table-column>
-              <b-table-column field="useDate" label="Using On" sortable>
-                {{ props.row.useDate.toDate().toLocaleString() }}
-              </b-table-column>
-              <b-table-column field="count" label="Count">
-                {{ props.row.count }}
+              <b-table-column field="requestDate" label="Requested On" sortable :visible="showDetails">
+                {{ props.row.requestDate.toDate().toLocaleString() }}
               </b-table-column>
               <b-table-column field="ids" label="Actions">
-                <b-button type="is-danger" size="is-small" icon-left="times" :disabled="loading" @click="deleteRecommendedOff(props)">
+                <b-button type="is-danger" size="is-small" icon-left="times" :disabled="loading" @click="deleteRecommendedOffs(props)">
                   Cancel
                 </b-button>
               </b-table-column>
@@ -142,10 +149,14 @@ export default {
       pendingOff: [],
       recommendedOff: [],
       loading: true,
-      activeTab: 0
+      activeTab: 0,
+      showDetails: false
     }
   },
   mounted () {
+    if (this.$route.query.t && Number.isSafeInteger(this.$route.query.t)) {
+      this.activeTab = Number(this.$route.query.t)
+    }
     this.reset(false)
   },
   methods: {
@@ -172,20 +183,24 @@ export default {
       })
       this.$store.dispatch('user/getCurrentUserPendingOffs', reset).then((data) => {
         this.loading = false
-        this.pendingOff = Object.values(data.reduce((l, c) => {
-          l[c.requestDate] = l[c.requestDate] || {
-            // description: c.description,
-            count: 0,
-            useDate: c.useDate,
-            recommender: c.recommender,
-            approver: c.approver,
-            requestDate: c.requestDate,
-            ids: []
-          }
-          l[c.requestDate]['count'] += 0.5
-          l[c.requestDate]['ids'].push(c.id)
-          return l
-        }, {}));
+        // this.pendingOff = Object.values(data.reduce((l, c) => {
+        //   l[c.requestDate] = l[c.requestDate] || {
+        //     // description: c.description,
+        //     count: 0,
+        //     useDate: c.useDate,
+        //     recommender: c.recommender,
+        //     approver: c.approver,
+        //     requestDate: c.requestDate,
+        //     ids: []
+        //   }
+        //   l[c.requestDate]['count'] += 0.5
+        //   l[c.requestDate]['ids'].push(c.id)
+        //   return l
+        // }, {}));
+        this.pendingOff = data.map((val) => {
+          val.count = val.ids.length / 2
+          return val
+        });
         [...new Set(this.pendingOff.flatMap(val => [val.recommender, val.approver]))].forEach((val) => {
           this.$store.dispatch('common/getUser', val).then((userData) => {
             this.$set(this.user, val, userData)
@@ -194,20 +209,24 @@ export default {
       })
       this.$store.dispatch('user/getCurrentUserRecommendedOffs', reset).then((data) => {
         this.loading = false
-        this.recommendedOff = Object.values(data.reduce((l, c) => {
-          l[c.requestDate] = l[c.requestDate] || {
-            // description: c.description,
-            count: 0,
-            useDate: c.useDate,
-            recommender: c.recommender,
-            approver: c.approver,
-            requestDate: c.requestDate,
-            ids: []
-          }
-          l[c.requestDate]['count'] += 0.5
-          l[c.requestDate]['ids'].push(c.id)
-          return l
-        }, {}));
+        // this.recommendedOff = Object.values(data.reduce((l, c) => {
+        //   l[c.requestDate] = l[c.requestDate] || {
+        //     // description: c.description,
+        //     count: 0,
+        //     useDate: c.useDate,
+        //     recommender: c.recommender,
+        //     approver: c.approver,
+        //     requestDate: c.requestDate,
+        //     ids: []
+        //   }
+        //   l[c.requestDate]['count'] += 0.5
+        //   l[c.requestDate]['ids'].push(c.id)
+        //   return l
+        // }, {}));
+        this.recommendedOff = data.map((val) => {
+          val.count = val.ids.length / 2
+          return val
+        });
         [...new Set(this.recommendedOff.flatMap(val => [val.recommender, val.approver]))].forEach((val) => {
           this.$store.dispatch('common/getUser', val).then((userData) => {
             this.$set(this.user, val, userData)
@@ -221,7 +240,7 @@ export default {
         message: 'Are you sure you wish to delete the off on <strong>' + off.row.useDate.toDate().toLocaleString() + '</strong>?',
         onConfirm: () => {
           this.loading = true
-          this.$store.dispatch('user/deleteUserPendingOffs', off.row.ids).then(() => {
+          this.$store.dispatch('user/deleteUserPendingOff', off.row.id).then(() => {
             this.$buefy.notification.open({
               message: 'Successfully Cancelled Off!',
               type: 'is-success'
@@ -244,7 +263,7 @@ export default {
         message: 'Are you sure you wish to delete the off on <strong>' + off.row.useDate.toDate().toLocaleString() + '</strong>?',
         onConfirm: () => {
           this.loading = true
-          this.$store.dispatch('user/deleteUserPendingApprovalOffs', off.row.ids).then(() => {
+          this.$store.dispatch('user/deleteUserPendingApprovalOff', off.row.id).then(() => {
             this.$buefy.notification.open({
               message: 'Successfully Cancelled Off!',
               type: 'is-success'
