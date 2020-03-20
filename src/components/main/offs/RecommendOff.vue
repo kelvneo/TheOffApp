@@ -2,7 +2,7 @@
   <div class="container">
     <section class="section">
       <h2 class="title">Recommend Offs</h2>
-      <b-tabs v-model="activeTab">
+      <b-tabs v-model="activeTab" type="is-boxed">
         <b-tab-item label="Awaiting Recommendation">
           <b-message type="is-info" role="alert" title="How To Recommend Offs" :closable="false" size="is-small">
             Check the boxes to select the personnel to recommend, and press "Recommend Offs" below.
@@ -26,7 +26,7 @@
                 <span v-else>...</span>
               </b-table-column>
               <b-table-column field="useDate" label="Using On" sortable>
-                {{ props.row.useDate.toDate().toLocaleString() }}
+                {{ momentUsingDate(props.row.useDate.seconds) }}
               </b-table-column>
               <b-table-column field="approver" label="To Approve" :visible="showDetails">
                 <span v-if="user[props.row.approver]">{{ user[props.row.approver]['name'] }}</span>
@@ -80,6 +80,8 @@
 </template>
 
 <script>
+import moment from 'moment'
+
 export default {
   name: 'RecommendOff',
   data () {
@@ -101,6 +103,9 @@ export default {
     })
   },
   methods: {
+    momentUsingDate (seconds) {
+      return moment.unix(seconds).format('DD MMM YY / A')
+    },
     deletePendingOffs (off) {
       this.$buefy.dialog.confirm({
         title: 'Deleting Pending Off',

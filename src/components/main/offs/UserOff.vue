@@ -13,7 +13,7 @@
           </b-switch>
         </div>
       </div>
-      <b-tabs v-model="activeTab">
+      <b-tabs v-model="activeTab" type="is-boxed">
         <b-tab-item label="Awarded Offs">
           <b-table :data="off" :loading="loading" default-sort="endDate">
             <template slot-scope="props">
