@@ -2,9 +2,6 @@
   <div class="container">
     <section class="section">
       <h2 class="title">Your Off Stockcard</h2>
-      <b-message type="is-warning" role="alert" :closable="false" title="Work in Progress" size="is-small">
-        This website is still under development and testing, apologies for the bugs!
-      </b-message>
       <OverallUserOffs class="mb" v-on:off-applied="reset(true)" v-on:click-item="activeTab = $event"></OverallUserOffs>
       <div class="columns is-gapless">
         <div class="field column">
@@ -15,6 +12,9 @@
       </div>
       <b-tabs v-model="activeTab" type="is-boxed">
         <b-tab-item label="Awarded Offs">
+          <b-message type="is-info" role="alert" title="Your Awarded Offs" :closable="false" size="is-small">
+            This section details all your <strong>Unexpired Offs</strong>, grouped by their <strong>Expiry Date</strong>.
+          </b-message>
           <b-table :data="off" :loading="loading" default-sort="endDate">
             <template slot-scope="props">
               <b-table-column field="description" label="Description">
@@ -52,6 +52,9 @@
           </b-table>
         </b-tab-item>
         <b-tab-item label="Offs Recommending">
+          <b-message type="is-info" role="alert" title="Your Offs Pending Recommendation" :closable="false" size="is-small">
+            This section details all your <strong>offs pending recommendations</strong>
+          </b-message>
           <b-table :data="pendingOff" :loading="loading" default-sort="requestDate">
             <template slot-scope="props">
               <b-table-column field="useDate" label="Using On" sortable>
@@ -91,6 +94,9 @@
           </b-table>
         </b-tab-item>
         <b-tab-item label="Offs to Approve">
+          <b-message type="is-info" role="alert" title="Your Offs Pending Approval" :closable="false" size="is-small">
+            This section details all your <strong>offs pending approval</strong>
+          </b-message>
           <b-table :data="recommendedOff" :loading="loading" default-sort="requestDate">
             <template slot-scope="props">
               <b-table-column field="useDate" label="Using On" sortable>

@@ -1,52 +1,58 @@
 <template>
-  <form action="" v-on:submit.prevent>
-    <div class="columns">
-      <div class="column is-half-desktop is-full-mobile">
-        <b-field label="Description" :type="awardOffForm.error ? 'is-danger' : ''"  :message="awardOffForm.error">
-          <b-input type="text" v-model="awardOffForm.description" placeholder="Jan Performance Off" required :disabled="loading" :loading="loading">
-          </b-input>
-        </b-field>
+  <div>
+    <b-message type="is-info" role="alert" title="How To Award Offs" :closable="false" size="is-small">
+      Provide an <strong>Expiry Date</strong>, and provide a <strong>Description</strong> for the off. <br/>
+      Find the personnel to award offs, then key in the amount you wish to recommend, then scroll up and press <strong>"Award Off"</strong>.
+    </b-message>
+    <form action="" v-on:submit.prevent>
+      <div class="columns">
+        <div class="column is-half-desktop is-full-mobile">
+          <b-field label="Description" :type="awardOffForm.error ? 'is-danger' : ''"  :message="awardOffForm.error">
+            <b-input type="text" v-model="awardOffForm.description" placeholder="Jan Performance Off" required :disabled="loading" :loading="loading">
+            </b-input>
+          </b-field>
+        </div>
+        <div class="column is-half-desktop is-full-mobile">
+          <b-field label="Expiry Date">
+            <b-datepicker placeholder="Click to select..." icon="calendar" v-model="awardOffForm.endDate" :min-date="new Date()" :disabled="loading" :loading="loading">
+            </b-datepicker>
+          </b-field>
+        </div>
       </div>
-      <div class="column is-half-desktop is-full-mobile">
-        <b-field label="Expiry Date">
-          <b-datepicker placeholder="Click to select..." icon="calendar" v-model="awardOffForm.endDate" :min-date="new Date()" :disabled="loading" :loading="loading">
-          </b-datepicker>
-        </b-field>
+      <div class="buttons">
+        <b-button type="is-success" icon-left="check" expanded @click="submit()" :disabled="loading" :loading="loading">Award Off</b-button>
       </div>
-    </div>
-    <div class="buttons">
-      <b-button type="is-success" icon-left="check" expanded @click="submit()" :disabled="loading" :loading="loading">Award Off</b-button>
-    </div>
-    <!-- Table of Users to Award Offs  -->
-    <b-table :data="users" :loading="loading" :mobile-cards="!tableForm">
-      <template slot-scope="props">
-        <b-table-column field="name" label="Name" sortable searchable>
-          {{ props.row.name }}
-        </b-table-column>
-        <b-table-column field="depot" label="Depot" sortable searchable>
-          {{ props.row.depot }}
-        </b-table-column>
-        <b-table-column field="branch" label="Branch" sortable searchable>
-          {{ props.row.branch }}
-        </b-table-column>
-        <b-table-column field="id" label="To Award">
-          <b-input type="number" v-model="props.row.count" placeholder="" required>
-          </b-input>
-        </b-table-column>
-      </template>
-      <template slot="empty">
-        <section class="section">
-          <div class="content has-text-grey has-text-centered">
-            <p>
-              <b-icon icon="question-circle" size="is-large">
-              </b-icon>
-            </p>
-            <p>No users found.</p>
-          </div>
-        </section>
-      </template>
-    </b-table>
-  </form>
+      <!-- Table of Users to Award Offs  -->
+      <b-table :data="users" :loading="loading" :mobile-cards="!tableForm">
+        <template slot-scope="props">
+          <b-table-column field="name" label="Name" sortable searchable>
+            {{ props.row.name }}
+          </b-table-column>
+          <b-table-column field="depot" label="Depot" sortable searchable>
+            {{ props.row.depot }}
+          </b-table-column>
+          <b-table-column field="branch" label="Branch" sortable searchable>
+            {{ props.row.branch }}
+          </b-table-column>
+          <b-table-column field="id" label="To Award">
+            <b-input type="number" v-model="props.row.count" placeholder="" required>
+            </b-input>
+          </b-table-column>
+        </template>
+        <template slot="empty">
+          <section class="section">
+            <div class="content has-text-grey has-text-centered">
+              <p>
+                <b-icon icon="question-circle" size="is-large">
+                </b-icon>
+              </p>
+              <p>No users found.</p>
+            </div>
+          </section>
+        </template>
+      </b-table>
+    </form>
+  </div>
 </template>
 
 <script>

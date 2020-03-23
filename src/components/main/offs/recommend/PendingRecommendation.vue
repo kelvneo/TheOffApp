@@ -1,7 +1,7 @@
 <template>
   <div>
     <b-message type="is-info" role="alert" title="How To Recommend Offs" :closable="false" size="is-small">
-      Check the boxes to select the personnel to recommend, and press "Recommend Offs" below.
+      Check the boxes to select the personnel to recommend, and press <strong>"Recommend Offs"</strong> below.
     </b-message>
     <b-table :data="pendingOff" :loading="loading" default-sort="requestDate" checkable :checked-rows.sync="checkedRows" :mobile-cards="!tableForm">
       <template slot-scope="props">

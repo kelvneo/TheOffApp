@@ -15,9 +15,6 @@
     <section class="section">
       <div class="container">
         <div class="container">
-          <b-message type="is-warning" role="alert" :closable="false" title="Work in Progress" size="is-small">
-            This website is still under development and testing, apologies for the bugs!
-          </b-message>
           <OverallUserOffs class="mb"></OverallUserOffs>
           <h4 class="title is-4">Off Pass</h4>
           <div class="card">

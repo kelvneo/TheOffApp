@@ -74,9 +74,6 @@
           <AwardOff :tableForm="tableForm" :showDetails="showDetails"></AwardOff>
         </b-tab-item>
         <b-tab-item label="Cancel Off" disabled>
-          <b-message type="is-warning" role="alert" :closable="false" title="Work in Progress" size="is-small">
-            Do check back as features get implemented.
-          </b-message>
         </b-tab-item>
       </b-tabs>
     </section>

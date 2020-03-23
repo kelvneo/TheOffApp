@@ -1,10 +1,7 @@
 <template>
   <div>
-    <b-message type="is-warning" role="alert" :closable="false" title="Work in Progress" size="is-small">
-      Do check back as features get implemented.
-    </b-message>
     <b-message type="is-info" role="alert" title="How To Approve Offs" :closable="false" size="is-small">
-      Check the boxes to select the personnel to approve, and press "Approve Offs" below.
+      Check the boxes to select the personnel to approve, and press <strong>"Approve Offs"</strong> below.
     </b-message>
     <!-- Table of Offs Awaiting Approval  -->
     <b-table :data="recommendedOffs" :loading="loading" default-sort="requestDate" checkable :checked-rows.sync="checkedRecommendedOffs" :mobile-cards="!tableForm">

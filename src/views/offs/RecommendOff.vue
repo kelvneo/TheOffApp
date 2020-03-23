@@ -22,9 +22,6 @@
           <recommend-off-component :tableForm="tableForm" :showDetails="showDetails"></recommend-off-component>
         </b-tab-item>
         <b-tab-item label="Recommend Cancellation" disabled>
-          <b-message type="is-warning" role="alert" :closable="false" title="Work in Progress" size="is-small">
-            Do check back as features get implemented.
-          </b-message>
         </b-tab-item>
       </b-tabs>
     </section>

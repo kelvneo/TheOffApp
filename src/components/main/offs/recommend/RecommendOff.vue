@@ -1,5 +1,9 @@
 <template>
   <div>
+    <b-message type="is-info" role="alert" title="How To Recommend to Award Offs" :closable="false" size="is-small">
+      Choose an <strong>Approving</strong> personnel, <strong>Expiry Date</strong>, and provide a <strong>Description</strong> for the off. <br/>
+      Find the personnel to award offs, then key in the amount you wish to recommend, then scroll up and press <strong>"Recommend Off"</strong>.
+    </b-message>
     <form action="" v-on:submit.prevent>
       <div class="columns is-multiline">
         <div class="column is-half-desktop is-full-mobile">

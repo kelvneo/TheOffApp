@@ -12,9 +12,9 @@
       <b-navbar-item tag="router-link" :to="{ path: '/off/stockcard' }">
         Off Stockcard
       </b-navbar-item>
-      <b-navbar-item tag="router-link" :to="{ path: '/off/stockcard' }">
+      <!-- <b-navbar-item tag="router-link" :to="{ path: '/off/stockcard' }">
         Off Pass
-      </b-navbar-item>
+      </b-navbar-item> -->
       <b-navbar-item tag="router-link" :to="{ path: '/off/recommend' }" v-if="hasPerm('recommend_off')">
         Recommend Offs
       </b-navbar-item>
