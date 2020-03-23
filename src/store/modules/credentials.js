@@ -55,6 +55,8 @@ const actions = {
       commit('user/setPendingOffPromise', null, { root: true })
       commit('user/setRecommendedOffs', null, { root: true })
       commit('user/setRecommendedOffPromise', null, { root: true })
+      commit('user/setOffPass', null, { root: true })
+      commit('user/setOffPassPromise', null, { root: true })
       commit('setUser', null)
     })
   }

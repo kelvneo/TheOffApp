@@ -17,23 +17,51 @@ const state = {
 }
 
 const getters = {
+  /**
+   * Check if the user has permission to perform a function
+   */
   hasPermission: (state) => (perm) => {
     return state.permissions.hasOwnProperty(perm)
   },
+  /**
+   * Get the total amount of offs the user has, disregarding the amount awaiting approval and recommendations.
+   * @param {*} state Vuex State
+   * @param {*} getters Vuex Getters
+   */
   totalOffCount (state, getters) {
     return state.offs ? state.offs.filter((val) => !val.approver).length / 2 : null
   },
+  /**
+   * Get the amount of offs the user has, after deducting offs awaiting approval and recommendations.
+   * @param {*} state Vuex State
+   * @param {*} getters Vuex Getters
+   */
   availableOffCount (state, getters) {
     return state.offs && state.pendingOffs && state.recommendedOffs
       ? (state.offs.length / 2 - getters.pendingOffCount - getters.recommendedOffCount)
       : null
   },
+  /**
+   * Get the amount of offs pending recommendation for the user.
+   * @param {*} state Vuex State
+   * @param {*} getters Vuex Getters
+   */
   pendingOffCount (state, getters) {
     return state.pendingOffs ? state.pendingOffs.reduce((a, b) => a + b.ids.length, 0) / 2 : null
   },
+  /**
+   * Get the amount of offs recommended and awaiting approval for the user.
+   * @param {*} state Vuex State
+   * @param {*} getters Vuex Getters
+   */
   recommendedOffCount (state, getters) {
     return state.recommendedOffs ? state.recommendedOffs.reduce((a, b) => a + b.ids.length, 0) / 2 : null
   },
+  /**
+   * Get the details of all the available offs for the user to use.
+   * @param {*} state Vuex State
+   * @param {*} getters Vuex Getters
+   */
   availableOffs (state, getters) {
     if (state.offs && state.pendingOffs && state.recommendedOffs) {
       const po = new Set(state.pendingOffs.flatMap((val) => val.ids))
@@ -45,6 +73,11 @@ const getters = {
       return []
     }
   },
+  /**
+   * Get all the dates taken by offs pending approval, approved offs, and MAs
+   * @param {*} state Vuex State
+   * @param {*} getters Vuex Getters
+   */
   unavailableDates (state, getters) {
     const payload = []
     if (state.pendingOffs) {
@@ -61,49 +94,84 @@ const getters = {
 }
 
 const actions = {
+  /**
+   * Get the firebase document of a user.
+   * @param {*} context Vuex Context
+   * @param {*} id ID of the user
+   */
   getUser (context, id) {
     return firebase.firestore().collection('users').doc(id).get()
   },
+  /**
+   * Get the firebase document of a user awaiting approval.
+   * @param {*} context Vuex Context
+   * @param {*} id ID of the temporary user
+   */
   getTempUser (context, id) {
     return firebase.firestore().collection('temp').doc(id).get()
   },
+  /**
+   * Create a temporary user from their sign up form.
+   * @param {*} context Vuex Context
+   * @param {*} data Payload, consisting of `{id: string, data: any}`
+   */
   createTempUser (context, data) {
     return firebase.firestore().collection('temp').doc(data.id).set(data.data)
   },
+  /**
+   * Get all the users awaiting approval.
+   * @param {*} context Vuex Context
+   */
   getTempUsers (context) {
     return firebase.firestore().collection('temp').get()
   },
+  /**
+   * Delete a temporary user.
+   * @param {*} context Vuex Context
+   * @param {*} id The temporary user ID
+   */
   deleteTempUser (context, id) {
     return firebase.firestore().collection('temp').doc(id).delete()
   },
+  /**
+   * Create an approved user.
+   * @param {*} context Vuex Context
+   * @param {*} data Payload, consisting of `{id: string, data: any}`
+   */
   createUser (context, data) {
     return firebase.firestore().collection('users').doc(data.id).set(data.data)
   },
+  /**
+   * Get the permissions assigned to a user
+   * @param {*} context Vuex context
+   * @param {*} id The ID of the user to check
+   */
   getUserPermissions (context, id) {
     return firebase.firestore().collection('users').doc(id).collection('perms').get()
   },
-  // getUserUpdateStatus (context, id) {
-  //   return firebase.firestore().collection('users').doc(id).collection('updates').doc('status').get()
-  // },
-  // updateUserUpdateStatus (context, data) {
-  //   return firebase.firestore().collection('users').doc(data.id).collection('updates').doc('status').set(data.data)
-  // },
-  // getUserTemperature (context, id) {
-  //   return firebase.firestore().collection('users').doc(id).collection('updates').doc('temperature').get()
-  // },
-  // updateUserTemperature (context, data) {
-  //   return firebase.firestore().collection('users').doc(data.id).collection('updates').doc('temperature').set(data.data)
-  // },
+  /**
+   * Get the unexpired offs the user has, ignoring pending recommendation and approval offs.
+   *
+   * This function will call firebase if no local version is found.
+   * @param {*} context Vuex context
+   * @param {*} reset Set this to `true` to update cache values.
+   */
   async getCurrentUserOffs (context, reset) {
+    // If reset is not true, and there are existing values, return the old values.
+    // This is to reduce the amount of reads from firebase.
     if (context.state.offs && context.state.offs.length && !reset) {
       return context.state.offs
     }
+    // Make sure that there isn't already a call to get the current user's offs.
     if (context.state.offPromise) {
       return context.state.offPromise
     }
+    // Clear all current offs.
     context.commit('setOffs', null)
+    // Filter the collection of offs by their expiry date.
     const promise = firebase.firestore().collection('users').doc(context.rootGetters['credentials/id'])
       .collection('offs').where('endDate', '>=', new Date()).get().then((snapshot) => {
+        // Check if there are any offs at all.
         if (snapshot.empty) {
           context.commit('setOffs', [])
           context.commit('setOffPromise', null)
@@ -118,9 +186,18 @@ const actions = {
           return context.state.offs
         }
       })
+    // To save reads and ensure there aren't any duplicate calls, always return the promise that
+    // is attempting to collate the information.
     context.commit('setOffPromise', promise)
     return promise
   },
+  /**
+   * Get the offs currently pending recommendation.
+   *
+   * This function will call firebase if no local version is found.
+   * @param {*} context Vuex context
+   * @param {*} reset Set this to `true` to update cache values.
+   */
   async getCurrentUserPendingOffs (context, reset) {
     if (context.state.pendingOffs && context.state.pendingOffs.length && !reset) {
       return context.state.pendingOffs
@@ -149,6 +226,13 @@ const actions = {
     context.commit('setPendingOffPromise', promise)
     return promise
   },
+  /**
+   * Get the offs currently pending approval.
+   *
+   * This function will call firebase if no local version is found.
+   * @param {*} context Vuex context
+   * @param {*} reset Set this to `true` to update cache values.
+   */
   async getCurrentUserRecommendedOffs (context, reset) {
     if (context.state.recommendedOffs && context.state.recommendedOffs.length && !reset) {
       return context.state.recommendedOffs
@@ -177,6 +261,13 @@ const actions = {
     context.commit('setRecommendedOffPromise', promise)
     return promise
   },
+  /**
+   * Get the offs that are approved.
+   *
+   * This function will call firebase if no local version is found.
+   * @param {*} context Vuex context
+   * @param {*} reset Set this to `true` to update cache values.
+   */
   async getCurrentUserOffPass (context, reset) {
     if (context.state.offPass && context.state.offPass.length && !reset) {
       return context.state.offPass
@@ -204,10 +295,20 @@ const actions = {
     context.commit('setOffPassPromise', promise)
     return promise
   },
-  getUserConfirmedOffs (context, id) {
+  /**
+   * Get the unexpired offs the user is approved to use.
+   * @param {*} context Vuex Context
+   * @param {*} id The user ID
+   */
+  getUserAwardedOffs (context, id) {
     return firebase.firestore().collection('users').doc(id).collection('offs').where('endDate', '>=', new Date()).get()
   },
-  getUserTotalConfirmedOffs (context, id) {
+  /**
+   * Get the offs, both expired and unexpired, the user is/was approved to use.
+   * @param {*} context Vuex Context
+   * @param {*} id The user ID
+   */
+  getUserTotalAwardedOffs (context, id) {
     return firebase.firestore().collection('users').doc(id).collection('offs').get()
   },
   getUserPendingOffs (context, id) {
@@ -254,6 +355,22 @@ const actions = {
   getOffsToApprove (context, id) {
     return firebase.firestore().collection('recommended_offs').where('approver', '==', id).get()
   },
+  getOffAwardRecommended (context, id) {
+    return firebase.firestore().collection('recommended_awards').where('recommender', '==', id).get()
+  },
+  getOffsToAward (context, id) {
+    return firebase.firestore().collection('recommended_awards').where('approver', '==', id).get()
+  },
+  deleteOffToAward (context, id) {
+    return firebase.firestore().collection('recommended_awards').doc(id).delete()
+  },
+  deleteOffsToAward (context, ids) {
+    const batch = firebase.firestore().batch()
+    for (const id of ids) {
+      batch.delete(firebase.firestore().collection('recommended_awards').doc(id))
+    }
+    return batch.commit()
+  },
   async applyOff (context, payload) {
     // const batch = firebase.firestore().batch()
     // for (const off of payload) {
@@ -270,6 +387,13 @@ const actions = {
       const id = off.id
       delete off.id
       batch.set(firebase.firestore().collection('recommended_offs').doc(id), off)
+    }
+    return batch.commit()
+  },
+  async recommendOffAward (context, payload) {
+    const batch = firebase.firestore().batch()
+    for (const off of payload) {
+      batch.set(firebase.firestore().collection('recommended_awards').doc(), off)
     }
     return batch.commit()
   },

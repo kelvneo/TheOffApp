@@ -17,8 +17,8 @@ import store from '../store/'
 // import 'firebase/auth'
 
 const ApproveUsers = () => import('../components/main/ApproveUsers.vue')
-const RecommendOff = () => import('../components/main/offs/RecommendOff.vue')
-const ApproveOff = () => import('../components/main/offs/ApproveOff.vue')
+const RecommendOff = () => import('../views/offs/RecommendOff.vue')
+const ApproveOff = () => import('../views/offs/ApproveOff.vue')
 
 Vue.use(VueRouter)
 

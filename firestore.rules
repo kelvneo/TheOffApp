@@ -35,6 +35,11 @@ service cloud.firestore {
         allow read, delete: if request.auth.uid == resource.data.requester || request.auth.uid == resource.data.recommender;
         allow read, update, delete: if request.auth.uid == resource.data.approver && exists(/databases/$(database)/documents/users/$(request.auth.uid)/perms/approve_off);
     }
+    match /recommended_awards/{uid} {
+        allow create: if request.auth.uid != null && request.auth.uid == request.resource.data.recommender && exists(/databases/$(database)/documents/users/$(request.auth.uid)/perms/recommend_off);
+        allow read, delete: if request.auth.uid == resource.data.requester || request.auth.uid == resource.data.recommender;
+        allow read, update, delete: if request.auth.uid == resource.data.approver && exists(/databases/$(database)/documents/users/$(request.auth.uid)/perms/approve_off);
+    }
 //   	match /users/{uid} {
 //     	allow read, write: if isAdmin();
 //     	allow read, update, delete: if request.auth.uid == uid;

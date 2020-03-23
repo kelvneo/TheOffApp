@@ -20,15 +20,20 @@ const getters = {
 const actions = {
   async updateAllUsers (context) {
     if (context.state.allUsersCollected) {
-      return context.state.allUsers
+      return Promise.resolve(context.state.allUsers)
     }
-    (await firebase.firestore().collection('users').get()).forEach((doc) => {
+    const promise = (firebase.firestore().collection('users').get())
+    context.commit('setAllUsers', promise)
+    const val = await promise
+    const returnVal = {}
+    val.forEach((doc) => {
       const data = doc.data()
       data.id = doc.id
-      context.commit('setUser', { id: doc.id, data: data })
+      returnVal[doc.id] = data
     })
     context.commit('setAllUsersCollected', true)
-    return context.state.allUsers
+    context.commit('setAllUsers', returnVal)
+    return returnVal
   },
   async getUser (context, id) {
     if (context.getters.user(id)) {
