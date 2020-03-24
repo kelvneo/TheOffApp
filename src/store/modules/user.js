@@ -419,6 +419,10 @@ const actions = {
       batch.delete(firebase.firestore().collection('users').doc(val.uid).collection('offs').doc(val.offId))
     }
     return batch.commit()
+  },
+  async addNotificationToken (context, token) {
+    return firebase.firestore().collection('users').doc(context.rootGetters['credentials/id'])
+      .collection('notification_tokens').doc(token).set({})
   }
 }
 
