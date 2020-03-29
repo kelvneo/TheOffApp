@@ -143,7 +143,7 @@
           <b-table :data="pendingMA" :loading="loading" default-sort="requestDate">
             <template slot-scope="props">
               <b-table-column field="useDate" label="Using On" sortable>
-                {{ momentUsingDate(props.row.useDate.toDate()) }}
+                {{ momentUsingDate(props.row.useDate.seconds) }}
               </b-table-column>
               <b-table-column field="location" label="Location">
                 {{ props.row.location }}
@@ -185,7 +185,7 @@
           <b-table :data="recommendedMA" :loading="loading" default-sort="requestDate">
             <template slot-scope="props">
               <b-table-column field="useDate" label="Using On" sortable>
-                {{ momentUsingDate(props.row.useDate.toDate()) }}
+                {{ momentUsingDate(props.row.useDate.seconds) }}
               </b-table-column>
               <b-table-column field="location" label="Location">
                 {{ props.row.location }}

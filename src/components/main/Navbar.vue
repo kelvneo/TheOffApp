@@ -35,9 +35,14 @@
     </template>
 
     <template slot="end">
-      <b-navbar-item tag="router-link" :to="{ path: '/approve' }" v-if="hasPerm('approve_users')">
-        Approve Users
-      </b-navbar-item>
+      <b-navbar-dropdown label="Users" v-if="hasPerm('approve_users') || hasPerm('cos')">
+        <!-- <b-navbar-item href="#" v-if="hasPerm('cos')">
+          Manage Users
+        </b-navbar-item> -->
+        <b-navbar-item tag="router-link" :to="{ path: '/approve' }" v-if="hasPerm('approve_users')">
+          Approve Users
+        </b-navbar-item>
+      </b-navbar-dropdown>
       <b-navbar-item tag="div">
         <div class="buttons">
           <b-button type="is-danger" class="has-background-dark" inverted outlined icon-left="sign-out-alt" @click="logout()">
