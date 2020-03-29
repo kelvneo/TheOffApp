@@ -23,8 +23,8 @@ exports.sendOffApprovedNotification = functions.firestore.document('users/{uid}/
 
   const payload = {
     notification: {
-      title: 'You have been awarded 0.5 off.',
-      body: 'Please check the GSAB Admin for details.'
+      title: '0.5 Off Awarded',
+      body: 'Please check GSAB Admin for details.'
     }
   };
 
@@ -59,8 +59,8 @@ exports.sendOffPassApprovedNotification = functions.firestore.document('users/{u
 
   const payload = {
     notification: {
-      title: 'Your off has been approved.',
-      body: 'Please check the GSAB Admin for details.'
+      title: 'Off / MA has been Approved',
+      body: 'Please check GSAB Admin for details.'
     }
   };
 
@@ -92,12 +92,12 @@ exports.pendingOffRecommendationNotification = functions.firestore.document('pen
   }
   console.log(deviceTokens.size, 'tokens found for:', uid);
 
-  const title = 'You have a pending off to ' + ((uid === snap.data().approver) ? 'approve.' : 'recommend.');
+  const title = 'Pending Off to ' + ((uid === snap.data().approver) ? 'Approve' : 'Recommend');
 
   const payload = {
     notification: {
       title: title,
-      body: 'Please check the GSAB Admin for details.'
+      body: 'Please check GSAB Admin for details.'
     }
   };
 
@@ -129,12 +129,86 @@ exports.pendingOffApprovingNotification = functions.firestore.document('recommen
   }
   console.log(deviceTokens.size, 'tokens found for:', uid);
 
-  const title = 'You have a pending off to approve.';
+  const title = 'Pending Off to Approve';
 
   const payload = {
     notification: {
       title: title,
-      body: 'Please check the GSAB Admin for details.'
+      body: 'Please check GSAB Admin for details.'
+    }
+  };
+
+  const tokenIDs = deviceTokens.docs.map(val => val.id);
+  const response = await admin.messaging().sendToDevice(tokenIDs, payload);
+  const removeTokenPromises = [];
+
+  response.results.forEach((result, index) => {
+    const error = result.error;
+    if (error) {
+      console.error('Failed to send notification to', tokenIDs[index], error)
+      if (error.code === 'messaging/invalid-registration-token' ||
+      error.code === 'messaging/registration-token-not-registered') {
+        removeTokenPromises.push(db.collection('users').doc(uid)
+          .collection('notification_tokens').doc(tokenIDs[index]).delete());
+      }
+    }
+  })
+  return Promise.all(removeTokenPromises);
+})
+
+exports.pendingMARecommendationNotification = functions.firestore.document('pending_mas/{offId}').onCreate(async (snap, context) => {
+  const uid = snap.data().recommender;
+  const offId = context.params.offId;
+
+  const deviceTokens = await db.collection('users').doc(uid).collection('notification_tokens').get();
+  if (deviceTokens.empty) {
+    return console.log('Unable to send notification to:', uid, 'as they do not have tokens.');
+  }
+  console.log(deviceTokens.size, 'tokens found for:', uid);
+
+  const title = 'Pending MA to ' + ((uid === snap.data().approver) ? 'Approve' : 'Recommend');
+
+  const payload = {
+    notification: {
+      title: title,
+      body: 'Please check GSAB Admin for details.'
+    }
+  };
+
+  const tokenIDs = deviceTokens.docs.map(val => val.id);
+  const response = await admin.messaging().sendToDevice(tokenIDs, payload);
+  const removeTokenPromises = [];
+
+  response.results.forEach((result, index) => {
+    const error = result.error;
+    if (error) {
+      console.error('Failed to send notification to', tokenIDs[index], error)
+      if (error.code === 'messaging/invalid-registration-token' ||
+      error.code === 'messaging/registration-token-not-registered') {
+        removeTokenPromises.push(db.collection('users').doc(uid)
+          .collection('notification_tokens').doc(tokenIDs[index]).delete());
+      }
+    }
+  })
+  return Promise.all(removeTokenPromises);
+})
+
+exports.pendingMAApprovingNotification = functions.firestore.document('recommended_mas/{offId}').onCreate(async (snap, context) => {
+  const uid = snap.data().recommender;
+  const offId = context.params.offId;
+
+  const deviceTokens = await db.collection('users').doc(uid).collection('notification_tokens').get();
+  if (deviceTokens.empty) {
+    return console.log('Unable to send notification to:', uid, 'as they do not have tokens.');
+  }
+  console.log(deviceTokens.size, 'tokens found for:', uid);
+
+  const title = 'Pending MA to Approve';
+
+  const payload = {
+    notification: {
+      title: title,
+      body: 'Please check GSAB Admin for details.'
     }
   };
 
@@ -166,12 +240,12 @@ exports.pendingAwardApprovingNotification = functions.firestore.document('recomm
   }
   console.log(deviceTokens.size, 'tokens found for:', uid);
 
-  const title = 'You have pending off(s) to award.';
+  const title = 'Pending Off(s) to Award';
 
   const payload = {
     notification: {
       title: title,
-      body: 'Please check the GSAB Admin for details.'
+      body: 'Please check GSAB Admin for details.'
     }
   };
 

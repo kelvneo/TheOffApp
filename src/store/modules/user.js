@@ -12,6 +12,10 @@ const state = {
   pendingOffPromise: null,
   recommendedOffs: null,
   recommendedOffPromise: null,
+  pendingMAs: null,
+  pendingMAPromise: null,
+  recommendedMAs: null,
+  recommendedMAPromise: null,
   offPass: null,
   offPassPromise: null
 }
@@ -89,7 +93,29 @@ const getters = {
     if (state.offPass) {
       payload.push(...state.offPass.map((val) => val.startDate.toDate()))
     }
+    if (state.pendingMAs) {
+      payload.push(...state.pendingMAs.map((val) => val.useDate.toDate()))
+    }
+    if (state.recommendedMAs) {
+      payload.push(...state.recommendedMAs.map((val) => val.useDate.toDate()))
+    }
     return payload
+  },
+  /**
+   * Get the amount of MAs pending recommendation for the user.
+   * @param {*} state Vuex State
+   * @param {*} getters Vuex Getters
+   */
+  pendingMACount (state, getters) {
+    return state.pendingMAs ? state.pendingMAs.length : null
+  },
+  /**
+   * Get the amount of MAs recommended and awaiting approval for the user.
+   * @param {*} state Vuex State
+   * @param {*} getters Vuex Getters
+   */
+  recommendedMACount (state, getters) {
+    return state.recommendedMAs ? state.recommendedMAs.length : null
   }
 }
 
@@ -423,6 +449,139 @@ const actions = {
   async addNotificationToken (context, token) {
     return firebase.firestore().collection('users').doc(context.rootGetters['credentials/id'])
       .collection('notification_tokens').doc(token).set({})
+  },
+  /**
+   * Get the MAs currently pending recommendation.
+   *
+   * This function will call firebase if no local version is found.
+   * @param {*} context Vuex context
+   * @param {*} reset Set this to `true` to update cache values.
+   */
+  async getCurrentUserPendingMAs (context, reset) {
+    if (context.state.pendingMAs && context.state.pendingMAs.length && !reset) {
+      return context.state.pendingMAs
+    }
+    if (context.state.pendingMAPromise) {
+      return context.state.pendingMAPromise
+    }
+    context.commit('setPendingMAs', null)
+    const promise = firebase.firestore().collection('pending_mas')
+      .where('requester', '==', context.rootGetters['credentials/id'])
+      .where('useDate', '>=', new Date()).get().then((snapshot) => {
+        if (snapshot.empty) {
+          context.commit('setPendingMAs', [])
+          context.commit('setPendingMAPromise', null)
+          return []
+        } else {
+          context.commit('setPendingMAs', snapshot.docs.map((val) => {
+            const data = val.data()
+            data.id = val.id
+            return data
+          }))
+          context.commit('setPendingMAPromise', null)
+          return context.state.pendingMAs
+        }
+      })
+    context.commit('setPendingMAPromise', promise)
+    return promise
+  },
+  /**
+   * Get the MAs currently pending approval.
+   *
+   * This function will call firebase if no local version is found.
+   * @param {*} context Vuex context
+   * @param {*} reset Set this to `true` to update cache values.
+   */
+  async getCurrentUserRecommendedMAs (context, reset) {
+    if (context.state.recommendedMAs && context.state.recommendedMAs.length && !reset) {
+      return context.state.recommendedMAs
+    }
+    if (context.state.recommendedMAPromise) {
+      return context.state.recommendedMAPromise
+    }
+    context.commit('setRecommendedMAs', null)
+    const promise = firebase.firestore().collection('recommended_mas')
+      .where('requester', '==', context.rootGetters['credentials/id'])
+      .where('useDate', '>=', new Date()).get().then((snapshot) => {
+        if (snapshot.empty) {
+          context.commit('setRecommendedMAs', [])
+          context.commit('setRecommendedMAPromise', null)
+          return []
+        } else {
+          context.commit('setRecommendedMAs', snapshot.docs.map((val) => {
+            const data = val.data()
+            data.id = val.id
+            return data
+          }))
+          context.commit('setRecommendedMAPromise', null)
+          return context.state.recommendedMAs
+        }
+      })
+    context.commit('setRecommendedMAPromise', promise)
+    return promise
+  },
+  getUserPendingMAs (context, id) {
+    return firebase.firestore().collection('pending_mas').where('requester', '==', id).where('useDate', '>=', new Date()).get()
+  },
+  getUserTotalPendingMAs (context, id) {
+    return firebase.firestore().collection('pending_mas').where('requester', '==', id).get()
+  },
+  deleteUserPendingMA (context, id) {
+    return firebase.firestore().collection('pending_mas').doc(id).delete()
+  },
+  deleteUserPendingMAs (context, ids) {
+    const batch = firebase.firestore().batch()
+    for (const id of ids) {
+      batch.delete(firebase.firestore().collection('pending_mas').doc(id))
+    }
+    return batch.commit()
+  },
+  getUserPendingApprovalMAs (context, id) {
+    return firebase.firestore().collection('recommended_mas').where('requester', '==', id).where('useDate', '>=', new Date()).get()
+  },
+  getUserTotalPendingApprovalMAs (context, id) {
+    return firebase.firestore().collection('recommended_mas').where('requester', '==', id).get()
+  },
+  deleteUserPendingApprovalMA (context, id) {
+    return firebase.firestore().collection('recommended_mas').doc(id).delete()
+  },
+  deleteUserPendingApprovalMAs (context, ids) {
+    const batch = firebase.firestore().batch()
+    for (const id of ids) {
+      batch.delete(firebase.firestore().collection('recommended_mas').doc(id))
+    }
+    return batch.commit()
+  },
+  getMAsToRecommend (context, id) {
+    return firebase.firestore().collection('pending_mas').where('recommender', '==', id).get()
+  },
+  getMAsToRecommendAndApprove (context, id) {
+    return firebase.firestore().collection('pending_mas').where('recommender', '==', id).where('approver', '==', id).get()
+  },
+  getMAsRecommended (context, id) {
+    return firebase.firestore().collection('recommended_mas').where('recommender', '==', id).get()
+  },
+  getMAsToApprove (context, id) {
+    return firebase.firestore().collection('recommended_mas').where('approver', '==', id).get()
+  },
+  async applyMA (context, payload) {
+    // const batch = firebase.firestore().batch()
+    // for (const off of payload) {
+    //   const id = off.id
+    //   delete off.id
+    //   batch.set(firebase.firestore().collection('pending_offs').doc(id), off)
+    // }
+    // return batch.commit()
+    return firebase.firestore().collection('pending_mas').doc().set(payload)
+  },
+  async recommendMAs (context, payload) {
+    const batch = firebase.firestore().batch()
+    for (const off of payload) {
+      const id = off.id
+      delete off.id
+      batch.set(firebase.firestore().collection('recommended_mas').doc(id), off)
+    }
+    return batch.commit()
   }
 }
 
@@ -459,6 +618,18 @@ const mutations = {
   },
   setOffPassPromise (state, offPromise) {
     state.offPassPromise = offPromise
+  },
+  setPendingMAs (state, mas) {
+    state.pendingMAs = mas
+  },
+  setPendingMAPromise (state, maPromise) {
+    state.pendingMAPromise = maPromise
+  },
+  setRecommendedMAs (state, mas) {
+    state.recommendedMAs = mas
+  },
+  setRecommendedMAPromise (state, maPromise) {
+    state.recommendedMAPromise = maPromise
   }
 }
 

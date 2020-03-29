@@ -13,7 +13,7 @@
         </b-button>
       </div>
     </div>
-    <div class="columns is-mobile is-multiline">
+    <div class="columns is-mobile is-multiline is-centered">
       <router-link :to="{ path: '/off', query: { t: 1 } }"  class="column is-one-quarter-tablet is-half-mobile has-text-centered has-text-grey"
         replace @click.native="overallClick(1)">
         <div>

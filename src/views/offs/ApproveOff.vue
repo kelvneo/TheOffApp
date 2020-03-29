@@ -15,8 +15,11 @@
         </div>
       </div>
       <b-tabs v-model="activeTab" type="is-boxed">
-        <b-tab-item label="Awaiting Approval">
+        <b-tab-item label="Off Awaiting Approval">
           <PendingApproval :tableForm="tableForm" :showDetails="showDetails"></PendingApproval>
+        </b-tab-item>
+        <b-tab-item label="MA Awaiting Approval">
+          <PendingMAApproval :tableForm="tableForm" :showDetails="showDetails"></PendingMAApproval>
         </b-tab-item>
         <b-tab-item label="Awaiting Award">
           <PendingAward :tableForm="tableForm" :showDetails="showDetails"></PendingAward>
@@ -84,6 +87,7 @@
 // import * as firebase from 'firebase'
 // import 'firebase/auth'
 import PendingApproval from '../../components/main/offs/approve/PendingApproval.vue'
+import PendingMAApproval from '../../components/main/offs/approve/PendingMAApproval.vue'
 import AwardOff from '../../components/main/offs/approve/AwardOff.vue'
 import PendingAward from '../../components/main/offs/approve/PendingAward.vue'
 
@@ -91,6 +95,7 @@ export default {
   name: 'ApproveOff',
   components: {
     PendingApproval,
+    PendingMAApproval,
     AwardOff,
     PendingAward
   },

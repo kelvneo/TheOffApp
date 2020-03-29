@@ -15,8 +15,11 @@
         </div>
       </div>
       <b-tabs v-model="activeTab" type="is-boxed">
-        <b-tab-item label="Awaiting Recommendation">
+        <b-tab-item label="Offs Awaiting Recommendation">
           <pending-recommendation :tableForm="tableForm" :showDetails="showDetails"></pending-recommendation>
+        </b-tab-item>
+        <b-tab-item label="MAs Awaiting Recommendation">
+          <pending-m-a-recommendation :tableForm="tableForm" :showDetails="showDetails"></pending-m-a-recommendation>
         </b-tab-item>
         <b-tab-item label="Recommend Offs">
           <recommend-off-component :tableForm="tableForm" :showDetails="showDetails"></recommend-off-component>
@@ -30,12 +33,14 @@
 
 <script>
 import PendingRecommendation from '../../components/main/offs/recommend/PendingRecommendation.vue'
+import PendingMARecommendation from '../../components/main/offs/recommend/PendingMARecommendation.vue'
 import RecommendOffComponent from '../../components/main/offs/recommend/RecommendOff.vue'
 
 export default {
   name: 'RecommendOff',
   components: {
     PendingRecommendation,
+    PendingMARecommendation,
     RecommendOffComponent
   },
   data () {

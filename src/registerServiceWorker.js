@@ -24,8 +24,7 @@ if (process.env.NODE_ENV === 'production') {
       Notification.open({
         message: 'New update installed, please restart the app.',
         type: 'is-info',
-        indefinite: true,
-        closable: false
+        indefinite: true
       })
       console.log('New content is available; please refresh.')
     },

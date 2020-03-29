@@ -16,6 +16,7 @@
       <div class="container">
         <div class="container">
           <OverallUserOffs class="mb"></OverallUserOffs>
+          <OverallUserMAs class="mb"></OverallUserMAs>
           <h4 class="title is-4">Off Pass</h4>
           <div class="card">
             <div class="card-content" v-if="currentOffPass === null">
@@ -69,12 +70,14 @@
 
 <script>
 import OverallUserOffs from './offs/OverallUserOffs.vue'
+import OverallUserMAs from './offs/OverallUserMAs.vue'
 import moment from 'moment'
 
 export default {
   name: 'Root',
   components: {
-    OverallUserOffs
+    OverallUserOffs,
+    OverallUserMAs
   },
   data () {
     return {

@@ -5,7 +5,7 @@
       <strong>GSAB Admin</strong> by <a href="https://github.com/kelvneo">Kelvin Neo</a>.
     </p>
     <p>
-      <router-link :to="{ path: '/about' }">About</router-link> - <span class="has-text-grey-light">20.03.25.1-alpha</span>
+      <router-link :to="{ path: '/about' }">About</router-link> - <span class="has-text-grey-light">20.03.29.1-alpha</span>
     </p>
   </div>
 </footer>
