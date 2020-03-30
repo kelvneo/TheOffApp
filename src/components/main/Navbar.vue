@@ -36,9 +36,9 @@
 
     <template slot="end">
       <b-navbar-dropdown label="Users" v-if="hasPerm('approve_users') || hasPerm('cos')">
-        <!-- <b-navbar-item href="#" v-if="hasPerm('cos')">
+        <b-navbar-item tag="router-link" :to="{ path: '/users/' }" v-if="hasPerm('cos')">
           Manage Users
-        </b-navbar-item> -->
+        </b-navbar-item>
         <b-navbar-item tag="router-link" :to="{ path: '/approve' }" v-if="hasPerm('approve_users')">
           Approve Users
         </b-navbar-item>

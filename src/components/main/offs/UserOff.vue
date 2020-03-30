@@ -292,7 +292,7 @@ export default {
         //     this.$set(this.user, val, userData)
         //   })
         // })
-        return new Set(this.off.flatMap(val => [val.recommender, val.approver]))
+        return new Set(this.pendingOff.flatMap(val => [val.recommender, val.approver]))
       })
       const curo = this.$store.dispatch('user/getCurrentUserRecommendedOffs', reset).then((data) => {
         this.loading = false
@@ -305,7 +305,7 @@ export default {
         //     this.$set(this.user, val, userData)
         //   })
         // })
-        return new Set(this.off.flatMap(val => [val.recommender, val.approver]))
+        return new Set(this.recommendedOff.flatMap(val => [val.recommender, val.approver]))
       })
       const cupm = this.$store.dispatch('user/getCurrentUserPendingMAs', reset).then((data) => {
         this.loading = false
@@ -315,7 +315,7 @@ export default {
         //     this.$set(this.user, val, userData)
         //   })
         // })
-        return new Set(this.off.flatMap(val => [val.recommender, val.approver]))
+        return new Set(this.pendingMA.flatMap(val => [val.recommender, val.approver]))
       })
       const curm = this.$store.dispatch('user/getCurrentUserRecommendedMAs', reset).then((data) => {
         this.loading = false
@@ -325,7 +325,7 @@ export default {
         //     this.$set(this.user, val, userData)
         //   })
         // })
-        return new Set(this.off.flatMap(val => [val.recommender, val.approver]))
+        return new Set(this.recommendedMA.flatMap(val => [val.recommender, val.approver]))
       })
       Promise.all([cuo, cupo, curo, cupm, curm]).then((val) => {
         const comdSet = new Set()

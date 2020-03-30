@@ -11,6 +11,7 @@ import Root from '../components/main/Root.vue'
 import About from '../views/About.vue'
 import UserOff from '../components/main/offs/UserOff.vue'
 import OffRoot from '../views/Offs.vue'
+import UsersRoot from '../views/Users.vue'
 import store from '../store/'
 
 // import * as firebase from 'firebase'
@@ -19,6 +20,7 @@ import store from '../store/'
 const ApproveUsers = () => import('../components/main/ApproveUsers.vue')
 const RecommendOff = () => import('../views/offs/RecommendOff.vue')
 const ApproveOff = () => import('../views/offs/ApproveOff.vue')
+const UserList = () => import('../components/main/users/UserList.vue')
 
 Vue.use(VueRouter)
 
@@ -132,6 +134,17 @@ const routes = [
                 path: 'approve',
                 name: 'ApproveOff',
                 component: ApproveOff
+              }
+            ]
+          },
+          {
+            path: 'users',
+            component: UsersRoot,
+            children: [
+              {
+                path: '',
+                name: 'UserList',
+                component: UserList
               }
             ]
           }
