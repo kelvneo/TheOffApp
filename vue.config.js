@@ -1,6 +1,6 @@
 module.exports = {
   pwa: {
-    name: 'GSAB Admin',
+    name: 'The Off App',
     themeColor: '#ffffff',
   },
 };

@@ -30,7 +30,7 @@
       </router-link>
     </div>
     <b-collapse :open.sync="applyMAOpen" position="is-bottom" aria-id="contentIdForA11y1">
-      <form>
+      <form class="box">
         <h4 class="title is-5">Apply MA</h4>
         <div class="columns is-mobile is-multiline">
           <b-field class="column is-half-desktop is-full-mobile" label="Date" horizontal>

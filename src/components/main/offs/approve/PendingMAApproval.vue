@@ -3,6 +3,11 @@
     <b-message type="is-info" role="alert" title="How To Approve MAs" :closable="false" size="is-small">
       Check the boxes to select the personnel to approve, and press <strong>"Approve MAs"</strong> below.
     </b-message>
+    <div class="buttons">
+      <b-button type="is-success" icon-left="check" expanded :disabled="loading || checkedRecommendedMAs.length === 0" @click="approveMAs()">
+        Approve MAs
+      </b-button>
+    </div>
     <!-- Table of MAs Awaiting Approval  -->
     <b-table :data="recommendedMAs" :loading="loading" default-sort="requestDate" checkable :checked-rows.sync="checkedRecommendedMAs" :mobile-cards="!tableForm">
       <template slot-scope="props">
@@ -171,6 +176,7 @@ export default {
       })
     },
     reset (reset) {
+      this.loading = true
       this.$store.dispatch('user/getMAsToApprove', this.$store.getters['credentials/id']).then((val) => {
         this.recommendedMAs = Object.values(val.docs.map(MA => {
           const data = MA.data()

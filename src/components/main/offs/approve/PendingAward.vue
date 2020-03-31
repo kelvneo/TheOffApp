@@ -3,6 +3,11 @@
     <b-message type="is-info" role="alert" title="How To Award Recommended Offs" :closable="false" size="is-small">
       Check the boxes to select the personnel to approve, and press <strong>"Approve Offs"</strong> below.
     </b-message>
+    <div class="buttons">
+      <b-button type="is-success" icon-left="check" expanded :disabled="loading || checkedRecommendedOffs.length === 0" @click="awardOffs()">
+        Approve Offs
+      </b-button>
+    </div>
     <!-- Table of Offs Awaiting Awarding  -->
     <b-table :data="recommendedOffs" :loading="loading" default-sort="awardDate" checkable :checked-rows.sync="checkedRecommendedOffs" :mobile-cards="!tableForm">
       <template slot-scope="props">
@@ -132,6 +137,7 @@ export default {
       })
     },
     reset (reset) {
+      this.loading = true
       this.$store.dispatch('user/getOffsToAward', this.$store.getters['credentials/id']).then((val) => {
         this.recommendedOffs = Object.values(val.docs.map(off => {
           const data = off.data()

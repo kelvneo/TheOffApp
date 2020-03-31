@@ -47,7 +47,11 @@ export default {
       const store = this.$store
       this.$store.dispatch('credentials/confirmOTP', this.otp).then(() => {
         store.dispatch('credentials/setLoading', true).then(() => {
-          this.$router.replace('/')
+          if (this.$route.query.redirect) {
+            this.$router.replace(this.$route.query.redirect)
+          } else {
+            this.$router.replace('/')
+          }
         })
       }).catch((err) => {
         this.loading = false

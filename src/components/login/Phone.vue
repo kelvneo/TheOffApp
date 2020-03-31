@@ -55,7 +55,11 @@ export default {
         .then((confirm) => {
           this.loading = false
           this.$store.state.credentials.recaptchaVerifier.clear()
-          this.$router.replace('/login/verify')
+          if (this.$route.query.redirect) {
+            this.$router.replace({ path: '/login/verify', query: { 'redirect': this.$route.query.redirect } })
+          } else {
+            this.$router.replace('/login/verify')
+          }
         }).catch((err) => {
           this.loading = false
           switch (err.code) {

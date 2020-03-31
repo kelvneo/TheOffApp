@@ -4,6 +4,13 @@
       Choose an <strong>Approving</strong> personnel, <strong>Expiry Date</strong>, and provide a <strong>Description</strong> for the off. <br/>
       Find the personnel to award offs, then key in the amount you wish to recommend, then scroll up and press <strong>"Recommend Off"</strong>.
     </b-message>
+    <div class="columns is-gapless">
+      <div class="field column">
+        <b-switch v-model="branchOnly">
+          Show Branch Only
+        </b-switch>
+      </div>
+    </div>
     <form action="" v-on:submit.prevent>
       <div class="columns is-multiline">
         <div class="column is-half-desktop is-full-mobile">
@@ -30,7 +37,7 @@
       <div class="buttons">
         <b-button type="is-success" icon-left="check" expanded @click="submit()" :disabled="loading" :loading="loading">Recommend Off</b-button>
       </div>
-      <b-table :data="users" :loading="loading" :mobile-cards="!tableForm">
+      <b-table :data="filteredUsers" :loading="loading" :mobile-cards="!tableForm">
         <template slot-scope="props">
           <b-table-column field="name" label="Name" sortable searchable>
             {{ props.row.name }}
@@ -58,6 +65,9 @@
           </section>
         </template>
       </b-table>
+      <div class="buttons">
+        <b-button type="is-success" icon-left="check" expanded @click="submit()" :disabled="loading" :loading="loading">Recommend Off</b-button>
+      </div>
     </form>
   </div>
 </template>
@@ -76,6 +86,7 @@ export default {
       user: {},
       commanders: [],
       approvingField: '',
+      branchOnly: true,
       awardOffForm: {
         approving: null,
         description: '',
@@ -89,6 +100,10 @@ export default {
       return this.commanders.map((val) => this.user[val]).filter((option) => {
         return option && option.name.toLowerCase().indexOf(this.approvingField.toLowerCase()) >= 0
       })
+    },
+    filteredUsers () {
+      const branch = this.$store.state.user.currentUser.branch
+      return this.branchOnly ? this.users.filter(val => val.branch === branch) : this.users
     }
   },
   methods: {

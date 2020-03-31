@@ -65,11 +65,11 @@ export default {
         '3SG', 'CFC', 'CPL', 'LCP', 'PFC', 'PTE', 'REC'
       ].reverse(),
       depots: {
-        'HQ GSAB': ['S1/S4', 'S3', 'CO/RSM', 'TAD'],
-        'PAD': ['TSU', 'Cluster', 'DCC', 'Orderly'],
-        'PLAD': ['TASS', 'Storage', 'DCC', 'Orderly'],
-        'PYAD': ['Storage', 'DCC', 'Orderly'],
-        'RO': ['Hendon', 'Tekong', 'Nee Soon']
+        'HQ GSAB': ['MP/Logs', 'S3', 'CO/RSM', 'TAD']
+        // 'PAD': ['TSU', 'Cluster', 'DCC', 'Orderly'],
+        // 'PLAD': ['TASS', 'Storage', 'DCC', 'Orderly'],
+        // 'PYAD': ['Storage', 'DCC', 'Orderly'],
+        // 'RO': ['Hendon', 'Tekong', 'Nee Soon']
       },
       rank: '',
       name: '',

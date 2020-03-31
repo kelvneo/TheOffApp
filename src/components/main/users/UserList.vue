@@ -22,6 +22,9 @@
           <b-table-column field="name" label="Name" sortable searchable>
             {{ props.row.name }}
           </b-table-column>
+          <b-table-column field="initials" label="Initials" sortable searchable>
+            {{ props.row.initials }}
+          </b-table-column>
           <b-table-column field="depot" label="Depot" sortable searchable>
             {{ props.row.depot }}
           </b-table-column>
@@ -31,7 +34,7 @@
           <b-table-column field="phoneNumber" label="Phone Number" sortable searchable>
             {{ props.row.phoneNumber }}
           </b-table-column>
-          <b-table-column field="id" label="ID">
+          <b-table-column field="id" label="ID" searchable>
             <span class="is-size-7 is-family-code">{{ props.row.id }}</span>
           </b-table-column>
         </template>

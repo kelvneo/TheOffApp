@@ -21,6 +21,10 @@
             <b-table-column field="phoneNumber" label="Phone Number">
               {{ props.row.phoneNumber }}
             </b-table-column>
+            <b-table-column field="initials" label="Initials">
+              <b-input v-model="props.row.initials" placeholder="A G Tan" required>
+              </b-input>
+            </b-table-column>
             <b-table-column field="id" label="Actions">
               <div class="buttons">
                 <b-button type="is-success" icon-left="check" :disabled="loading" @click="approveUser(props)">
@@ -63,42 +67,50 @@ export default {
   },
   methods: {
     approveUser (user) {
-      const payload = {
-        id: user.row.id,
-        data: {
-          rank: user.row.rank,
-          name: user.row.name,
-          depot: user.row.depot,
-          branch: user.row.branch,
-          phoneNumber: user.row.phoneNumber,
-          perm: true
+      if (!user.row.initials) {
+        this.$buefy.notification.open({
+          message: 'The user needs an initial.',
+          type: 'is-danger'
+        })
+      } else {
+        const payload = {
+          id: user.row.id,
+          data: {
+            rank: user.row.rank,
+            name: user.row.name,
+            depot: user.row.depot,
+            branch: user.row.branch,
+            phoneNumber: user.row.phoneNumber,
+            initials: user.row.initials,
+            perm: true
+          }
         }
-      }
-      this.loading = true
-      this.$store.dispatch('user/createUser', payload).then(() => {
-        this.$store.dispatch('user/deleteTempUser', user.row.id).then(() => {
-          this.tempUsers.splice(user.index, 1)
-          this.$buefy.notification.open({
-            message: 'The user is now approved!',
-            type: 'is-success'
+        this.loading = true
+        this.$store.dispatch('user/createUser', payload).then(() => {
+          this.$store.dispatch('user/deleteTempUser', user.row.id).then(() => {
+            this.tempUsers.splice(user.index, 1)
+            this.$buefy.notification.open({
+              message: 'The user is now approved!',
+              type: 'is-success'
+            })
+            this.loading = false
+          }).catch((err) => {
+            this.$buefy.notification.open({
+              message: 'The temporary user cannot be deleted.',
+              type: 'is-warning'
+            })
+            console.error(err)
+            this.loading = false
           })
-          this.loading = false
         }).catch((err) => {
           this.$buefy.notification.open({
-            message: 'The temporary user cannot be deleted.',
-            type: 'is-warning'
+            message: 'The user cannot be approved.',
+            type: 'is-danger'
           })
           console.error(err)
           this.loading = false
         })
-      }).catch((err) => {
-        this.$buefy.notification.open({
-          message: 'The user cannot be approved.',
-          type: 'is-danger'
-        })
-        console.error(err)
-        this.loading = false
-      })
+      }
     },
     deleteTemp (user) {
       this.loading = true
@@ -124,6 +136,7 @@ export default {
       snapshot.forEach(doc => {
         const data = doc.data()
         data['id'] = doc.id
+        data['initials'] = ''
         this.tempUsers.push(data)
       })
       this.loading = false

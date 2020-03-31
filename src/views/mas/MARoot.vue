@@ -6,7 +6,7 @@
 // @ is an alias to /src
 
 export default {
-  name: 'offs',
+  name: 'MARoot',
   components: {
   }
 }

@@ -24,7 +24,7 @@ exports.sendOffApprovedNotification = functions.firestore.document('users/{uid}/
   const payload = {
     notification: {
       title: '0.5 Off Awarded',
-      body: 'Please check GSAB Admin for details.'
+      body: 'Please check The Off App for details.'
     }
   };
 
@@ -60,7 +60,7 @@ exports.sendOffPassApprovedNotification = functions.firestore.document('users/{u
   const payload = {
     notification: {
       title: 'Off / MA has been Approved',
-      body: 'Please check GSAB Admin for details.'
+      body: 'Please check The Off App for details.'
     }
   };
 
@@ -97,7 +97,7 @@ exports.pendingOffRecommendationNotification = functions.firestore.document('pen
   const payload = {
     notification: {
       title: title,
-      body: 'Please check GSAB Admin for details.'
+      body: 'Please check The Off App for details.'
     }
   };
 
@@ -134,7 +134,7 @@ exports.pendingOffApprovingNotification = functions.firestore.document('recommen
   const payload = {
     notification: {
       title: title,
-      body: 'Please check GSAB Admin for details.'
+      body: 'Please check The Off App for details.'
     }
   };
 
@@ -171,7 +171,7 @@ exports.pendingMARecommendationNotification = functions.firestore.document('pend
   const payload = {
     notification: {
       title: title,
-      body: 'Please check GSAB Admin for details.'
+      body: 'Please check The Off App for details.'
     }
   };
 
@@ -208,7 +208,7 @@ exports.pendingMAApprovingNotification = functions.firestore.document('recommend
   const payload = {
     notification: {
       title: title,
-      body: 'Please check GSAB Admin for details.'
+      body: 'Please check The Off App for details.'
     }
   };
 
@@ -245,7 +245,7 @@ exports.pendingAwardApprovingNotification = functions.firestore.document('recomm
   const payload = {
     notification: {
       title: title,
-      body: 'Please check GSAB Admin for details.'
+      body: 'Please check The Off App for details.'
     }
   };
 

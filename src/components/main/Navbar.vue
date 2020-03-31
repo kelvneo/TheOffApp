@@ -2,7 +2,7 @@
   <b-navbar type="is-dark" :fixed-top="true">
     <template slot="brand">
       <b-navbar-item tag="router-link" :to="{ path: '/' }">
-        <h2 class="title is-4 has-text-light">HQ G</h2>
+        <h2 class="title is-4 has-text-light">TOA</h2>
       </b-navbar-item>
     </template>
     <template slot="start">
@@ -15,12 +15,22 @@
       <!-- <b-navbar-item tag="router-link" :to="{ path: '/off/stockcard' }">
         Off Pass
       </b-navbar-item> -->
-      <b-navbar-item tag="router-link" :to="{ path: '/off/recommend' }" v-if="hasPerm('recommend_off')">
-        Recommend Offs
-      </b-navbar-item>
-      <b-navbar-item tag="router-link" :to="{ path: '/off/approve' }" v-if="hasPerm('approve_off')">
-        Approve Offs
-      </b-navbar-item>
+      <b-navbar-dropdown label="Recommend" v-if="hasPerm('recommend_off')">
+        <b-navbar-item tag="router-link" :to="{ path: '/off/recommend' }">
+          Offs
+        </b-navbar-item>
+        <b-navbar-item tag="router-link" :to="{ path: '/ma/recommend' }">
+          Medical Appointment
+        </b-navbar-item>
+      </b-navbar-dropdown>
+      <b-navbar-dropdown label="Approve" v-if="hasPerm('approve_off')">
+        <b-navbar-item tag="router-link" :to="{ path: '/off/approve' }">
+          Offs
+        </b-navbar-item>
+        <b-navbar-item tag="router-link" :to="{ path: '/ma/approve' }">
+          Medical Appointment
+        </b-navbar-item>
+      </b-navbar-dropdown>
       <!-- <b-navbar-item href="#">
         Home
       </b-navbar-item> -->

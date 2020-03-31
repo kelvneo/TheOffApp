@@ -10,7 +10,8 @@ import WaitForApproval from '../components/login/WaitForApproval.vue'
 import Root from '../components/main/Root.vue'
 import About from '../views/About.vue'
 import UserOff from '../components/main/offs/UserOff.vue'
-import OffRoot from '../views/Offs.vue'
+import OffRoot from '../views/offs/OffRoot.vue'
+import MARoot from '../views/mas/MARoot.vue'
 import UsersRoot from '../views/Users.vue'
 import store from '../store/'
 
@@ -21,6 +22,8 @@ const ApproveUsers = () => import('../components/main/ApproveUsers.vue')
 const RecommendOff = () => import('../views/offs/RecommendOff.vue')
 const ApproveOff = () => import('../views/offs/ApproveOff.vue')
 const UserList = () => import('../components/main/users/UserList.vue')
+const RecommendMA = () => import('../views/mas/RecommendMA.vue')
+const ApproveMA = () => import('../views/mas/ApproveMA.vue')
 
 Vue.use(VueRouter)
 
@@ -138,6 +141,33 @@ const routes = [
             ]
           },
           {
+            path: 'ma',
+            component: MARoot,
+            children: [
+              {
+                path: '',
+                redirect: {
+                  name: 'UserOff'
+                }
+              },
+              {
+                path: 'stockcard',
+                name: 'UserOff',
+                component: UserOff
+              },
+              {
+                path: 'recommend',
+                name: 'RecommendMA',
+                component: RecommendMA
+              },
+              {
+                path: 'approve',
+                name: 'ApproveMA',
+                component: ApproveMA
+              }
+            ]
+          },
+          {
             path: 'users',
             component: UsersRoot,
             children: [
@@ -152,7 +182,10 @@ const routes = [
         // redirect: '/login/wait',
         beforeEnter: (to, from, next) => {
           if (!store.state.user.currentUser) {
-            next('/login')
+            next({
+              path: '/login',
+              query: { redirect: to.fullPath }
+            })
           } else {
             store.dispatch('user/getUserPermissions', store.state.credentials.user.uid).then((snapshot) => {
               const payload = {}

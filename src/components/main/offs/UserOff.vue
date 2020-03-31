@@ -438,9 +438,3 @@ export default {
   }
 }
 </script>
-
-<style lang="sass">
-.mb
-  margin-bottom: 2rem
-
-</style>

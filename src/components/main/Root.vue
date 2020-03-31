@@ -28,7 +28,7 @@
             <div class="card-content" v-else>
               <div class="content">
                 <p class="has-text-centered">
-                  <span class="title is-4">{{ name }}</span><br/>
+                  <span class="title is-4">{{ initials }}</span><br/>
                   <span class="subtitle is-6" :class="{
                     'has-text-info': currentOffPass.description === 'Full Day Off',
                     'has-text-primary': currentOffPass.description === 'Half Day Off',
@@ -83,6 +83,7 @@ export default {
     return {
       // rank: '',
       name: '',
+      initials: '',
       offPassIndex: 0,
       user: {}
     }
@@ -97,7 +98,7 @@ export default {
   },
   methods: {
     safeUser (val) {
-      return this.user[val] ? this.user[val].name : '...'
+      return this.user[val] ? this.user[val].initials : '...'
     },
     momentSeconds (seconds) {
       return moment.unix(seconds).format('DD MMM YY, HH:mmA')
@@ -115,6 +116,7 @@ export default {
   created () {
     // this.rank = this.$store.state.user.currentUser.rank
     this.name = this.$store.state.user.currentUser.name
+    this.initials = this.$store.state.user.currentUser.initials
   }
 }
 </script>
@@ -122,5 +124,6 @@ export default {
 <style lang="sass">
 .mb
   margin-bottom: 2rem
-
+.b-table
+  margin-bottom: 1.5rem
 </style>

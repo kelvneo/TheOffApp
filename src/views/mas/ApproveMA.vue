@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <section class="section">
-      <h2 class="title">Approve Offs</h2>
+      <h2 class="title">Approve MAs</h2>
       <div class="columns is-gapless">
         <div class="field column">
           <b-switch v-model="showDetails">
@@ -16,10 +16,7 @@
       </div>
       <b-tabs v-model="activeTab" type="is-boxed">
         <b-tab-item label="To Approve">
-          <PendingApproval :tableForm="tableForm" :showDetails="showDetails"></PendingApproval>
-        </b-tab-item>
-        <b-tab-item label="To Award">
-          <PendingAward :tableForm="tableForm" :showDetails="showDetails"></PendingAward>
+          <PendingMAApproval :tableForm="tableForm" :showDetails="showDetails"></PendingMAApproval>
         </b-tab-item>
         <!-- <b-tab-item label="Awaiting Award">
           <b-table :data="recommendedOffs" :loading="loading" default-sort="requestDate" checkable :checked-rows.sync="checkedRecommendedOffs" :mobile-cards="!tableForm">
@@ -70,10 +67,7 @@
             </b-button>
           </div>
         </b-tab-item> -->
-        <b-tab-item label="Award Off">
-          <AwardOff :tableForm="tableForm" :showDetails="showDetails"></AwardOff>
-        </b-tab-item>
-        <b-tab-item label="Cancel Off" disabled>
+        <b-tab-item label="Cancel" disabled>
         </b-tab-item>
       </b-tabs>
     </section>
@@ -83,16 +77,12 @@
 <script>
 // import * as firebase from 'firebase'
 // import 'firebase/auth'
-import PendingApproval from '../../components/main/offs/approve/PendingApproval.vue'
-import AwardOff from '../../components/main/offs/approve/AwardOff.vue'
-import PendingAward from '../../components/main/offs/approve/PendingAward.vue'
+import PendingMAApproval from '../../components/main/offs/approve/PendingMAApproval.vue'
 
 export default {
   name: 'ApproveOff',
   components: {
-    PendingApproval,
-    AwardOff,
-    PendingAward
+    PendingMAApproval
   },
   data () {
     return {
