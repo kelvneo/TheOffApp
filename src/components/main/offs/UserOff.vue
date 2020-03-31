@@ -59,7 +59,7 @@
           <b-table :data="pendingOff" :loading="loading" default-sort="requestDate">
             <template slot-scope="props">
               <b-table-column field="useDate" label="Using On" sortable>
-                {{ momentUsingDate(props.row.useDate.toDate()) }}
+                {{ momentUsingDate(props.row.useDate.seconds) }}
               </b-table-column>
               <b-table-column field="count" label="Half / Full Day">
                 {{ props.row.count === 1 ? 'Full Day' : 'Half Day '}}
@@ -101,7 +101,7 @@
           <b-table :data="recommendedOff" :loading="loading" default-sort="requestDate">
             <template slot-scope="props">
               <b-table-column field="useDate" label="Using On" sortable>
-                {{ momentUsingDate(props.row.useDate.toDate()) }}
+                {{ momentUsingDate(props.row.useDate.seconds) }}
               </b-table-column>
               <b-table-column field="count" label="Half / Full Day">
                 {{ props.row.count === 1 ? 'Full Day' : 'Half Day' }}
