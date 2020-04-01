@@ -8,10 +8,15 @@ service cloud.firestore {
       match /updates/{uid} {
         allow read, write: if request.auth.uid == uid || exists(/databases/$(database)/documents/users/$(request.auth.uid)/perms/cos)
       }
+      match /notification_tokens/{nid} {
+        allow read, write: if request.auth.uid == uid
+      }
       match /offs/{uid} {
+        allow read: if exists(/databases/$(database)/documents/users/$(request.auth.uid)/perms/recommend_off)
         allow read, write: if exists(/databases/$(database)/documents/users/$(request.auth.uid)/perms/approve_off)
       }
       match /off_pass/{uid} {
+        allow read: if exists(/databases/$(database)/documents/users/$(request.auth.uid)/perms/cos)
         allow read, write: if exists(/databases/$(database)/documents/users/$(request.auth.uid)/perms/approve_off)
       }
       allow create: if request.auth.uid != null && exists(/databases/$(database)/documents/users/$(request.auth.uid)/perms/approve_users);
@@ -27,16 +32,31 @@ service cloud.firestore {
     }
     match /pending_offs/{uid} {
     		allow create: if request.auth.uid != null && request.auth.uid == request.resource.data.requester;
+        allow read: if exists(/databases/$(database)/documents/users/$(request.auth.uid)/perms/recommend_off);
         allow read, delete: if request.auth.uid == resource.data.requester;
         allow read, update, delete: if request.auth.uid == resource.data.recommender && exists(/databases/$(database)/documents/users/$(request.auth.uid)/perms/recommend_off);
     }
     match /recommended_offs/{uid} {
         allow create: if request.auth.uid != null && request.auth.uid == request.resource.data.recommender && exists(/databases/$(database)/documents/users/$(request.auth.uid)/perms/recommend_off);
+        allow read: if exists(/databases/$(database)/documents/users/$(request.auth.uid)/perms/recommend_off);
+        allow read, delete: if request.auth.uid == resource.data.requester || request.auth.uid == resource.data.recommender;
+        allow read, update, delete: if request.auth.uid == resource.data.approver && exists(/databases/$(database)/documents/users/$(request.auth.uid)/perms/approve_off);
+    }
+    match /pending_mas/{uid} {
+    		allow create: if request.auth.uid != null && request.auth.uid == request.resource.data.requester;
+        allow read: if exists(/databases/$(database)/documents/users/$(request.auth.uid)/perms/recommend_off);
+        allow read, delete: if request.auth.uid == resource.data.requester;
+        allow read, update, delete: if request.auth.uid == resource.data.recommender && exists(/databases/$(database)/documents/users/$(request.auth.uid)/perms/recommend_off);
+    }
+    match /recommended_mas/{uid} {
+        allow create: if request.auth.uid != null && request.auth.uid == request.resource.data.recommender && exists(/databases/$(database)/documents/users/$(request.auth.uid)/perms/recommend_off);
+        allow read: if exists(/databases/$(database)/documents/users/$(request.auth.uid)/perms/recommend_off);
         allow read, delete: if request.auth.uid == resource.data.requester || request.auth.uid == resource.data.recommender;
         allow read, update, delete: if request.auth.uid == resource.data.approver && exists(/databases/$(database)/documents/users/$(request.auth.uid)/perms/approve_off);
     }
     match /recommended_awards/{uid} {
         allow create: if request.auth.uid != null && request.auth.uid == request.resource.data.recommender && exists(/databases/$(database)/documents/users/$(request.auth.uid)/perms/recommend_off);
+        allow read: if exists(/databases/$(database)/documents/users/$(request.auth.uid)/perms/recommend_off);
         allow read, delete: if request.auth.uid == resource.data.requester || request.auth.uid == resource.data.recommender;
         allow read, update, delete: if request.auth.uid == resource.data.approver && exists(/databases/$(database)/documents/users/$(request.auth.uid)/perms/approve_off);
     }

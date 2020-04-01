@@ -126,4 +126,7 @@ export default {
   margin-bottom: 2rem
 .b-table
   margin-bottom: 1.5rem
+.user-link
+  text-decoration: underline dotted
+  color: initial
 </style>

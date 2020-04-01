@@ -24,6 +24,9 @@
         <b-tab-item label="Recommended">
           <recommended-offs :tableForm="tableForm" :showDetails="showDetails"></recommended-offs>
         </b-tab-item>
+        <b-tab-item label="Awarded">
+          <recommended-award :tableForm="tableForm" :showDetails="showDetails"></recommended-award>
+        </b-tab-item>
         <b-tab-item label="Cancel" disabled>
         </b-tab-item>
       </b-tabs>
@@ -35,13 +38,15 @@
 import PendingRecommendation from '../../components/main/offs/recommend/PendingRecommendation.vue'
 import RecommendOffComponent from '../../components/main/offs/recommend/RecommendOff.vue'
 import RecommendedOffs from '../../components/main/offs/recommend/RecommendedOffs.vue'
+import RecommendedAward from '../../components/main/offs/recommend/RecommendedAward.vue'
 
 export default {
   name: 'RecommendOff',
   components: {
     PendingRecommendation,
     RecommendOffComponent,
-    RecommendedOffs
+    RecommendedOffs,
+    RecommendedAward
   },
   data () {
     return {

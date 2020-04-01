@@ -1,15 +1,10 @@
 <template>
   <div>
-    <b-message type="is-info" role="alert" title="How To Award Recommended Offs" :closable="false" size="is-small">
-      Check the boxes to select the personnel to approve, and press <strong>"Approve Offs"</strong> below.
+    <b-message type="is-info" role="alert" title="Awarded Offs" :closable="false" size="is-small">
+      The table details all your <strong>Offs You Awarded</strong> that are pending approval.
     </b-message>
-    <div class="buttons">
-      <b-button type="is-success" icon-left="check" expanded :disabled="loading || checkedRecommendedOffs.length === 0" @click="awardOffs()">
-        Approve Offs
-      </b-button>
-    </div>
     <!-- Table of Offs Awaiting Awarding  -->
-    <b-table :data="recommendedOffs" :loading="loading" default-sort="awardDate" checkable :checked-rows.sync="checkedRecommendedOffs" :mobile-cards="!tableForm">
+    <b-table :data="recommendedOffs" :loading="loading" default-sort="awardDate" :mobile-cards="!tableForm">
       <template slot-scope="props">
         <b-table-column field="awardee" label="Awardee">
           <router-link class="user-link" :to="{ name: 'UserDetails', params: { id: props.row.awardee } }" v-if="user[props.row.awardee]">
@@ -26,9 +21,9 @@
         <b-table-column field="awardDate" label="Recommended On" sortable :visible="showDetails">
           {{ props.row.awardDate.toDate().toLocaleString() }}
         </b-table-column>
-        <b-table-column field="recommender" label="Recommender" :visible="showDetails">
-          <router-link class="user-link" :to="{ name: 'UserDetails', params: { id: props.row.recommender } }" v-if="user[props.row.recommender]">
-            {{ user[props.row.recommender]['name'] }}
+        <b-table-column field="approver" label="Approver" :visible="showDetails">
+          <router-link class="user-link" :to="{ name: 'UserDetails', params: { id: props.row.approver } }" v-if="user[props.row.approver]">
+            {{ user[props.row.approver]['name'] }}
           </router-link>
           <span v-else>...</span>
         </b-table-column>
@@ -55,18 +50,13 @@
         </section>
       </template>
     </b-table>
-    <div class="buttons">
-      <b-button type="is-success" icon-left="check" expanded :disabled="loading || checkedRecommendedOffs.length === 0" @click="awardOffs()">
-        Approve Offs
-      </b-button>
-    </div>
   </div>
 </template>
 
 <script>
 // import moment from 'moment'
 export default {
-  name: 'PendingAward',
+  name: 'RecommendedAward',
   props: {
     tableForm: Boolean,
     showDetails: Boolean
@@ -76,45 +66,10 @@ export default {
       loading: true,
       user: {},
       recommendedOffs: [],
-      checkedRecommendedOffs: [],
       rawRecommendedOffs: {}
     }
   },
   methods: {
-    awardOffs () {
-      this.loading = true
-      const payload = {}
-      const awardDate = new Date()
-      const ids = this.checkedRecommendedOffs.map((val) => val.id)
-      for (const off of this.checkedRecommendedOffs) {
-        const offPayload = {
-          'awarded': off.approver,
-          'awardDate': awardDate,
-          'awardRecommended': off.recommender,
-          'description': off.description,
-          'endDate': off.endDate
-        }
-        payload[off.awardee] = Array(Math.floor(off.count * 2)).fill(offPayload)
-      }
-      // console.log(payload)
-      this.$store.dispatch('user/awardOffs', payload).then(() => {
-        return this.$store.dispatch('user/deleteOffsToAward', ids).then(() => {
-          this.$buefy.notification.open({
-            message: 'Offs have been awarded!',
-            type: 'is-success'
-          })
-          this.loading = false
-          this.reset()
-        })
-      }).catch((err) => {
-        this.$buefy.notification.open({
-          message: 'Unable to award offs',
-          type: 'is-danger'
-        })
-        console.error(err)
-        this.loading = false
-      })
-    },
     deletePendingAward (off) {
       // Prevent accidental deletion by re-confirming with the user.
       this.$buefy.dialog.confirm({

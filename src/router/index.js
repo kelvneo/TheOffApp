@@ -22,6 +22,7 @@ const ApproveUsers = () => import('../components/main/ApproveUsers.vue')
 const RecommendOff = () => import('../views/offs/RecommendOff.vue')
 const ApproveOff = () => import('../views/offs/ApproveOff.vue')
 const UserList = () => import('../components/main/users/UserList.vue')
+const UserDetails = () => import('../components/main/users/UserDetails.vue')
 const RecommendMA = () => import('../views/mas/RecommendMA.vue')
 const ApproveMA = () => import('../views/mas/ApproveMA.vue')
 
@@ -152,8 +153,9 @@ const routes = [
               },
               {
                 path: 'stockcard',
-                name: 'UserOff',
-                component: UserOff
+                redirect: {
+                  name: 'UserOff'
+                }
               },
               {
                 path: 'recommend',
@@ -175,6 +177,12 @@ const routes = [
                 path: '',
                 name: 'UserList',
                 component: UserList
+              },
+              {
+                path: ':id',
+                name: 'UserDetails',
+                component: UserDetails,
+                props: true
               }
             ]
           }
