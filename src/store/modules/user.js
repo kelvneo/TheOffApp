@@ -17,7 +17,9 @@ const state = {
   recommendedMAs: null,
   recommendedMAPromise: null,
   offPass: null,
-  offPassPromise: null
+  offPassPromise: null,
+  totalOffPass: [],
+  totalOffPassCursor: null
 }
 
 const getters = {
@@ -320,6 +322,37 @@ const actions = {
       })
     context.commit('setOffPassPromise', promise)
     return promise
+  },
+  async nextTotalOffPass (context, limit = 10) {
+    const promise = context.state.totalOffPassCursor ? context.state.totalOffPassCursor
+      : firebase.firestore().collection('users').doc(context.rootGetters['credentials/id']).collection('off_pass').orderBy('endDate', 'desc').limit(limit)
+
+    if (context.state.totalOffPass.length && !context.state.totalOffPassCursor) {
+      return []
+    }
+
+    return promise.get().then((snapshot) => {
+      if (snapshot.docs.length && snapshot.docs.length >= limit) {
+        const lastVisible = snapshot.docs[snapshot.docs.length - 1]
+        context.commit('setTotalOffPassCursor', firebase.firestore().collection('users').doc(context.rootGetters['credentials/id'])
+          .collection('off_pass').orderBy('endDate', 'desc').startAfter(lastVisible).limit(10))
+      } else {
+        context.commit('setTotalOffPassCursor', null)
+      }
+
+      if (snapshot.empty) {
+        context.commit('setTotalOffPass', [])
+        return []
+      } else {
+        const ret = snapshot.docs.map((val) => {
+          const data = val.data()
+          data.id = val.id
+          return data
+        })
+        context.commit('addTotalOffPass', ret)
+        return ret
+      }
+    })
   },
   /**
    * Get the unexpired offs the user is approved to use.
@@ -630,6 +663,15 @@ const mutations = {
   },
   setRecommendedMAPromise (state, maPromise) {
     state.recommendedMAPromise = maPromise
+  },
+  setTotalOffPass (state, offs) {
+    state.totalOffPass = offs
+  },
+  addTotalOffPass (state, offs) {
+    state.totalOffPass.push(...offs)
+  },
+  setTotalOffPassCursor (state, offPromise) {
+    state.totalOffPassCursor = offPromise
   }
 }
 

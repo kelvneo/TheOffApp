@@ -57,6 +57,12 @@ const actions = {
       commit('user/setRecommendedOffPromise', null, { root: true })
       commit('user/setOffPass', null, { root: true })
       commit('user/setOffPassPromise', null, { root: true })
+      commit('user/setPendingMAs', null, { root: true })
+      commit('user/setPendingMAPromise', null, { root: true })
+      commit('user/setRecommendedMAs', null, { root: true })
+      commit('user/setRecommendedMAPromise', null, { root: true })
+      commit('user/setTotalOffPass', [], { root: true })
+      commit('user/setTotalOffPassCursor', null, { root: true })
       commit('setUser', null)
     })
   }

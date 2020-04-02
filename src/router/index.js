@@ -10,6 +10,7 @@ import WaitForApproval from '../components/login/WaitForApproval.vue'
 import Root from '../components/main/Root.vue'
 import About from '../views/About.vue'
 import UserOff from '../components/main/offs/UserOff.vue'
+import UserOffPass from '../components/main/offs/UserOffPass.vue'
 import OffRoot from '../views/offs/OffRoot.vue'
 import MARoot from '../views/mas/MARoot.vue'
 import UsersRoot from '../views/Users.vue'
@@ -128,6 +129,11 @@ const routes = [
                 path: 'stockcard',
                 name: 'UserOff',
                 component: UserOff
+              },
+              {
+                path: 'pass',
+                name: 'UserOffPass',
+                component: UserOffPass
               },
               {
                 path: 'recommend',

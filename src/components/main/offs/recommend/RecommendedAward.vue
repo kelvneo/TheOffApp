@@ -97,7 +97,7 @@ export default {
     },
     reset (reset) {
       this.loading = true
-      this.$store.dispatch('user/getOffsToAward', this.$store.getters['credentials/id']).then((val) => {
+      this.$store.dispatch('user/getOffAwardRecommended', this.$store.getters['credentials/id']).then((val) => {
         this.recommendedOffs = Object.values(val.docs.map(off => {
           const data = off.data()
           this.rawRecommendedOffs[off.id] = data
