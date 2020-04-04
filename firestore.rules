@@ -19,7 +19,10 @@ service cloud.firestore {
         allow read: if exists(/databases/$(database)/documents/users/$(request.auth.uid)/perms/cos)
         allow read, write: if exists(/databases/$(database)/documents/users/$(request.auth.uid)/perms/approve_off)
       }
-      allow create: if request.auth.uid != null && exists(/databases/$(database)/documents/users/$(request.auth.uid)/perms/approve_users);
+      match /perms/{perm} {
+      	allow read, write: if request.auth.uid != null && exists(/databases/$(database)/documents/users/$(request.auth.uid)/perms/approve_users);
+      }
+      allow write: if request.auth.uid != null && exists(/databases/$(database)/documents/users/$(request.auth.uid)/perms/approve_users);
       allow read: if exists(/databases/$(database)/documents/users/$(request.auth.uid)/perms/cos);
       allow get: if request.auth.uid != null;
     }

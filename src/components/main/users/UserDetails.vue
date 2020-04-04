@@ -21,12 +21,17 @@
         </div>
         <div class="column">
           <b-icon icon="phone"></b-icon>
-          <span class="detail">{{ details ? details.phoneNumber : '...' }}</span>
+          <span class="detail" v-if="!details">...</span>
+          <a :href="'tel:' + details.phoneNumber" class="detail" v-else>{{ details.phoneNumber }}</a>
         </div>
       </div>
       <b-message type="is-warning" role="alert" title="Work In Progress" :closable="false" size="is-small">
         This page is a work-in-progress. Do check back for more details.
       </b-message>
+      <div class="buttons" v-if="hasPerm('approve_users')">
+        <b-button type="is-warning" expanded icon-left="edit" disabled>Edit Details</b-button>
+        <b-button type="is-danger" expanded icon-left="user-slash" disabled>Delete User</b-button>
+      </div>
       <h4 class="title is-4">View Details</h4>
       <div class="buttons">
         <b-button icon-left="address-card" disabled expanded>Off Passes</b-button>
@@ -39,6 +44,8 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
+
 export default {
   name: 'UserDetails',
   props: {
@@ -51,6 +58,10 @@ export default {
     }
   },
   computed: {
+    ...mapGetters({
+      hasPerm: 'user/hasPermission'
+      // ...
+    })
   },
   methods: {
     reset () {

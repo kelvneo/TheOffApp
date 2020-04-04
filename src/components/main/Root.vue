@@ -4,7 +4,7 @@
       <div class="hero-body">
         <div class="container">
           <h2 class="subtitle">
-            Welcome
+            Good {{ timeOfDay }}
           </h2>
           <h1 class="title">
             {{name}}
@@ -81,6 +81,10 @@ export default {
     },
     offPassCount () {
       return this.$store.state.user.offPass === null ? null : this.$store.state.user.offPass.length
+    },
+    timeOfDay () {
+      const now = new Date()
+      return now.getHours() > 17 || now.getHours() < 3 ? 'Evening' : (now.getHours() > 11 ? 'Afternoon' : 'Morning')
     }
   },
   methods: {

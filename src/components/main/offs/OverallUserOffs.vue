@@ -56,14 +56,14 @@
               native-value="FD">
               <span>Full Day</span>
             </b-radio-button>
-            <b-radio-button v-model="startMeridies" :disabled="submitting || pmOnly"
+            <!-- <b-radio-button v-model="startMeridies" :disabled="submitting || pmOnly"
               native-value="AM">
               <span>AM Only</span>
             </b-radio-button>
             <b-radio-button v-model="startMeridies" :disabled="submitting"
               native-value="PM">
               <span>PM Only</span>
-            </b-radio-button>
+            </b-radio-button> -->
           </b-field>
           <b-field label="Recommending" class="column is-half-desktop is-full-mobile" horizontal>
             <b-autocomplete
@@ -124,7 +124,7 @@ export default {
     return {
       applyOffOpen: false,
       startDate: null,
-      startMeridies: null,
+      startMeridies: 'FD',
       commanders: [],
       commandersLoading: true,
       recommendingField: '',
@@ -241,7 +241,7 @@ export default {
       this.$store.dispatch('user/getCurrentUserOffPass', reset)
       this.applyOffOpen = false
       this.startDate = null
-      this.startMeridies = null
+      this.startMeridies = 'FD'
       this.recommendingField = ''
       this.recommending = null
       this.approvingField = ''
