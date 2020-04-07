@@ -335,7 +335,7 @@ const actions = {
       if (snapshot.docs.length && snapshot.docs.length >= limit) {
         const lastVisible = snapshot.docs[snapshot.docs.length - 1]
         context.commit('setTotalOffPassCursor', firebase.firestore().collection('users').doc(context.rootGetters['credentials/id'])
-          .collection('off_pass').orderBy('endDate', 'desc').startAfter(lastVisible).limit(10))
+          .collection('off_pass').orderBy('endDate', 'desc').startAfter(lastVisible).limit(limit))
       } else {
         context.commit('setTotalOffPassCursor', null)
       }

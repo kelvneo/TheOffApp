@@ -7,7 +7,7 @@
     <b-table :data="recommendedOffs" :loading="loading" default-sort="awardDate" :mobile-cards="!tableForm">
       <template slot-scope="props">
         <b-table-column field="awardee" label="Awardee">
-          <router-link class="user-link" :to="{ name: 'UserDetails', params: { id: props.row.awardee } }" v-if="user[props.row.awardee]">
+          <router-link class="user-link" :to="{ name: 'UserDetailsRoot', params: { id: props.row.awardee } }" v-if="user[props.row.awardee]">
             {{ user[props.row.awardee]['name'] }}
           </router-link>
           <span v-else>...</span>
@@ -22,7 +22,7 @@
           {{ props.row.awardDate.toDate().toLocaleString() }}
         </b-table-column>
         <b-table-column field="approver" label="Approver" :visible="showDetails">
-          <router-link class="user-link" :to="{ name: 'UserDetails', params: { id: props.row.approver } }" v-if="user[props.row.approver]">
+          <router-link class="user-link" :to="{ name: 'UserDetailsRoot', params: { id: props.row.approver } }" v-if="user[props.row.approver]">
             {{ user[props.row.approver]['name'] }}
           </router-link>
           <span v-else>...</span>

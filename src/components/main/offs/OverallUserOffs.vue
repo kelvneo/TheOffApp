@@ -124,7 +124,7 @@ export default {
     return {
       applyOffOpen: false,
       startDate: null,
-      startMeridies: 'FD',
+      startMeridies: null,
       commanders: [],
       commandersLoading: true,
       recommendingField: '',
@@ -241,7 +241,7 @@ export default {
       this.$store.dispatch('user/getCurrentUserOffPass', reset)
       this.applyOffOpen = false
       this.startDate = null
-      this.startMeridies = 'FD'
+      this.startMeridies = null
       this.recommendingField = ''
       this.recommending = null
       this.approvingField = ''

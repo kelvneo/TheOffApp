@@ -5,7 +5,7 @@
       <strong>The Off App</strong> by <a href="https://github.com/kelvneo">Kelvin Neo</a>.
     </p>
     <p>
-      <router-link :to="{ path: '/about' }">About</router-link> - <span class="has-text-grey-light">20.04.04.1-alpha</span>
+      <router-link :to="{ path: '/about' }">About</router-link> - <span class="has-text-grey-light">20.04.07.1-alpha</span>
     </p>
   </div>
 </footer>

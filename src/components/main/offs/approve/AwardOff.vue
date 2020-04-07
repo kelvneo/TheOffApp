@@ -33,7 +33,7 @@
       <b-table :data="filteredUsers" :loading="loading" :mobile-cards="!tableForm">
         <template slot-scope="props">
           <b-table-column field="name" label="Name" sortable searchable>
-            <router-link class="user-link" :to="{ name: 'UserDetails', params: { id: props.row.id } }">{{ props.row.name }}</router-link>
+            <router-link class="user-link" :to="{ name: 'UserDetailsRoot', params: { id: props.row.id } }">{{ props.row.name }}</router-link>
           </b-table-column>
           <b-table-column field="depot" label="Depot" sortable searchable>
             {{ props.row.depot }}

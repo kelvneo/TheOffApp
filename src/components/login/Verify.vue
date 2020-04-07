@@ -1,26 +1,26 @@
 <template>
   <section class="hero is-fullheight is-info is-bold">
-  <div class="hero-body">
-    <div class="container">
-      <h1 class="title">
-          Check your Phone
-      </h1>
-      <h2 class="subtitle">
-          Please check your phone and key in the 6 digit OTP sent to you.
-      </h2>
-      <form action="" v-on:submit.prevent>
-        <b-field :type="error ? 'is-danger' : ''"  :message="error" horizontal>
-          <b-input placeholder="OTP" type="number" v-model="otp" expanded focus :disabled="loading" :loading="loading" maxlength="6">
-          </b-input>
-          <p class="control">
-            <b-button type="is-info" inverted outlined icon-left="check" id="phone-login" :disabled="loading" @click="login()">
-              Verify
-            </b-button>
-          </p>
-        </b-field>
-      </form>
+    <div class="hero-body">
+      <div class="container">
+        <h1 class="title">
+            Check your Phone
+        </h1>
+        <h2 class="subtitle">
+            Please check your phone and key in the 6 digit OTP sent to you.
+        </h2>
+        <form action="" v-on:submit.prevent>
+          <b-field :type="error ? 'is-danger' : ''"  :message="error" horizontal>
+            <b-input placeholder="OTP" type="number" v-model="otp" expanded focus :disabled="loading" :loading="loading" maxlength="6">
+            </b-input>
+            <p class="control">
+              <b-button type="is-info" inverted outlined icon-left="check" id="phone-login" :disabled="loading" @click="login()">
+                Verify
+              </b-button>
+            </p>
+          </b-field>
+        </form>
+      </div>
     </div>
-  </div>
   </section>
 </template>
 

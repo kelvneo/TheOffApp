@@ -1,31 +1,31 @@
 <template>
   <section class="hero is-fullheight is-info is-bold">
-  <div class="hero-body">
-    <div class="container">
-      <h1 class="title">
-          Welcome!
-      </h1>
-      <h2 class="subtitle">
-          Please login to continue.
-      </h2>
-      <form action="" v-on:submit.prevent>
-        <b-field :type="error ? 'is-danger' : ''"  :message="error">
-          <b-field>
-            <p class="control">
-              <span class="button is-static">+65</span>
-            </p>
-            <b-input placeholder="Phone Number" type="tel" v-model="phoneNo" expanded focus :disabled="loading" :loading="loading" @keyup.enter="login()">
-            </b-input>
-            <p class="control">
-              <b-button type="is-info" inverted outlined icon-left="mobile-alt" id="phone-login" :disabled="loading" @click="login()">
-                Login
-              </b-button>
-            </p>
+    <div class="hero-body">
+      <div class="container">
+        <h1 class="title">
+            Welcome!
+        </h1>
+        <h2 class="subtitle">
+            Please login to continue.
+        </h2>
+        <form action="" v-on:submit.prevent>
+          <b-field :type="error ? 'is-danger' : ''"  :message="error">
+            <b-field>
+              <p class="control">
+                <span class="button is-static">+65</span>
+              </p>
+              <b-input placeholder="Phone Number" type="tel" v-model="phoneNo" expanded focus :disabled="loading" :loading="loading" @keyup.enter="login()">
+              </b-input>
+              <p class="control">
+                <b-button type="is-info" inverted outlined icon-left="mobile-alt" id="phone-login" :disabled="loading" @click="login()">
+                  Login
+                </b-button>
+              </p>
+            </b-field>
           </b-field>
-        </b-field>
-      </form>
+        </form>
+      </div>
     </div>
-  </div>
   </section>
 </template>
 

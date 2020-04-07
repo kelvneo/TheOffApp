@@ -11,7 +11,7 @@
     <b-table :data="pendingOff" :loading="loading" default-sort="requestDate" checkable :checked-rows.sync="checkedRows" :mobile-cards="!tableForm">
       <template slot-scope="props">
         <b-table-column field="requester" label="Requester">
-          <router-link class="user-link" :to="{ name: 'UserDetails', params: { id: props.row.requester } }" v-if="user[props.row.requester]">
+          <router-link class="user-link" :to="{ name: 'UserDetailsRoot', params: { id: props.row.requester } }" v-if="user[props.row.requester]">
             {{ user[props.row.requester]['name'] }}
           </router-link>
           <span v-else>...</span>
@@ -20,7 +20,7 @@
           {{ momentUsingDate(props.row.useDate.seconds) }}
         </b-table-column>
         <b-table-column field="approver" label="To Approve" :visible="showDetails">
-          <router-link class="user-link" :to="{ name: 'UserDetails', params: { id: props.row.approver } }" v-if="user[props.row.approver]">
+          <router-link class="user-link" :to="{ name: 'UserDetailsRoot', params: { id: props.row.approver } }" v-if="user[props.row.approver]">
             {{ user[props.row.approver]['name'] }}
           </router-link>
           <span v-else>...</span>

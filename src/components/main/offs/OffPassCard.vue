@@ -20,7 +20,10 @@
         <hr/>
         <p class="has-text-grey">
           Approved By: <span class="title is-6 has-text-grey">{{ safeUser(offPass.approver) }}</span><br/>
-          Recommended By: <span class="title is-6 has-text-grey">{{ safeUser(offPass.recommender) }}</span>
+          <span class="is-size-7" v-if="showDetails">Approved Date: <span class="title is-7 has-text-grey">{{ momentSeconds(offPass.approvedDate.seconds) }}</span><br/><br/></span>
+          Recommended By: <span class="title is-6 has-text-grey">{{ safeUser(offPass.recommender) }}</span><br/>
+          <span class="is-size-7" v-if="showDetails">Recommended Date: <span class="title is-7 has-text-grey">{{ momentSeconds(offPass.recommendedDate.seconds) }}</span><br/></span>
+          <span class="is-size-7" v-if="showDetails">Request Date: <span class="title is-7 has-text-grey">{{ momentSeconds(offPass.requestDate.seconds) }}</span><br/></span>
         </p>
       </div>
     </div>
@@ -34,7 +37,11 @@ export default {
   name: 'OffPassCard',
   props: {
     user: Object,
-    offPass: Object
+    offPass: Object,
+    showDetails: {
+      type: Boolean,
+      default: false
+    }
   },
   computed: {
     name () {

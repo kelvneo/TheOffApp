@@ -17,58 +17,24 @@
           </b-switch>
         </div> -->
       </div>
-      <b-table :data="offPass" :loading="loading" :row-class="(row, index) => row.endDate.toMillis() < Date.now() && 'has-text-grey-light'">
-        <template slot-scope="props">
-          <b-table-column field="description" label="Description" :class="{
-            'has-text-info': props.row.description === 'Full Day Off',
-            'has-text-primary': props.row.description === 'Half Day Off',
-            'has-text-danger': props.row.description.startsWith('MA'),
-          }">
-            {{ props.row.description }}
-          </b-table-column>
-          <b-table-column field="startDate" label="Start Date">
-            {{ momentSeconds(props.row.startDate.seconds) }}
-          </b-table-column>
-          <b-table-column field="endDate" label="End Date">
-            {{ momentSeconds(props.row.endDate.seconds) }}
-          </b-table-column>
-          <b-table-column field="recommender" label="Recommender">
-            <span v-if="user[props.row.recommender]">{{ user[props.row.recommender]['name'] }}</span>
-            <span v-else>...</span>
-          </b-table-column>
-          <b-table-column field="recommendedDate" label="Recommend Date" :visible="showDetails">
-            {{ momentSeconds(props.row.recommendedDate.seconds) }}
-          </b-table-column>
-          <b-table-column field="approver" label="Approver">
-            <span v-if="user[props.row.approver]">{{ user[props.row.approver]['name'] }}</span>
-            <span v-else>...</span>
-          </b-table-column>
-          <b-table-column field="approvedDate" label="Approve Date" :visible="showDetails">
-            {{ momentSeconds(props.row.approvedDate.seconds) }}
-          </b-table-column>
-          <b-table-column field="requestDate" label="Request Date" :visible="showDetails">
-           {{ momentSeconds(props.row.requestDate.seconds) }}
-          </b-table-column>
-          <b-table-column field="id" label="Actions">
-            <div class="buttons">
-              <b-button type="is-info" icon-left="eye" size="is-small" :disabled="loading" @click="viewOffPassCard(props)">
-                View Off Pass
-              </b-button>
+      <b-progress v-if="loading"></b-progress>
+      <div class="columns is-multiline is-centered">
+        <div class="column is-one-third" v-for="pass of offPass" :key="pass.id">
+          <off-pass-card :user="user" :offPass="pass" :class="{
+            'has-background-white-ter':  pass.endDate.toMillis() < Date.now()
+          }" :showDetails="showDetails"></off-pass-card>
+        </div>
+        <div class="column is-one-third">
+          <div class="card" v-if="!offPass || !offPass.length">
+            <div class="card-content">
+              <div class="content has-text-grey has-text-centered">
+                <p><b-icon icon="frown" size="is-large"></b-icon></p>
+                <p>No Off Pass Found</p>
+              </div>
             </div>
-          </b-table-column>
-        </template>
-        <template slot="empty">
-          <section class="section">
-            <div class="content has-text-grey has-text-centered">
-              <p>
-                <b-icon icon="question-circle" size="is-large">
-                </b-icon>
-              </p>
-              <p>No Off Passes Found.</p>
-            </div>
-          </section>
-        </template>
-      </b-table>
+          </div>
+        </div>
+      </div>
       <div class="buttons">
         <b-button type="is-success" icon-left="angle-down" expanded @click="loadMore()" :disabled="loading" :loading="loading" v-if="canLoadMore">Load More</b-button>
       </div>
@@ -82,6 +48,9 @@ import OffPassCard from './OffPassCard.vue'
 
 export default {
   name: 'UserOffPass',
+  components: {
+    OffPassCard
+  },
   data () {
     return {
       loading: false,
@@ -132,16 +101,6 @@ export default {
               })
             }
           })
-        }
-      })
-    },
-    viewOffPassCard (row) {
-      this.$buefy.modal.open({
-        parent: this,
-        component: OffPassCard,
-        props: {
-          user: this.user,
-          offPass: row.row
         }
       })
     }

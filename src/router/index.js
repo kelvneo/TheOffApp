@@ -14,6 +14,9 @@ import UserOffPass from '../components/main/offs/UserOffPass.vue'
 import OffRoot from '../views/offs/OffRoot.vue'
 import MARoot from '../views/mas/MARoot.vue'
 import UsersRoot from '../views/Users.vue'
+import UserDetailsRoot from '../components/main/users/UserDetails.vue'
+import UserOffPassRecords from '../components/main/users/UserOffPassRecords.vue'
+import NotFound from '../views/NotFound.vue'
 import store from '../store/'
 
 // import * as firebase from 'firebase'
@@ -23,7 +26,7 @@ const ApproveUsers = () => import('../components/main/ApproveUsers.vue')
 const RecommendOff = () => import('../views/offs/RecommendOff.vue')
 const ApproveOff = () => import('../views/offs/ApproveOff.vue')
 const UserList = () => import('../components/main/users/UserList.vue')
-const UserDetails = () => import('../components/main/users/UserDetails.vue')
+const UserDetails = () => import('../views/users/User.vue')
 const RecommendMA = () => import('../views/mas/RecommendMA.vue')
 const ApproveMA = () => import('../views/mas/ApproveMA.vue')
 
@@ -188,7 +191,21 @@ const routes = [
                 path: ':id',
                 name: 'UserDetails',
                 component: UserDetails,
-                props: true
+                props: true,
+                children: [
+                  {
+                    path: '',
+                    name: 'UserDetailsRoot',
+                    component: UserDetailsRoot,
+                    props: true
+                  },
+                  {
+                    path: 'pass',
+                    name: 'UserOffPassRecords',
+                    component: UserOffPassRecords,
+                    props: true
+                  }
+                ]
               }
             ]
           }
@@ -230,6 +247,10 @@ const routes = [
       }
       checkLoading()
     }
+  },
+  {
+    path: '*',
+    component: NotFound
   }
 ]
 

@@ -1,50 +1,50 @@
 <template>
   <section class="hero is-fullheight is-info is-bold">
-  <div class="hero-body">
-    <div class="container">
-      <h1 class="title">
-          Looks like you are new!
-      </h1>
-      <h2 class="subtitle">
-          Please fill in some information for us.
-      </h2>
-      <form action=""  v-on:submit.prevent>
-        <b-field :type="error ? 'is-danger' : ''"  :message="error" label="Rank and Name" custom-class="has-text-light" horizontal>
-          <b-field class="columns is-mobile is-gapless">
-            <b-autocomplete v-model="rank" placeholder="3SG" :open-on-focus="true" :data="filteredRankArray"
-            @select="option => rank = option" :keep-first="true" :disabled="loading" :loading="loading" class="column is-4">
-            </b-autocomplete>
-            <b-input placeholder="John Tan" v-model="name" expanded focus :disabled="loading" :loading="loading" class="column is-8">
-            </b-input>
+    <div class="hero-body">
+      <div class="container">
+        <h1 class="title">
+            Looks like you are new!
+        </h1>
+        <h2 class="subtitle">
+            Please fill in some information for us.
+        </h2>
+        <form action=""  v-on:submit.prevent>
+          <b-field :type="error ? 'is-danger' : ''"  :message="error" label="Rank and Name" custom-class="has-text-light" horizontal>
+            <b-field class="columns is-mobile is-gapless">
+              <b-autocomplete v-model="rank" placeholder="3SG" :open-on-focus="true" :data="filteredRankArray"
+              @select="option => rank = option" :keep-first="true" :disabled="loading" :loading="loading" class="column is-4">
+              </b-autocomplete>
+              <b-input placeholder="John Tan" v-model="name" expanded focus :disabled="loading" :loading="loading" class="column is-8">
+              </b-input>
+            </b-field>
           </b-field>
-        </b-field>
-        <b-field :type="error ? 'is-danger' : ''"  :message="error" label="Depot / Dept" custom-class="has-text-light" horizontal>
-          <b-field class="columns is-mobile is-gapless">
-            <b-select placeholder="HQ GSAB" v-model="depot" :disabled="loading" class="column is-6" expanded v-on:input="onDepotSelect">
-              <option v-for="d in Object.keys(depots)" :key="d" :value="d">{{d}}</option>
-            </b-select>
-            <b-select placeholder="S3" v-model="branch" class="column is-6" expanded :disabled="!depot || loading">
-              <option v-for="b in depots[depot]" :key="b" :value="b">{{b}}</option>
-            </b-select>
+          <b-field :type="error ? 'is-danger' : ''"  :message="error" label="Depot / Dept" custom-class="has-text-light" horizontal>
+            <b-field class="columns is-mobile is-gapless">
+              <b-select placeholder="HQ GSAB" v-model="depot" :disabled="loading" class="column is-6" expanded v-on:input="onDepotSelect">
+                <option v-for="d in Object.keys(depots)" :key="d" :value="d">{{d}}</option>
+              </b-select>
+              <b-select placeholder="S3" v-model="branch" class="column is-6" expanded :disabled="!depot || loading">
+                <option v-for="b in depots[depot]" :key="b" :value="b">{{b}}</option>
+              </b-select>
+            </b-field>
           </b-field>
-        </b-field>
-        <b-field horizontal>
-          <b-field grouped>
-            <p class="control">
-              <b-button type="is-info" inverted outlined icon-left="user-check" id="phone-login" :disabled="loading" @click="submit()">
-                Submit
-              </b-button>
-            </p>
-            <p class="control">
-              <b-button type="is-primary" inverted outlined icon-left="sign-out-alt" :disabled="loading" @click="logout()">
-                Logout
-              </b-button>
-            </p>
+          <b-field horizontal>
+            <b-field grouped>
+              <p class="control">
+                <b-button type="is-info" inverted outlined icon-left="user-check" id="phone-login" :disabled="loading" @click="submit()">
+                  Submit
+                </b-button>
+              </p>
+              <p class="control">
+                <b-button type="is-primary" inverted outlined icon-left="sign-out-alt" :disabled="loading" @click="logout()">
+                  Logout
+                </b-button>
+              </p>
+            </b-field>
           </b-field>
-        </b-field>
-      </form>
+        </form>
+      </div>
     </div>
-  </div>
   </section>
 </template>
 

@@ -12,7 +12,7 @@
     <b-table :data="recommendedMAs" :loading="loading" default-sort="requestDate" checkable :checked-rows.sync="checkedRecommendedMAs" :mobile-cards="!tableForm">
       <template slot-scope="props">
         <b-table-column field="requester" label="Requester">
-          <router-link class="user-link" :to="{ name: 'UserDetails', params: { id: props.row.requester } }" v-if="user[props.row.requester]">
+          <router-link class="user-link" :to="{ name: 'UserDetailsRoot', params: { id: props.row.requester } }" v-if="user[props.row.requester]">
             {{ user[props.row.requester]['name'] }}
           </router-link>
           <span v-else>...</span>
@@ -27,7 +27,7 @@
           {{ props.row.requestDate.toDate().toLocaleString() }}
         </b-table-column>
         <b-table-column field="recommender" label="Recommender" :visible="showDetails">
-          <router-link class="user-link" :to="{ name: 'UserDetails', params: { id: props.row.recommender } }" v-if="user[props.row.recommender]">
+          <router-link class="user-link" :to="{ name: 'UserDetailsRoot', params: { id: props.row.recommender } }" v-if="user[props.row.recommender]">
             {{ user[props.row.recommender]['name'] }}
           </router-link>
           <span v-else>...</span>
