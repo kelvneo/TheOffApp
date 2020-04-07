@@ -37,6 +37,7 @@ export default {
   name: 'OffPassCard',
   props: {
     user: Object,
+    users: Object,
     offPass: Object,
     showDetails: {
       type: Boolean,
@@ -45,15 +46,15 @@ export default {
   },
   computed: {
     name () {
-      return this.$store.state.user.currentUser.name
+      return this.user.name
     },
     initials () {
-      return this.$store.state.user.currentUser.initials
+      return this.user.initials
     }
   },
   methods: {
     safeUser (val) {
-      return this.user[val] ? this.user[val].initials : '...'
+      return this.users[val] ? this.users[val].initials : '...'
     },
     momentSeconds (seconds) {
       return moment.unix(seconds).format('DD MMM YY, HH:mmA')

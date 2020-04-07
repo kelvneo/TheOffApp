@@ -16,7 +16,7 @@
     <b-progress v-if="loading"></b-progress>
     <div class="columns is-multiline is-centered">
       <div class="column is-one-third" v-for="pass of offPass" :key="pass.id">
-        <off-pass-card :user="user" :offPass="pass" :class="{
+        <off-pass-card :user="details" :users="user" :offPass="pass" :class="{
           'has-background-white-ter':  pass.endDate.toMillis() < Date.now()
         }" :showDetails="showDetails"></off-pass-card>
       </div>
@@ -58,7 +58,8 @@ export default {
       showDetails: false,
       user: {},
       offPass: [],
-      offPassCursor: null
+      offPassCursor: null,
+      details: null
     }
   },
   computed: {
@@ -134,7 +135,10 @@ export default {
     }
   },
   mounted () {
-    this.reset()
+    this.$store.dispatch('common/getUser', this.id).then((val) => {
+      this.details = val
+      this.reset()
+    })
   }
 }
 </script>

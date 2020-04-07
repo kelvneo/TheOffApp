@@ -34,7 +34,7 @@
             </div>
           </div>
           <div v-else>
-            <off-pass-card :user="user" :offPass="currentOffPass" ></off-pass-card>
+            <off-pass-card :user="currentUser" :users="user" :offPass="currentOffPass" ></off-pass-card>
             <div class="columns is-mobile is-gapless">
               <div class="column">
                 <b-button expanded :disabled="!offPassCount || offPassIndex <= 0" @click="offPassIndex--">
@@ -85,6 +85,9 @@ export default {
     timeOfDay () {
       const now = new Date()
       return now.getHours() > 17 || now.getHours() < 3 ? 'Evening' : (now.getHours() > 11 ? 'Afternoon' : 'Morning')
+    },
+    currentUser () {
+      return this.$store.state.user.currentUser
     }
   },
   methods: {

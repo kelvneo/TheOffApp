@@ -20,7 +20,7 @@
       <b-progress v-if="loading"></b-progress>
       <div class="columns is-multiline is-centered">
         <div class="column is-one-third" v-for="pass of offPass" :key="pass.id">
-          <off-pass-card :user="user" :offPass="pass" :class="{
+          <off-pass-card :users="user" :user="currentUser" :offPass="pass" :class="{
             'has-background-white-ter':  pass.endDate.toMillis() < Date.now()
           }" :showDetails="showDetails"></off-pass-card>
         </div>
@@ -64,6 +64,9 @@ export default {
     },
     canLoadMore () {
       return this.$store.state.user.totalOffPass.length && this.$store.state.user.totalOffPassCursor
+    },
+    currentUser () {
+      return this.$store.state.user.currentUser
     }
   },
   methods: {
