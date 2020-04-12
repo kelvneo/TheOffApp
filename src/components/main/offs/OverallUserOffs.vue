@@ -56,14 +56,14 @@
               native-value="FD">
               <span>Full Day</span>
             </b-radio-button>
-            <!-- <b-radio-button v-model="startMeridies" :disabled="submitting || pmOnly"
+            <b-radio-button v-model="startMeridies" :disabled="submitting || pmOnly"
               native-value="AM">
               <span>AM Only</span>
             </b-radio-button>
             <b-radio-button v-model="startMeridies" :disabled="submitting"
               native-value="PM">
               <span>PM Only</span>
-            </b-radio-button> -->
+            </b-radio-button>
           </b-field>
           <b-field label="Recommending" class="column is-half-desktop is-full-mobile" horizontal>
             <b-autocomplete
