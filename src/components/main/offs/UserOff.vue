@@ -260,6 +260,7 @@ export default {
       return moment.unix(seconds).format('DD MMM YY / A')
     },
     reset (reset) {
+      this.loading = true
       const cuo = this.$store.dispatch('user/getCurrentUserOffs', reset).then((data) => {
         this.loading = false
         this.off = Object.values(data.reduce((l, c) => {

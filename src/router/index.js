@@ -13,22 +13,26 @@ import UserOff from '../components/main/offs/UserOff.vue'
 import UserOffPass from '../components/main/offs/UserOffPass.vue'
 import OffRoot from '../views/offs/OffRoot.vue'
 import MARoot from '../views/mas/MARoot.vue'
-import UsersRoot from '../views/Users.vue'
-import UserDetailsRoot from '../components/main/users/UserDetails.vue'
-import UserOffPassRecords from '../components/main/users/UserOffPassRecords.vue'
 import NotFound from '../views/NotFound.vue'
 import store from '../store/'
 
 // import * as firebase from 'firebase'
 // import 'firebase/auth'
 
+const RecommendOff = () => import(/* webpackChunkName: "group-recommend" */ '../views/offs/RecommendOff.vue')
+const ApproveOff = () => import(/* webpackChunkName: "group-approve" */'../views/offs/ApproveOff.vue')
+const RecommendMA = () => import(/* webpackChunkName: "group-recommend" */'../views/mas/RecommendMA.vue')
+const ApproveMA = () => import(/* webpackChunkName: "group-approve" */'../views/mas/ApproveMA.vue')
+
 const ApproveUsers = () => import('../components/main/ApproveUsers.vue')
-const RecommendOff = () => import('../views/offs/RecommendOff.vue')
-const ApproveOff = () => import('../views/offs/ApproveOff.vue')
+
+const UsersRoot = () => import('../views/Users.vue')
 const UserList = () => import('../components/main/users/UserList.vue')
-const UserDetails = () => import('../views/users/User.vue')
-const RecommendMA = () => import('../views/mas/RecommendMA.vue')
-const ApproveMA = () => import('../views/mas/ApproveMA.vue')
+const UserDetails = () => import(/* webpackChunkName: "group-user" */ '../views/users/User.vue')
+const UserDetailsRoot = () => import(/* webpackChunkName: "group-user" */ '../components/main/users/UserDetails.vue')
+const UserOffPassRecords = () => import(/* webpackChunkName: "group-user" */ '../components/main/users/UserOffPassRecords.vue')
+const UserOffRecords = () => import(/* webpackChunkName: "group-user" */ '../components/main/users/UserOffRecords.vue')
+const UserMARecords = () => import(/* webpackChunkName: "group-user" */ '../components/main/users/UserMARecords.vue')
 
 Vue.use(VueRouter)
 
@@ -203,6 +207,18 @@ const routes = [
                     path: 'pass',
                     name: 'UserOffPassRecords',
                     component: UserOffPassRecords,
+                    props: true
+                  },
+                  {
+                    path: 'off',
+                    name: 'UserOffRecords',
+                    component: UserOffRecords,
+                    props: true
+                  },
+                  {
+                    path: 'ma',
+                    name: 'UserMARecords',
+                    component: UserMARecords,
                     props: true
                   }
                 ]
