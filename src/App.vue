@@ -9,20 +9,25 @@
 export default {
   data () {
     return {
-      loading: true
+      // loading: true
+    }
+  },
+  computed: {
+    loading () {
+      return this.$store.state.credentials.loading
     }
   },
   created () {
-    function loop (app) {
-      setTimeout(() => {
-        app.loading = app.$store.state.credentials.loading
-        if (app.loading) {
-          loop(app)
-        }
-      }, 100)
-    }
+    // function loop (app) {
+    //   setTimeout(() => {
+    //     app.loading = app.$store.state.credentials.loading
+    //     if (app.loading) {
+    //       loop(app)
+    //     }
+    //   }, 100)
+    // }
 
-    loop(this)
+    // loop(this)
   }
 }
 </script>

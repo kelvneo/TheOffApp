@@ -1,5 +1,5 @@
 <template>
-  <div class="home">
+  <div class="home" v-if="!loading">
     <Navbar></Navbar>
     <router-view/>
     <Footer></Footer>
@@ -16,6 +16,11 @@ export default {
   components: {
     Navbar,
     Footer
+  },
+  computed: {
+    loading () {
+      return this.$store.state.credentials.loading
+    }
   }
 }
 </script>

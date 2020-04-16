@@ -47,29 +47,36 @@ export default {
       const store = this.$store
       this.$store.dispatch('credentials/confirmOTP', this.otp).then(() => {
         store.dispatch('credentials/setLoading', true).then(() => {
-          if (this.$route.query.redirect) {
-            this.$router.replace(this.$route.query.redirect)
-          } else {
-            this.$router.replace('/')
-          }
+          this.checkIsAuthenticated()
         })
       }).catch((err) => {
         this.loading = false
         this.error = err.message
         console.error(err)
       })
-    }
-  },
-  beforeRouteLeave (to, from, next) {
-    function checkLoading (app) {
-      // console.log(store.state.credentials.loading)
-      if (!app.$store.state.credentials.loading) next()
-      else {
-        setTimeout(checkLoading, 100, app)
+    },
+    checkIsAuthenticated () {
+      if (this.$store.state.credentials.loading) {
+        setTimeout(this.checkIsAuthenticated, 100)
+      } else {
+        if (this.$route.query.redirect) {
+          this.$router.replace(this.$route.query.redirect)
+        } else {
+          this.$router.replace('/')
+        }
       }
     }
-    checkLoading(this)
   },
+  // beforeRouteLeave (to, from, next) {
+  //   function checkLoading (app) {
+  //     // console.log(store.state.credentials.loading)
+  //     if (!app.$store.state.credentials.loading) next()
+  //     else {
+  //       setTimeout(checkLoading, 100, app)
+  //     }
+  //   }
+  //   checkLoading(this)
+  // },
   created () {
 
   }
