@@ -15,6 +15,10 @@ service cloud.firestore {
         allow read: if exists(/databases/$(database)/documents/users/$(request.auth.uid)/perms/recommend_off)
         allow read, write: if exists(/databases/$(database)/documents/users/$(request.auth.uid)/perms/approve_off)
       }
+      match /cancelled_offs/{uid} {
+        allow read: if exists(/databases/$(database)/documents/users/$(request.auth.uid)/perms/recommend_off)
+        allow read, write: if exists(/databases/$(database)/documents/users/$(request.auth.uid)/perms/approve_off)
+      }
       match /off_pass/{uid} {
         allow read: if exists(/databases/$(database)/documents/users/$(request.auth.uid)/perms/cos)
         allow read, write: if exists(/databases/$(database)/documents/users/$(request.auth.uid)/perms/approve_off)

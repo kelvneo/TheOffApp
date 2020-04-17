@@ -1,15 +1,22 @@
 <template>
   <div>
     <router-view v-if="!loading"></router-view>
-    <b-loading is-full-page :active.sync="loading" :can-cancel="false" ></b-loading>
+    <b-loading is-full-page :active.sync="loading" :can-cancel="false">
+      <div class="loading-icon"></div>
+      <div class="has-text-light loading-text">{{ loadingText }}</div>
+    </b-loading>
   </div>
 </template>
 
 <script>
+import firebase from 'firebase/app'
+import 'firebase/auth'
+
 export default {
   data () {
     return {
       // loading: true
+      loadingText: 'Loading...'
     }
   },
   computed: {
@@ -28,6 +35,32 @@ export default {
     // }
 
     // loop(this)
+  },
+  mounted () {
+    // Check if the user is logged into firebase
+    this.loadingText = 'Verifying your identity...'
+    firebase.auth().onAuthStateChanged((user) => {
+      this.$store.commit('credentials/setLoading', true)
+      this.$store.commit('credentials/setUser', user)
+      this.loadingText = 'Getting your details...'
+      // Check if the user exists in the database
+      if (user) {
+        this.$store.dispatch('user/getUser', user.uid).then((u) => {
+          if (u.exists) {
+            this.$store.commit('credentials/setLoading', false)
+            this.$store.commit('user/setCurrentUser', u.data())
+          } else { // If the user does not exist in the database, check if there is a temporary user.
+            this.$store.dispatch('user/getTempUser', user.uid).then((tu) => {
+              this.$store.commit('credentials/setLoading', false)
+              this.$store.commit('user/setTempUser', tu.data())
+            })
+          }
+        })
+      } else {
+        this.$store.commit('credentials/setLoading', false)
+        this.$store.dispatch('credentials/logout')
+      }
+    })
   }
 }
 </script>
@@ -35,6 +68,16 @@ export default {
 <style lang="scss">
 @import "~bulma/sass/utilities/_all";
 $loading-background: rgba(#000, 0.9);
+$loading-background-legacy: #000000;
 @import "~bulma";
 @import "~buefy/src/scss/buefy";
+
+.loading-text {
+  position: absolute;
+  top: 60%;
+  left: 50%;
+  padding: 0.5em;
+  text-align: center;
+  transform: translate(-50%, -50%);
+}
 </style>

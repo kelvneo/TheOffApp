@@ -1,33 +1,36 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Main from '../views/Main.vue'
-import Home from '../views/Home.vue'
-import Login from '../views/Login.vue'
-import Phone from '../components/login/Phone.vue'
-import Verify from '../components/login/Verify.vue'
-import CollectInfo from '../components/login/CollectInfo.vue'
-import WaitForApproval from '../components/login/WaitForApproval.vue'
-import Root from '../components/main/Root.vue'
-import About from '../views/About.vue'
-import UserOff from '../components/main/offs/UserOff.vue'
-import UserOffPass from '../components/main/offs/UserOffPass.vue'
-import OffRoot from '../views/offs/OffRoot.vue'
-import MARoot from '../views/mas/MARoot.vue'
 import NotFound from '../views/NotFound.vue'
 import store from '../store/'
 
 // import * as firebase from 'firebase'
 // import 'firebase/auth'
 
+const Home = () => import(/* webpackChunkName: "group-main" */ '../views/Home.vue')
+const Root = () => import(/* webpackChunkName: "group-main" */ '../components/main/Root.vue')
+const UserOff = () => import(/* webpackChunkName: "group-main" */ '../components/main/offs/UserOff.vue')
+const UserOffPass = () => import(/* webpackChunkName: "group-main" */ '../components/main/offs/UserOffPass.vue')
+const OffRoot = () => import(/* webpackChunkName: "group-main" */ '../views/offs/OffRoot.vue')
+const MARoot = () => import(/* webpackChunkName: "group-main" */ '../views/mas/MARoot.vue')
+
+const About = () => import(/* webpackChunkName: "group-about" */ '../views/About.vue')
+
+const Login = () => import(/* webpackChunkName: "group-login" */ '../views/Login.vue')
+const Phone = () => import(/* webpackChunkName: "group-login" */ '../components/login/Phone.vue')
+const Verify = () => import(/* webpackChunkName: "group-login" */ '../components/login/Verify.vue')
+const CollectInfo = () => import(/* webpackChunkName: "group-register" */ '../components/login/CollectInfo.vue')
+const WaitForApproval = () => import(/* webpackChunkName: "group-register" */ '../components/login/WaitForApproval.vue')
+
 const RecommendOff = () => import(/* webpackChunkName: "group-recommend" */ '../views/offs/RecommendOff.vue')
 const ApproveOff = () => import(/* webpackChunkName: "group-approve" */'../views/offs/ApproveOff.vue')
 const RecommendMA = () => import(/* webpackChunkName: "group-recommend" */'../views/mas/RecommendMA.vue')
 const ApproveMA = () => import(/* webpackChunkName: "group-approve" */'../views/mas/ApproveMA.vue')
 
-const ApproveUsers = () => import('../components/main/ApproveUsers.vue')
+const ApproveUsers = () => import(/* webpackChunkName: "group-temp" */'../components/main/ApproveUsers.vue')
 
-const UsersRoot = () => import('../views/Users.vue')
-const UserList = () => import('../components/main/users/UserList.vue')
+const UsersRoot = () => import(/* webpackChunkName: "group-users" */'../views/Users.vue')
+const UserList = () => import(/* webpackChunkName: "group-users" */'../components/main/users/UserList.vue')
 const UserDetails = () => import(/* webpackChunkName: "group-user" */ '../views/users/User.vue')
 const UserDetailsRoot = () => import(/* webpackChunkName: "group-user" */ '../components/main/users/UserDetails.vue')
 const UserOffPassRecords = () => import(/* webpackChunkName: "group-user" */ '../components/main/users/UserOffPassRecords.vue')
@@ -193,7 +196,7 @@ const routes = [
               },
               {
                 path: ':id',
-                name: 'UserDetails',
+                // name: 'UserDetails',
                 component: UserDetails,
                 props: true,
                 children: [
@@ -225,25 +228,10 @@ const routes = [
               }
             ]
           }
-        ],
+        ]
         // redirect: '/login/wait',
-        beforeEnter: (to, from, next) => {
-          if (!store.state.user.currentUser) {
-            next({
-              path: '/login',
-              query: { redirect: to.fullPath }
-            })
-          } else {
-            store.dispatch('user/getUserPermissions', store.state.credentials.user.uid).then((snapshot) => {
-              const payload = {}
-              snapshot.forEach((doc) => {
-                payload[doc.id] = doc.data()
-              })
-              store.commit('user/setPermissions', payload)
-            })
-            next()
-          }
-        }
+        // beforeEnter: (to, from, next) => {
+        // }
       }
       // {
       //   path: '/about',
@@ -258,10 +246,11 @@ const routes = [
       function checkLoading () {
         if (!store.state.credentials.loading) next()
         else {
-          setTimeout(checkLoading, 100)
+          setTimeout(checkLoading, 50)
         }
       }
       checkLoading()
+      // next()
     }
   },
   {
