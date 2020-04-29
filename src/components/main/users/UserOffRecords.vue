@@ -41,10 +41,21 @@
     </div>
     <b-tabs v-model="activeTab" type="is-boxed">
       <b-tab-item label="Awarded Offs">
-        <b-message type="is-info" role="alert" title="Awarded Offs" :closable="false" size="is-small">
-          This section details all <strong>Unexpired Offs</strong>, grouped by their <strong>Expiry Date</strong>.
+        <b-message type="is-info" role="alert" title="Your Awarded Offs" :closable="false" size="is-small">
+          This section details all <strong>Unexpired Offs</strong>, grouped by their <strong>Expiry Date</strong>.<br/>
+          Click <strong>Show Extra Details</strong> above for more information.
         </b-message>
-        <b-table :data="offDisplay" :loading="loading" default-sort="endDate">
+        <div class="columns is-multiline user-list">
+          <div class="column is-half" v-for="o of offDisplay" :key="o.awardDate.seconds">
+            <awarded-off-card :users="user" :offData="o" :showDetails="showDetails"></awarded-off-card>
+          </div>
+          <div class="column" v-if="offDisplay.length === 0 ">
+            <div class="box">
+              <h4 class="title is-4 has-text-centered has-text-grey">No Offs Found</h4>
+            </div>
+          </div>
+        </div>
+        <!-- <b-table :data="offDisplay" :loading="loading" default-sort="endDate">
           <template slot-scope="props">
             <b-table-column field="description" label="Description">
               {{ props.row.description }}
@@ -78,7 +89,7 @@
               </div>
             </section>
           </template>
-        </b-table>
+        </b-table> -->
       </b-tab-item>
       <b-tab-item label="Offs Recommending">
         <b-message type="is-info" role="alert" title="Offs Pending Recommendation" :closable="false" size="is-small">
@@ -170,11 +181,15 @@
 
 <script>
 import moment from 'moment'
+import AwardedOffCard from '../offs/AwardedOffCard.vue'
 // import firebase from 'firebase/app'
 // import 'firebase/firestore'
 
 export default {
   name: 'UserOffRecords',
+  components: {
+    AwardedOffCard
+  },
   props: {
     id: String
   },

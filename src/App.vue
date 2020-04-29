@@ -80,4 +80,15 @@ $loading-background-legacy: #000000;
   text-align: center;
   transform: translate(-50%, -50%);
 }
+
+.mb {
+  margin-bottom: 2rem;
+}
+.b-table {
+  margin-bottom: 1.5rem;
+}
+.user-link {
+  text-decoration: underline dotted;
+  color: initial;
+}
 </style>

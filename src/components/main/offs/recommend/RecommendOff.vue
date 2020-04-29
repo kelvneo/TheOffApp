@@ -4,40 +4,75 @@
       Choose an <strong>Approving</strong> personnel, <strong>Expiry Date</strong>, and provide a <strong>Description</strong> for the off. <br/>
       Find the personnel to award offs, then key in the amount you wish to recommend, then scroll up and press <strong>"Recommend Off"</strong>.
     </b-message>
-    <div class="columns is-gapless">
-      <div class="field column">
-        <b-switch v-model="branchOnly">
-          Show Branch Only
-        </b-switch>
-      </div>
-    </div>
     <form action="" v-on:submit.prevent>
-      <div class="columns is-multiline">
-        <div class="column is-half-desktop is-full-mobile">
-          <b-field label="Approving" :type="awardOffForm.error ? 'is-danger' : ''"  :message="awardOffForm.error">
-            <b-autocomplete
-              v-model="approvingField" :disabled="loading" :loading="loading" placeholder="e.g. Anne"
-              :open-on-focus="true" :data="filteredApproving" field="name" @select="option => awardOffForm.approving = option">
-            </b-autocomplete>
-          </b-field>
-        </div>
-        <div class="column is-half-desktop is-full-mobile">
-          <b-field label="Description" :type="awardOffForm.error ? 'is-danger' : ''"  :message="awardOffForm.error">
-            <b-input type="text" v-model="awardOffForm.description" placeholder="Jan Performance Off" required :disabled="loading" :loading="loading">
-            </b-input>
-          </b-field>
-        </div>
-        <div class="column is-full">
-          <b-field label="Expiry Date">
-            <b-datepicker placeholder="Click to select..." icon="calendar" v-model="awardOffForm.endDate" :min-date="new Date()" :disabled="loading" :loading="loading">
-            </b-datepicker>
-          </b-field>
-        </div>
-      </div>
-      <div class="buttons">
-        <b-button type="is-success" icon-left="check" expanded @click="submit()" :disabled="loading" :loading="loading">Recommend Off</b-button>
-      </div>
-      <b-table :data="filteredUsers" :loading="loading" :mobile-cards="!tableForm">
+      <b-steps v-model="activeStep" :has-navigation="false">
+        <b-step-item icon="list" label="Details">
+          <div class="columns is-multiline">
+            <div class="column is-half-desktop is-full-mobile">
+              <b-field label="Approving Person" :type="awardOffForm.error ? 'is-danger' : ''"  :message="awardOffForm.error">
+                <b-autocomplete
+                  v-model="approvingField" :disabled="loading" :loading="loading" placeholder="e.g. Anne"
+                  :open-on-focus="true" :data="filteredApproving" field="name" @select="option => awardOffForm.approving = option">
+                </b-autocomplete>
+              </b-field>
+            </div>
+            <div class="column is-half-desktop is-full-mobile">
+              <b-field label="Description" :type="awardOffForm.error ? 'is-danger' : ''"  :message="awardOffForm.error">
+                <b-input type="text" v-model="awardOffForm.description" placeholder="Jan Performance Off" required :disabled="loading" :loading="loading">
+                </b-input>
+              </b-field>
+            </div>
+            <div class="column is-full">
+              <b-field label="Expiry Date">
+                <b-datepicker placeholder="Click to select..." icon="calendar" v-model="awardOffForm.endDate" :min-date="new Date()" :disabled="loading" :loading="loading">
+                </b-datepicker>
+              </b-field>
+            </div>
+          </div>
+          <div class="buttons">
+            <b-button type="is-success" icon-left="chevron-right" expanded @click="activeStep = 1" :disabled="loading || (!awardOffForm.approving || !awardOffForm.description)" :loading="loading">Next</b-button>
+          </div>
+        </b-step-item>
+        <b-step-item icon="users" label="Choose Personnel">
+          <div class="columns is-multiline">
+            <div class="column is-full">
+              <b-field label="Search">
+                <b-input type="text" v-model="search" placeholder="Search a Name" :disabled="loading" :loading="loading">
+                </b-input>
+              </b-field>
+            </div>
+            <div class="column is-full">
+              <b-field>
+                <b-switch v-model="branchOnly">
+                  Show Branch Only
+                </b-switch>
+              </b-field>
+            </div>
+          </div>
+          <!-- <div class="buttons">
+            <b-button type="is-success" icon-left="check" expanded @click="submit()" :disabled="loading" :loading="loading">Recommend Off</b-button>
+          </div> -->
+          <div class="columns is-multiline user-list">
+            <div class="column is-half" v-for="user of filteredUsers" :key="user.id">
+              <AwardOffFormCard :user.sync="user" :loading="loading"></AwardOffFormCard>
+            </div>
+            <div class="column" v-if="filteredUsers.length === 0 ">
+              <div class="box">
+                <h4 class="title is-4 has-text-centered has-text-grey">No Users Found</h4>
+              </div>
+            </div>
+          </div>
+          <div class="columns is-mobile">
+            <div class="column is-narrow">
+              <b-button @click="activeStep = 0" icon-right="chevron-left"></b-button>
+            </div>
+            <div class="column">
+              <b-button type="is-success" icon-left="check" expanded @click="submit()" :disabled="loading" :loading="loading">Recommend Off</b-button>
+            </div>
+          </div>
+        </b-step-item>
+      </b-steps>
+      <!-- <b-table :data="filteredUsers" :loading="loading" :mobile-cards="!tableForm">
         <template slot-scope="props">
           <b-table-column field="name" label="Name" sortable searchable>
             <router-link class="user-link" :to="{ name: 'UserDetailsRoot', params: { id: props.row.id } }">{{ props.row.name }}</router-link>
@@ -64,17 +99,19 @@
             </div>
           </section>
         </template>
-      </b-table>
-      <div class="buttons">
-        <b-button type="is-success" icon-left="check" expanded @click="submit()" :disabled="loading" :loading="loading">Recommend Off</b-button>
-      </div>
+      </b-table> -->
     </form>
   </div>
 </template>
 
 <script>
+import AwardOffFormCard from '../AwardOffFormCard.vue'
+
 export default {
   name: 'recommend-off-component',
+  components: {
+    AwardOffFormCard
+  },
   props: {
     tableForm: Boolean,
     showDetails: Boolean
@@ -92,7 +129,9 @@ export default {
         description: '',
         endDate: new Date(),
         error: ''
-      }
+      },
+      activeStep: 0,
+      search: ''
     }
   },
   computed: {
@@ -103,13 +142,14 @@ export default {
     },
     filteredUsers () {
       const branch = this.$store.state.user.currentUser.branch
-      return this.branchOnly ? this.users.filter(val => val.branch === branch) : this.users
+      return this.users.filter(val => (!this.search || val.name.toLowerCase().indexOf(this.search.toLowerCase()) !== -1) && (!this.branchOnly || val.branch === branch))
     }
   },
   methods: {
     submit () {
       this.awardOffForm.error = ''
       if (this.awardOffForm.description && this.awardOffForm.endDate) {
+        this.search = ''
         this.loading = true
         const toCredit = this.users.filter((val) => val.count > 0)
         if (toCredit.length === 0) {
@@ -159,6 +199,7 @@ export default {
         endDate: new Date(),
         approving: null
       }
+      this.activeStep = 0
       this.awardOffForm.endDate.setMonth(this.awardOffForm.endDate.getMonth() + 1)
       const temp = []
       this.$store.dispatch('common/updateAllUsers').then((data) => {
