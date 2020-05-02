@@ -210,7 +210,16 @@ export default {
           payload['count'] = 0
           temp.push(payload)
         }
-        this.users = temp
+        const branch = this.$store.state.user.currentUser.branch
+        this.users = temp.sort((a, b) => {
+          if ((a.branch === branch && b.branch === branch)) {
+            return a.name > b.name ? 1 : -1
+          } else if (a.branch === branch) {
+            return -1
+          } else {
+            return a.name > b.name ? 1 : -1
+          }
+        })
         this.user = data
         this.loading = false
       })

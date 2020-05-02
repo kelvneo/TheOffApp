@@ -129,7 +129,9 @@ export default {
     },
     pmOnly () {
       const date = new Date()
-      return this.startDate && this.startDate.getDate() === date.getDate() && date.getHours() > 11
+      const sameDay = this.startDate && this.startDate.getDate() === date.getDate() && this.startDate.getMonth() === date.getMonth() &&
+        this.startDate.getYear() === date.getYear()
+      return sameDay && date.getHours() > 11
     },
     blockedDates () {
       return this.$store.getters['user/unavailableDates'].map((val) => {

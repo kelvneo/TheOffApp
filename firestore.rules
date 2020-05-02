@@ -67,6 +67,22 @@ service cloud.firestore {
         allow read, delete: if request.auth.uid == resource.data.requester || request.auth.uid == resource.data.recommender;
         allow read, update, delete: if request.auth.uid == resource.data.approver && exists(/databases/$(database)/documents/users/$(request.auth.uid)/perms/approve_off);
     }
+    match /pending_deletes/{uid} {
+    		allow create: if request.auth.uid != null && request.auth.uid == request.resource.data.requester;
+        allow read: if exists(/databases/$(database)/documents/users/$(request.auth.uid)/perms/recommend_off);
+        allow read, delete: if request.auth.uid == resource.data.requester;
+        allow read, update, delete: if request.auth.uid == resource.data.recommender && exists(/databases/$(database)/documents/users/$(request.auth.uid)/perms/recommend_off);
+    }
+    match /recommended_deletes/{uid} {
+        allow create: if request.auth.uid != null && request.auth.uid == request.resource.data.recommender && exists(/databases/$(database)/documents/users/$(request.auth.uid)/perms/recommend_off);
+        allow read: if exists(/databases/$(database)/documents/users/$(request.auth.uid)/perms/recommend_off);
+        allow read, delete: if request.auth.uid == resource.data.requester || request.auth.uid == resource.data.recommender;
+        allow read, update, delete: if request.auth.uid == resource.data.approver && exists(/databases/$(database)/documents/users/$(request.auth.uid)/perms/approve_off);
+    }
+    match /logs/{multiSegment=**} {
+    	allow create: if request.auth.uid != null;
+      allow read: if request.auth.uid != null && exists(/databases/$(database)/documents/users/$(request.auth.uid)/perms/read_logs);
+    }
 //   	match /users/{uid} {
 //     	allow read, write: if isAdmin();
 //     	allow read, update, delete: if request.auth.uid == uid;

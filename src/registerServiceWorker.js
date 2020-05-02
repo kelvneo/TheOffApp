@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 
 import { register } from 'register-service-worker'
-import { NotificationProgrammatic as Notification } from 'buefy'
+import { ToastProgrammatic as Toast } from 'buefy'
 
 if (process.env.NODE_ENV === 'production') {
   register(`${process.env.BASE_URL}service-worker.js`, {
@@ -21,10 +21,8 @@ if (process.env.NODE_ENV === 'production') {
       console.log('New content is downloading.')
     },
     updated () {
-      Notification.open({
-        message: 'New update installed, please restart the app.',
-        type: 'is-info',
-        indefinite: true
+      Toast.open({
+        message: 'New update installed!'
       })
       console.log('New content is available; please refresh.')
     },
