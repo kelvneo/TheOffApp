@@ -17,15 +17,13 @@
           </b-switch>
         </div> -->
       </div>
-      <b-progress v-if="loading"></b-progress>
+      <!-- <b-progress v-if="loading"></b-progress> -->
       <div class="columns is-multiline is-centered">
-        <div class="column is-one-third" v-for="pass of offPass" :key="pass.id">
-          <off-pass-card :users="user" :user="currentUser" :offPass="pass" :class="{
-            'has-background-white-ter':  pass.endDate.toMillis() < Date.now()
-          }" :showDetails="showDetails"></off-pass-card>
+        <div class="column is-one-third" v-if="loading">
+          <off-pass-card :users="user" :showDetails="showDetails"></off-pass-card>
         </div>
-        <div class="column is-one-third">
-          <div class="card" v-if="!offPass || !offPass.length">
+        <div class="column is-one-third" v-else-if="!offPass.length">
+          <div class="card">
             <div class="card-content">
               <div class="content has-text-grey has-text-centered">
                 <p><b-icon icon="frown" size="is-large"></b-icon></p>
@@ -33,6 +31,11 @@
               </div>
             </div>
           </div>
+        </div>
+        <div class="column is-one-third" v-else v-for="pass of offPass" :key="pass.id">
+          <off-pass-card :user="currentUser" :users="user" :offPass="pass" :class="{
+            'has-background-white-ter':  pass.endDate.toMillis() < Date.now()
+          }" :showDetails="showDetails"></off-pass-card>
         </div>
       </div>
       <div class="buttons">

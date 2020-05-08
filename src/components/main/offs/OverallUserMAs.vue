@@ -18,14 +18,20 @@
         replace @click.native="overallClick(3)">
         <div>
           <p class="heading">Recommending</p>
-          <p class="title has-text-grey-light">{{ pendingMAs }}</p>
+          <p class="title has-text-grey-light">
+            <template v-if="pendingMAs !== null">{{ pendingMAs }}</template>
+            <b-skeleton :active="pendingMAs === null" width="3rem"></b-skeleton>
+          </p>
         </div>
       </router-link>
       <router-link :to="{ path: '/off', query: { t: 3 } }" class="column is-one-quarter-tablet is-half-mobile has-text-centered has-text-grey"
         replace @click.native="overallClick(4)">
         <div>
           <p class="heading">To Approve</p>
-          <p class="title has-text-grey-light">{{ recommendedMAs }}</p>
+          <p class="title has-text-grey-light">
+            <template v-if="recommendedMAs !== null">{{ recommendedMAs }}</template>
+            <b-skeleton :active="recommendedMAs === null" width="3rem"></b-skeleton>
+          </p>
         </div>
       </router-link>
     </div>
@@ -102,10 +108,10 @@ export default {
   },
   computed: {
     pendingMAs () {
-      return this.$store.getters['user/pendingMACount'] === null ? '...' : this.$store.getters['user/pendingMACount']
+      return this.$store.getters['user/pendingMACount']
     },
     recommendedMAs () {
-      return this.$store.getters['user/recommendedMACount'] === null ? '...' : this.$store.getters['user/recommendedMACount']
+      return this.$store.getters['user/recommendedMACount']
     },
     filteredRecommending () {
       return this.commanders.filter((option) => {

@@ -2,21 +2,33 @@
   <div class="box" :class="{'has-text-danger': expiring}">
     <div class="columns is-mobile is-vcentered">
       <div class="column">
-        <p class="heading has-text-weight-bold is-size-6" :class="{'has-text-danger': expiring}">{{ offData.description }}</p>
-        <p class="heading is-7 is-marginless" :class="{'has-text-danger': expiring}">Use By:
-          <span class="heading is-inline has-text-weight-bold is-size-7 is-marginless">{{ momentSecondsDate(offData.endDate.seconds) }}</span>
+        <p class="heading has-text-weight-bold is-size-6" :class="{'has-text-danger': expiring}">
+          <template v-if="offData">{{ offData.description }}</template>
+          <b-skeleton :active="!offData"></b-skeleton>
+        </p>
+        <p class="heading is-7 is-marginless" :class="{'has-text-danger': expiring}">
+          <template v-if="offData">
+            Use By:
+            <span class="heading is-inline has-text-weight-bold is-size-7 is-marginless">
+              {{ momentSecondsDate(offData.endDate.seconds) }}
+            </span>
+          </template>
+          <b-skeleton :active="!offData"></b-skeleton>
         </p>
       </div>
       <div class="column is-narrow">
         <div class="level-item has-text-centered">
           <div>
-            <p class="title" :class="{'has-text-danger': expiring}">{{ offData.count }}</p>
+            <p class="title" :class="{'has-text-danger': expiring}">
+              <template v-if="offData">{{ offData.count }}</template>
+              <b-skeleton :active="!offData"></b-skeleton>
+            </p>
             <p class="heading">Off</p>
           </div>
         </div>
       </div>
     </div>
-    <div v-if="showDetails">
+    <div v-if="offData && showDetails">
       <hr/>
       <p>
         <span class="is-size-7">Awarded On: {{ momentSeconds(offData.awardDate.seconds) }}</span><br/>
@@ -46,6 +58,9 @@ export default {
   },
   computed: {
     expiring () {
+      if (!this.offData) {
+        return false
+      }
       const endDate = moment.unix(this.offData.endDate.seconds)
       return endDate.diff(moment(), 'days') <= 7
     }

@@ -15,7 +15,7 @@
       <!-- <b-navbar-item tag="router-link" :to="{ path: '/off/stockcard' }">
         Off Pass
       </b-navbar-item> -->
-      <b-navbar-dropdown label="Recommend" v-if="hasPerm('recommend_off')">
+      <b-navbar-dropdown label="Recommend" v-if="hasPerm('recommend_off')" :collapsible="true">
         <b-navbar-item tag="router-link" :to="{ path: '/off/recommend' }">
           Offs
         </b-navbar-item>
@@ -23,7 +23,7 @@
           Medical Appointment
         </b-navbar-item>
       </b-navbar-dropdown>
-      <b-navbar-dropdown label="Approve" v-if="hasPerm('approve_off')">
+      <b-navbar-dropdown label="Approve" v-if="hasPerm('approve_off')" :collapsible="true">
         <b-navbar-item tag="router-link" :to="{ path: '/off/approve' }">
           Offs
         </b-navbar-item>
@@ -45,7 +45,7 @@
     </template>
 
     <template slot="end">
-      <b-navbar-dropdown label="Users" v-if="hasPerm('approve_users') || hasPerm('cos')">
+      <b-navbar-dropdown label="Users" v-if="hasPerm('approve_users') || hasPerm('cos')" :collapsible="true">
         <b-navbar-item tag="router-link" :to="{ path: '/users/' }" v-if="hasPerm('cos')">
           Manage Users
         </b-navbar-item>

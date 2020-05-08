@@ -18,21 +18,30 @@
         replace @click.native="overallClick(1)">
         <div>
           <p class="heading">Recommending</p>
-          <p class="title has-text-grey-light">{{ pendingOffs }}</p>
+          <p class="title has-text-grey-light">
+            <template v-if="pendingOffs !== null">{{ pendingOffs }}</template>
+            <b-skeleton :active="pendingOffs === null" width="3rem"></b-skeleton>
+          </p>
         </div>
       </router-link>
       <router-link :to="{ path: '/off', query: { t: 2 } }" class="column is-one-quarter-tablet is-half-mobile has-text-centered has-text-grey"
         replace @click.native="overallClick(2)">
         <div>
           <p class="heading">To Approve</p>
-          <p class="title has-text-grey-light">{{ recommendedOffs }}</p>
+          <p class="title has-text-grey-light">
+            <template v-if="recommendedOffs !== null">{{ recommendedOffs }}</template>
+            <b-skeleton :active="recommendedOffs === null" width="3rem"></b-skeleton>
+          </p>
         </div>
       </router-link>
       <router-link :to="{ path: '/off' }" class="column is-half-tablet is-full-mobile has-text-centered"
         replace @click.native="overallClick(0)">
         <div>
           <p class="heading">Usable</p>
-          <p class="title has-text-info">{{ availableOffs }}</p>
+          <p class="title has-text-info">
+            <template v-if="availableOffs !== null">{{ availableOffs }}</template>
+            <b-skeleton :active="availableOffs === null" width="3rem"></b-skeleton>
+          </p>
         </div>
       </router-link>
       <!-- <div class="column is-one-quarter-tablet is-half-mobile has-text-centered">
@@ -140,16 +149,16 @@ export default {
   },
   computed: {
     totalOffs () {
-      return this.$store.getters['user/totalOffCount'] === null ? '...' : this.$store.getters['user/totalOffCount']
+      return this.$store.getters['user/totalOffCount']
     },
     availableOffs () {
-      return this.$store.getters['user/availableOffCount'] === null ? '...' : this.$store.getters['user/availableOffCount']
+      return this.$store.getters['user/availableOffCount']
     },
     pendingOffs () {
-      return this.$store.getters['user/pendingOffCount'] === null ? '...' : this.$store.getters['user/pendingOffCount']
+      return this.$store.getters['user/pendingOffCount']
     },
     recommendedOffs () {
-      return this.$store.getters['user/recommendedOffCount'] === null ? '...' : this.$store.getters['user/recommendedOffCount']
+      return this.$store.getters['user/recommendedOffCount']
     },
     filteredRecommending () {
       return this.commanders.filter((option) => {

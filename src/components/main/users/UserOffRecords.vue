@@ -1,5 +1,11 @@
 <template>
   <div>
+    <div class="columns user-buttons">
+      <div class="column">
+        <b-button tag="router-link" type="is-light" class="has-text-grey"
+          :to="{ name: 'UserDetailsRoot', params: { id: this.id } }" icon-left="chevron-left">Back to Profile</b-button>
+      </div>
+    </div>
     <h4 class="title is-4">Off Records</h4>
     <div class="mb">
       <div class="columns is-mobile is-multiline is-centered">
@@ -7,21 +13,30 @@
           @click="overallClick(1)">
           <div>
             <p class="heading">Recommending</p>
-            <p class="title has-text-grey-light">{{ pendingOffCount }}</p>
+            <p class="title has-text-grey-light">
+              <template v-if="!loading">{{ pendingOffCount }}</template>
+              <b-skeleton :active="loading" width="3rem"></b-skeleton>
+            </p>
           </div>
         </div>
         <div class="column is-one-quarter-tablet is-half-mobile has-text-centered has-text-grey"
           @click="overallClick(2)">
           <div>
             <p class="heading">To Approve</p>
-            <p class="title has-text-grey-light">{{ recommendedOffCount }}</p>
+            <p class="title has-text-grey-light">
+              <template v-if="!loading">{{ recommendedOffCount }}</template>
+              <b-skeleton :active="loading" width="3rem"></b-skeleton>
+            </p>
           </div>
         </div>
         <div class="column is-half-tablet is-full-mobile has-text-centered"
           @click="overallClick(0)">
           <div>
             <p class="heading">Usable</p>
-            <p class="title has-text-info">{{ availableOffCount }}</p>
+            <p class="title has-text-info">
+              <template v-if="!loading">{{ availableOffCount }}</template>
+              <b-skeleton :active="loading" width="3rem"></b-skeleton>
+            </p>
           </div>
         </div>
         <!-- <div class="column is-one-quarter-tablet is-half-mobile has-text-centered">

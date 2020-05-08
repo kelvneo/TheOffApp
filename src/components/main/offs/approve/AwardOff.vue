@@ -129,7 +129,7 @@ export default {
   computed: {
     filteredUsers () {
       const branch = this.$store.state.user.currentUser.branch
-      return this.branchOnly ? this.users.filter(val => val.branch === branch) : this.users
+      return this.users.filter(val => (!this.search || val.name.toLowerCase().indexOf(this.search.toLowerCase()) !== -1) && (!this.branchOnly || val.branch === branch))
     }
   },
   methods: {

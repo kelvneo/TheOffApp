@@ -5,18 +5,25 @@
         <ul>
           <li><router-link to="/users">Users</router-link></li>
           <li class="is-active">
-            <router-link :to="{ name: 'UserDetailsRoot', params: { id: this.id } }" aria-current="page">{{ details ? details.name : '...' }}</router-link>
+            <router-link :to="{ name: 'UserDetailsRoot', params: { id: this.id } }" aria-current="page">
+              <template v-if="details">{{ details.name }}</template>
+              <b-skeleton :active="!details"></b-skeleton>
+            </router-link>
           </li>
         </ul>
       </nav>
       <h2 class="title">
         <router-link :to="{ name: 'UserDetailsRoot', params: { id: this.id } }" aria-current="page" class="has-text-info">
-          {{ details ? details.name : '...' }}
+          <template v-if="details">{{ details.name }}</template>
+          <b-skeleton :active="!details"></b-skeleton>
         </router-link>
       </h2>
       <h4 class="subtitle">
-        {{ details ? details.depot + ' - ' + details.branch : '...' }}
-        <b-tag>ID: {{ details ? details.id : '...' }}</b-tag>
+        <template v-if="details">
+          {{ details.depot + ' - ' + details.branch  }}
+          <b-tag>ID: {{ details.id }}</b-tag>
+        </template>
+        <b-skeleton :active="!details"></b-skeleton>
       </h4>
       <router-view/>
       <!-- <b-loading :is-full-page="false" :active.sync="loading"></b-loading> -->

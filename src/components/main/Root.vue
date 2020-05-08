@@ -25,7 +25,10 @@
               <b-button type="is-info" tag="router-link" class="level-item" :to="{ path: '/off/pass' }">Details</b-button>
             </div>
           </div>
-          <div class="card" v-if="currentOffPass === null">
+          <div v-if="loadingOffPass">
+            <off-pass-card :user="currentUser" :users="user"></off-pass-card>
+          </div>
+          <div class="card" v-else-if="currentOffPass === null">
             <div class="card-content">
               <div class="content has-text-grey has-text-centered">
                 <p><b-icon icon="frown" size="is-large"></b-icon></p>
@@ -78,6 +81,9 @@ export default {
   computed: {
     currentOffPass () {
       return this.$store.state.user.offPass === null || this.$store.state.user.offPass.length === 0 ? null : this.$store.state.user.offPass[this.offPassIndex]
+    },
+    loadingOffPass () {
+      return this.$store.state.user.offPass === null
     },
     offPassCount () {
       return this.$store.state.user.offPass === null ? null : this.$store.state.user.offPass.length

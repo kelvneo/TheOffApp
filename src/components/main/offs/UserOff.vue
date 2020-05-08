@@ -21,7 +21,10 @@
             <div class="column is-half" v-for="o of off" :key="o.awardDate.seconds">
               <awarded-off-card :users="user" :offData="o" :showDetails="showDetails"></awarded-off-card>
             </div>
-            <div class="column" v-if="off.length === 0 ">
+            <div class="column is-half" v-if="loading">
+              <awarded-off-card :users="user"></awarded-off-card>
+            </div>
+            <div class="column" v-if="off.length === 0">
               <div class="box">
                 <h4 class="title is-4 has-text-centered has-text-grey">No Offs Found</h4>
               </div>

@@ -3,27 +3,47 @@
     <div class="card-content">
       <div class="content">
         <p class="has-text-centered">
-          <span class="title is-4">{{ initials }}</span><br/>
+          <span class="title is-4">
+            <template v-if="user">{{ initials }}</template>
+            <b-skeleton :active="!user"></b-skeleton>
+          </span><br/>
           <span class="subtitle is-6" :class="{
-            'has-text-info': offPass.description === 'Full Day Off',
-            'has-text-primary': offPass.description === 'Half Day Off',
-            'has-text-danger': offPass.description.startsWith('MA'),
-          }">
-            {{ offPass.description }}
+              'has-text-info': offPass && offPass.description === 'Full Day Off',
+              'has-text-primary': offPass && offPass.description === 'Half Day Off',
+              'has-text-danger': offPass && offPass.description.startsWith('MA'),
+            }">
+            <template v-if="offPass">{{ offPass.description }}</template>
+            <b-skeleton :active="!offPass"></b-skeleton>
           </span><br/>
         </p>
         <p class="has-text-centered">
-          <span class="title is-6">{{ momentSeconds(offPass.startDate.seconds) }}</span><br/>
-          <span class="subtitle is-6 has-text-grey-light">- To - </span><br/>
-          <span class="title is-6">{{ momentSeconds(offPass.endDate.seconds) }}</span>
+          <template v-if="offPass">
+            <span class="title is-6">{{ momentSeconds(offPass.startDate.seconds) }}</span><br/>
+            <span class="subtitle is-6 has-text-grey-light">- To - </span><br/>
+            <span class="title is-6">{{ momentSeconds(offPass.endDate.seconds) }}</span>
+          </template>
+          <b-skeleton :active="!offPass" :count="3"></b-skeleton>
         </p>
         <hr/>
         <p class="has-text-grey">
-          Approved By: <span class="title is-6 has-text-grey">{{ safeUser(offPass.approver) }}</span><br/>
-          <span class="is-size-7" v-if="showDetails">Approved Date: <span class="title is-7 has-text-grey">{{ momentSeconds(offPass.approvedDate.seconds) }}</span><br/><br/></span>
-          Recommended By: <span class="title is-6 has-text-grey">{{ safeUser(offPass.recommender) }}</span><br/>
-          <span class="is-size-7" v-if="showDetails">Recommended Date: <span class="title is-7 has-text-grey">{{ momentSeconds(offPass.recommendedDate.seconds) }}</span><br/></span>
-          <span class="is-size-7" v-if="showDetails">Request Date: <span class="title is-7 has-text-grey">{{ momentSeconds(offPass.requestDate.seconds) }}</span><br/></span>
+          <template v-if="offPass">
+            <span>
+              <template v-if="users[offPass.approver]">
+                Approved By: <span class="title is-6 has-text-grey">{{ safeUser(offPass.approver) }}</span>
+              </template>
+              <b-skeleton :active="!users[offPass.approver]"></b-skeleton>
+            </span><br/>
+            <span class="is-size-7" v-if="showDetails">Approved Date: <span class="title is-7 has-text-grey">{{ momentSeconds(offPass.approvedDate.seconds) }}</span><br/><br/></span>
+            <span>
+              <template v-if="users[offPass.recommender]">
+              Recommended By: <span class="title is-6 has-text-grey">{{ safeUser(offPass.recommender) }}</span>
+              </template>
+              <b-skeleton :active="!users[offPass.recommender]"></b-skeleton>
+            </span><br/>
+            <span class="is-size-7" v-if="showDetails">Recommended Date: <span class="title is-7 has-text-grey">{{ momentSeconds(offPass.recommendedDate.seconds) }}</span><br/></span>
+            <span class="is-size-7" v-if="showDetails">Request Date: <span class="title is-7 has-text-grey">{{ momentSeconds(offPass.requestDate.seconds) }}</span><br/></span>
+          </template>
+          <b-skeleton :active="!offPass" :count="showDetails ? 5 : 2"></b-skeleton>
         </p>
       </div>
     </div>

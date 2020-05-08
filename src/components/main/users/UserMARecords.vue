@@ -1,19 +1,31 @@
 <template>
   <div>
+    <div class="columns user-buttons">
+      <div class="column">
+        <b-button tag="router-link" type="is-light" class="has-text-grey"
+          :to="{ name: 'UserDetailsRoot', params: { id: this.id } }" icon-left="chevron-left">Back to Profile</b-button>
+      </div>
+    </div>
     <h4 class="title is-4">Pending MAs</h4>
     <div class="columns is-mobile is-multiline is-centered">
       <div class="column is-one-quarter-tablet is-half-mobile has-text-centered has-text-grey"
         @click="overallClick(0)">
         <div>
           <p class="heading">Recommending</p>
-          <p class="title has-text-grey-light">{{ pendingMACount }}</p>
+          <p class="title has-text-grey-light">
+            <template v-if="!loading">{{ pendingMACount }}</template>
+            <b-skeleton :active="loading" width="3rem"></b-skeleton>
+          </p>
         </div>
       </div>
       <div class="column is-one-quarter-tablet is-half-mobile has-text-centered has-text-grey"
         @click="overallClick(1)">
         <div>
           <p class="heading">To Approve</p>
-          <p class="title has-text-grey-light">{{ recommendedMACount }}</p>
+          <p class="title has-text-grey-light">
+            <template v-if="!loading">{{ recommendedMACount }}</template>
+            <b-skeleton :active="loading" width="3rem"></b-skeleton>
+          </p>
         </div>
       </div>
     </div>

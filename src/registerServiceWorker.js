@@ -22,7 +22,8 @@ if (process.env.NODE_ENV === 'production') {
     },
     updated () {
       Toast.open({
-        message: 'New update installed!'
+        message: 'Restart to finish update!',
+        position: 'is-bottom'
       })
       console.log('New content is available; please refresh.')
     },
