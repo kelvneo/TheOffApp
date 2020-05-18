@@ -78,7 +78,7 @@ export default {
   },
   methods: {
     momentSeconds (seconds) {
-      return moment.unix(seconds).format('DD MMM YY, HH:mmA')
+      return moment.unix(seconds).format('DD MMM YY, hhmm\\h\\r\\s')
     },
     nextTotalOffPass (limit = 10) {
     },

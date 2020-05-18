@@ -2,10 +2,11 @@
 <footer class="footer">
   <div class="content has-text-centered">
     <p>
-      <strong>The Off App</strong> by <a href="https://github.com/kelvneo">Kelvin Neo</a>.
+      <strong>The Off App</strong>
     </p>
+    <p><router-link :to="{ path: '/about' }">About</router-link></p>
     <p>
-      <router-link :to="{ path: '/about' }">About</router-link> - <span class="has-text-grey-light">20.05.08.1-alpha</span>
+      <span class="has-text-grey-light">20.05.19.1-beta</span>
     </p>
   </div>
 </footer>

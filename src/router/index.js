@@ -33,6 +33,7 @@ const UsersRoot = () => import(/* webpackChunkName: "group-users" */'../views/Us
 const UserList = () => import(/* webpackChunkName: "group-users" */'../components/main/users/UserList.vue')
 const UserDetails = () => import(/* webpackChunkName: "group-user" */ '../views/users/User.vue')
 const UserDetailsRoot = () => import(/* webpackChunkName: "group-user" */ '../components/main/users/UserDetails.vue')
+const UserDetailsEdit = () => import(/* webpackChunkName: "group-user" */ '../components/main/users/UserDetailsEdit.vue')
 const UserOffPassRecords = () => import(/* webpackChunkName: "group-user" */ '../components/main/users/UserOffPassRecords.vue')
 const UserOffRecords = () => import(/* webpackChunkName: "group-user" */ '../components/main/users/UserOffRecords.vue')
 const UserMARecords = () => import(/* webpackChunkName: "group-user" */ '../components/main/users/UserMARecords.vue')
@@ -204,6 +205,12 @@ const routes = [
                     path: '',
                     name: 'UserDetailsRoot',
                     component: UserDetailsRoot,
+                    props: true
+                  },
+                  {
+                    path: 'edit',
+                    name: 'UserDetailsEdit',
+                    component: UserDetailsEdit,
                     props: true
                   },
                   {

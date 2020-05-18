@@ -25,29 +25,33 @@
               <b-button type="is-info" tag="router-link" class="level-item" :to="{ path: '/off/pass' }">Details</b-button>
             </div>
           </div>
-          <div v-if="loadingOffPass">
-            <off-pass-card :user="currentUser" :users="user"></off-pass-card>
-          </div>
-          <div class="card" v-else-if="currentOffPass === null">
-            <div class="card-content">
-              <div class="content has-text-grey has-text-centered">
-                <p><b-icon icon="frown" size="is-large"></b-icon></p>
-                <p>No Off Pass Found</p>
+          <div class="columns is-centered">
+            <div class="column is-one-third">
+              <div v-if="loadingOffPass">
+                <off-pass-card :user="currentUser" :users="user"></off-pass-card>
               </div>
-            </div>
-          </div>
-          <div v-else>
-            <off-pass-card :user="currentUser" :users="user" :offPass="currentOffPass" ></off-pass-card>
-            <div class="columns is-mobile is-gapless">
-              <div class="column">
-                <b-button expanded :disabled="!offPassCount || offPassIndex <= 0" @click="offPassIndex--">
-                  <b-icon icon="chevron-left"></b-icon>
-                </b-button>
+              <div class="card" v-else-if="currentOffPass === null">
+                <div class="card-content">
+                  <div class="content has-text-grey has-text-centered">
+                    <p><b-icon icon="frown" size="is-large"></b-icon></p>
+                    <p>No Off Pass Found</p>
+                  </div>
+                </div>
               </div>
-              <div class="column">
-                <b-button expanded :disabled="!offPassCount || offPassIndex + 1 >= offPassCount" @click="offPassIndex++">
-                  <b-icon icon="chevron-right"></b-icon>
-                </b-button>
+              <div v-else>
+                <off-pass-card :user="currentUser" :users="user" :offPass="currentOffPass" ></off-pass-card>
+                <div class="columns is-mobile is-gapless">
+                  <div class="column">
+                    <b-button expanded :disabled="!offPassCount || offPassIndex <= 0" @click="offPassIndex--">
+                      <b-icon icon="chevron-left"></b-icon>
+                    </b-button>
+                  </div>
+                  <div class="column">
+                    <b-button expanded :disabled="!offPassCount || offPassIndex + 1 >= offPassCount" @click="offPassIndex++">
+                      <b-icon icon="chevron-right"></b-icon>
+                    </b-button>
+                  </div>
+                </div>
               </div>
             </div>
           </div>

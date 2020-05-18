@@ -77,7 +77,7 @@ export default {
       return this.users[val] ? this.users[val].initials : '...'
     },
     momentSeconds (seconds) {
-      return moment.unix(seconds).format('DD MMM YY, HH:mmA')
+      return moment.unix(seconds).format('DD MMM YY, HHmm\\h\\r\\s')
     }
   }
 }

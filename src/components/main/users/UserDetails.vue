@@ -17,7 +17,7 @@
     <h4 class="title is-4">Actions</h4>
     <div class="columns buttons" v-if="hasPerm('approve_users')">
       <div class="column">
-        <b-button type="is-warning" expanded icon-left="edit" disabled>Edit Details</b-button>
+        <b-button type="is-warning" tag="router-link" expanded icon-left="edit" :to="{ name: 'UserDetailsEdit', params: { id: this.id } }">Edit Details</b-button>
       </div>
       <div class="column">
         <b-button type="is-danger" expanded icon-left="user-slash" disabled>Delete User</b-button>

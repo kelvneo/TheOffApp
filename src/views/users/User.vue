@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <section class="section">
-      <nav class="breadcrumb" aria-label="breadcrumbs">
+      <nav class="breadcrumb" aria-label="breadcrumbs" v-if="hasPerm('cos')">
         <ul>
           <li><router-link to="/users">Users</router-link></li>
           <li class="is-active">

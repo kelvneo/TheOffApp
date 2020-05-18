@@ -170,6 +170,14 @@ const actions = {
     return firebase.firestore().collection('users').doc(data.id).set(data.data)
   },
   /**
+   * Update an approved user.
+   * @param {*} context Vuex Context
+   * @param {*} data Payload, consisting of `{id: string, data: any}`
+   */
+  updateUser (context, data) {
+    return firebase.firestore().collection('users').doc(data.id).update(data.data)
+  },
+  /**
    * Get the permissions assigned to a user
    * @param {*} context Vuex context
    * @param {*} id The ID of the user to check
