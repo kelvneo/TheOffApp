@@ -36,6 +36,7 @@ service cloud.firestore {
     }
     match /constants/{multiSegment=**} {
     	allow read: if isVerified();
+    	allow read, write: if request.auth.uid != null && exists(/databases/$(database)/documents/users/$(request.auth.uid)/perms/approve_users);
     }
     match /pending_offs/{uid} {
     		allow create: if request.auth.uid != null && request.auth.uid == request.resource.data.requester;

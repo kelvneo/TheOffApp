@@ -186,6 +186,46 @@ const actions = {
     return firebase.firestore().collection('users').doc(id).collection('perms').get()
   },
   /**
+   * Delete the user's permission.
+   *
+   * Set the data field as the permission you wish to delete.
+   * @param {*} context Vuex Context
+   * @param {*} data Payload, consisting of `{id: string, data: string}`
+   */
+  deleteUserPermission (context, data) {
+    return firebase.firestore().collection('users').doc(data.id).collection('perms').doc(data.data).delete()
+  },
+  /**
+   * Add a permission to the user.
+   *
+   * Set the data field as the permission you wish to add.
+   * @param {*} context Vuex Context
+   * @param {*} data Payload, consisting of `{id: string, data: string}`
+   */
+  addUserPermission (context, data) {
+    return firebase.firestore().collection('users').doc(data.id).collection('perms').doc(data.data).set({})
+  },
+  /**
+   * Add the user as commander for a depot.
+   * @param {*} context Vuex Context
+   * @param {*} data Payload, consisting of `{id: string, depot: string}`
+   */
+  addCommander (context, data) {
+    const payload = {}
+    payload[data.depot] = firebase.firestore.FieldValue.arrayUnion(data.id)
+    return firebase.firestore().collection('constants').doc('commanders').update(payload)
+  },
+  /**
+   * Remove the user as commander for a depot.
+   * @param {*} context Vuex Context
+   * @param {*} data Payload, consisting of `{id: string, depot: string}`
+   */
+  removeCommander (context, data) {
+    const payload = {}
+    payload[data.depot] = firebase.firestore.FieldValue.arrayRemove(data.id)
+    return firebase.firestore().collection('constants').doc('commanders').update(payload)
+  },
+  /**
    * Get the unexpired offs the user has, ignoring pending recommendation and approval offs.
    *
    * This function will call firebase if no local version is found.

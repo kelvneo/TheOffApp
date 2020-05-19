@@ -45,6 +45,25 @@
           </template>
           <b-skeleton :active="!offPass" :count="showDetails ? 5 : 2"></b-skeleton>
         </p>
+        <div v-if="isApprover">
+          <template v-if="offPass">
+            <div class="columns buttons">
+              <div class="column" v-if="!offPass.description.startsWith('MA')">
+                <b-button type="is-success" outlined size="is-small" expanded icon-left="donate" disabled>Cancel & Refund</b-button>
+              </div>
+              <div class="column">
+                <b-button type="is-danger" outlined size="is-small" expanded icon-left="trash" disabled>Delete Off Pass</b-button>
+              </div>
+            </div>
+          </template>
+          <b-skeleton :active="!offPass" :count="1"></b-skeleton>
+        </div>
+        <div v-else-if="isUser">
+          <template v-if="offPass">
+            <b-button type="is-danger" outlined size="is-small" expanded icon-left="times" disabled>Cancel Off Pass</b-button>
+          </template>
+          <b-skeleton :active="!offPass" :count="1"></b-skeleton>
+        </div>
       </div>
     </div>
   </div>
@@ -70,6 +89,12 @@ export default {
     },
     initials () {
       return this.user.initials
+    },
+    isUser () {
+      return this.offPass && this.user && (this.user.id === this.$store.getters['credentials/id'])
+    },
+    isApprover () {
+      return this.offPass && this.offPass.approver === this.$store.getters['credentials/id']
     }
   },
   methods: {
