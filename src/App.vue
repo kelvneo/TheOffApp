@@ -48,7 +48,9 @@ export default {
         this.$store.dispatch('user/getUser', user.uid).then((u) => {
           if (u.exists) {
             this.$store.commit('credentials/setLoading', false)
-            this.$store.commit('user/setCurrentUser', u.data())
+            const ud = u.data()
+            ud.id = user.uid
+            this.$store.commit('user/setCurrentUser', ud)
           } else { // If the user does not exist in the database, check if there is a temporary user.
             this.$store.dispatch('user/getTempUser', user.uid).then((tu) => {
               this.$store.commit('credentials/setLoading', false)
@@ -82,7 +84,7 @@ $loading-background-legacy: #000000;
 }
 
 .mb {
-  margin-bottom: 2rem;
+  margin-bottom: 2rem !important;
 }
 .b-table {
   margin-bottom: 1.5rem;

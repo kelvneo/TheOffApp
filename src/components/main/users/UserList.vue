@@ -2,67 +2,63 @@
   <div class="container">
     <section class="section">
       <h2 class="title">Manage Users</h2>
-      <b-message type="is-warning" role="alert" title="Work In Progress" :closable="false" size="is-small">
-        This page is a work-in-progress. Do check back for more details.
-      </b-message>
-      <div class="columns is-gapless">
-        <div class="field column">
-          <b-switch v-model="showDetails">
-            Show Extra Details
-          </b-switch>
+      <div class="columns is-multiline">
+        <div class="column is-full">
+          <b-field label="Search">
+            <b-input type="text" v-model="search" placeholder="Search a Name" :disabled="loading" :loading="loading">
+            </b-input>
+          </b-field>
         </div>
-        <div class="field column is-hidden-tablet">
-          <b-switch v-model="tableForm">
-            Table Mode
-          </b-switch>
+        <div class="column is-full">
+          <b-field>
+            <b-switch v-model="branchOnly">
+              Show Branch Only
+            </b-switch>
+          </b-field>
         </div>
       </div>
-      <b-table :data="users" :loading="loading" :mobile-cards="!tableForm">
-        <template slot-scope="props">
-          <b-table-column field="name" label="Name" sortable searchable>
-            <router-link class="user-link" :to="{ name: 'UserDetailsRoot', params: { id: props.row.id } }">{{ props.row.name }}</router-link>
-          </b-table-column>
-          <b-table-column field="initials" label="Initials" sortable searchable>
-            {{ props.row.initials }}
-          </b-table-column>
-          <b-table-column field="depot" label="Depot" sortable searchable>
-            {{ props.row.depot }}
-          </b-table-column>
-          <b-table-column field="branch" label="Branch" sortable searchable>
-            {{ props.row.branch }}
-          </b-table-column>
-          <b-table-column field="phoneNumber" label="Phone Number" sortable searchable>
-            {{ props.row.phoneNumber }}
-          </b-table-column>
-          <b-table-column field="id" label="ID" searchable>
-            <span class="is-size-7 is-family-code">{{ props.row.id }}</span>
-          </b-table-column>
-        </template>
-        <template slot="empty">
-          <section class="section">
-            <div class="content has-text-grey has-text-centered">
-              <p>
-                <b-icon icon="question-circle" size="is-large">
-                </b-icon>
-              </p>
-              <p>No users found.</p>
-            </div>
-          </section>
-        </template>
-      </b-table>
+
+      <div class="columns is-multiline user-list" v-if="users">
+        <div class="column is-half" v-for="user of filteredUsers" :key="user.id">
+          <UserListItemCard :user.sync="user" :loading="loading" :showDetails="showDetails"></UserListItemCard>
+        </div>
+        <div class="column" v-if="users.length === 0 ">
+          <div class="box">
+            <h4 class="title is-4 has-text-centered has-text-grey">No Users Found</h4>
+          </div>
+        </div>
+      </div>
+      <div class="columns is-multiline user-list" v-else>
+        <div class="column is-half">
+          <UserListItemCard :loading="loading"></UserListItemCard>
+        </div>
+      </div>
     </section>
   </div>
 </template>
 
 <script>
+import UserListItemCard from './UserListItemCard.vue'
+
 export default {
   name: 'UserList',
+  components: {
+    UserListItemCard
+  },
   data () {
     return {
       loading: true,
       showDetails: false,
       tableForm: false,
-      users: []
+      users: null,
+      branchOnly: false,
+      search: ''
+    }
+  },
+  computed: {
+    filteredUsers () {
+      const branch = this.$store.state.user.currentUser.branch
+      return this.users.filter(val => (!this.search || val.name.toLowerCase().indexOf(this.search.toLowerCase()) !== -1) && (!this.branchOnly || val.branch === branch))
     }
   },
   methods: {

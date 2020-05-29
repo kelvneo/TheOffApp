@@ -14,7 +14,7 @@
       </div>
     </div>
     <div class="columns is-mobile is-multiline is-centered">
-      <router-link :to="{ path: '/off', query: { t: 1 } }"  class="column is-one-quarter-tablet is-half-mobile has-text-centered has-text-grey"
+      <router-link :to="{ path: '/off', query: { t: 1 } }"  class="column is-half has-text-centered has-text-grey"
         replace @click.native="overallClick(1)">
         <div>
           <p class="heading">Recommending</p>
@@ -24,7 +24,7 @@
           </p>
         </div>
       </router-link>
-      <router-link :to="{ path: '/off', query: { t: 2 } }" class="column is-one-quarter-tablet is-half-mobile has-text-centered has-text-grey"
+      <router-link :to="{ path: '/off', query: { t: 2 } }" class="column is-half has-text-centered has-text-grey"
         replace @click.native="overallClick(2)">
         <div>
           <p class="heading">To Approve</p>
@@ -34,7 +34,7 @@
           </p>
         </div>
       </router-link>
-      <router-link :to="{ path: '/off' }" class="column is-half-tablet is-full-mobile has-text-centered"
+      <router-link :to="{ path: '/off' }" class="column is-full has-text-centered"
         replace @click.native="overallClick(0)">
         <div>
           <p class="heading">Usable</p>
@@ -55,12 +55,12 @@
       <form class="box">
         <h4 class="title is-5">Apply Off</h4>
         <div class="columns is-mobile is-multiline">
-          <b-field class="column is-half-desktop is-full-mobile" label="Date" horizontal>
+          <b-field class="column is-full" label="Date" horizontal>
             <b-datepicker placeholder="Click to select..." icon="calendar" :mobile-native="false" :disabled="submitting"
               :min-date="minDate" v-model="startDate" :unselectable-days-of-week="[0, 6]" :events="blockedDates">
             </b-datepicker>
           </b-field>
-          <b-field class="column is-half-desktop is-full-mobile" label="Time" horizontal>
+          <b-field class="column is-full" label="Time" horizontal>
             <b-radio-button v-model="startMeridies" :disabled="availableOffs < 1 || submitting || pmOnly"
               native-value="FD">
               <span>Full Day</span>
@@ -74,13 +74,13 @@
               <span>PM Only</span>
             </b-radio-button>
           </b-field>
-          <b-field label="Recommending" class="column is-half-desktop is-full-mobile" horizontal>
+          <b-field label="Recommending" class="column is-full" horizontal>
             <b-autocomplete
               v-model="recommendingField" :disabled="commandersLoading || submitting" :loading="commandersLoading" placeholder="e.g. Anne"
               :open-on-focus="true" :data="filteredRecommending" field="name" @select="option => recommending = option">
             </b-autocomplete>
           </b-field>
-          <b-field label="Approving" class="column is-half-desktop is-full-mobile" horizontal>
+          <b-field label="Approving" class="column is-full" horizontal>
             <b-autocomplete
               v-model="approvingField" :disabled="commandersLoading || submitting" :loading="commandersLoading" placeholder="e.g. Anne"
               :open-on-focus="true" :data="filteredApproving" field="name" @select="option => approving = option">

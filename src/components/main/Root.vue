@@ -15,18 +15,33 @@
     <section class="section">
       <div class="container">
         <div class="container">
-          <OverallUserOffs class="mb"></OverallUserOffs>
-          <OverallUserMAs class="mb"></OverallUserMAs>
-          <div class="level is-mobile">
-            <div class="level-left">
-              <h4 class="level-item title is-4">Off Pass</h4>
+          <h4 class="title is-5">Quick Links</h4>
+          <div class="columns is-mobile is-multiline user-buttons is-variable is-1 mb">
+            <div class="column is-half-mobile is-one-quarter-desktop" v-if="hasPerm('approve_off')">
+              <b-button tag="router-link" type="is-info" outlined expanded icon-left="tag" :to="{ name: 'ApproveOff' }">Approve Off</b-button>
             </div>
-            <div class="level-right">
-              <b-button type="is-info" tag="router-link" class="level-item" :to="{ path: '/off/pass' }">Details</b-button>
+            <div class="column is-half-mobile is-one-quarter-desktop" v-if="hasPerm('approve_off')">
+              <b-button tag="router-link" type="is-info" outlined expanded icon-left="notes-medical" :to="{ name: 'ApproveMA' }">Approve MA</b-button>
+            </div>
+            <div class="column is-half-mobile is-one-quarter-desktop" v-if="hasPerm('recommend_off')">
+              <b-button tag="router-link" type="is-success" outlined expanded icon-left="tag" :to="{ name: 'RecommendOff' }">Recommend Off</b-button>
+            </div>
+            <div class="column is-half-mobile is-one-quarter-desktop" v-if="hasPerm('recommend_off')">
+              <b-button tag="router-link" type="is-success" outlined expanded icon-left="notes-medical" :to="{ name: 'RecommendMA' }">Recommend MA</b-button>
+            </div>
+            <div class="column is-half-mobile is-one-quarter-desktop">
+              <b-button tag="router-link" expanded icon-left="list" :to="{ name: 'UserOff' }">Stockcard </b-button>
+            </div>
+            <div class="column is-half-mobile is-one-quarter-desktop">
+              <b-button tag="router-link" expanded icon-left="address-card" :to="{ name: 'UserOffPass' }">Off Pass</b-button>
             </div>
           </div>
-          <div class="columns is-centered">
-            <div class="column is-one-third">
+          <hr/>
+          <div class="columns is-centered mb">
+            <div class="column">
+              <div class="level is-mobile">
+                <h4 class="level-item title is-4">Upcoming Off Pass</h4>
+              </div>
               <div v-if="loadingOffPass">
                 <off-pass-card :user="currentUser" :users="user"></off-pass-card>
               </div>
@@ -54,6 +69,8 @@
                 </div>
               </div>
             </div>
+            <OverallUserOffs class="column"></OverallUserOffs>
+            <OverallUserMAs class="column"></OverallUserMAs>
           </div>
         </div>
       </div>
@@ -65,6 +82,7 @@
 import OverallUserOffs from './offs/OverallUserOffs.vue'
 import OverallUserMAs from './offs/OverallUserMAs.vue'
 import OffPassCard from './offs/OffPassCard.vue'
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'Root',
@@ -98,7 +116,11 @@ export default {
     },
     currentUser () {
       return this.$store.state.user.currentUser
-    }
+    },
+    ...mapGetters({
+      hasPerm: 'user/hasPermission'
+      // ...
+    })
   },
   methods: {
   },
