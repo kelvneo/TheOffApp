@@ -266,3 +266,30 @@ exports.pendingAwardApprovingNotification = functions.firestore.document('recomm
   })
   return Promise.all(removeTokenPromises);
 })
+
+exports.changeUserStatus = functions.https.onCall(async (data, context) => {
+  const uid = context.auth.uid;
+  const perm = await db.collection('users').doc(uid).collection('perms').doc('approve_users').get();
+  if (perm.exists) {
+    if (data.id) {
+      const id = data.id;
+      const disabled = !!data.disabled;
+      const res = await db.collection('users').doc(id).update({
+        disabled: disabled
+      });
+      return admin.auth().updateUser(id, {
+        disabled: disabled
+      });
+    } else {
+      return {
+        success: false,
+        message: 'Invalid payload.'
+      }
+    }
+  } else {
+    return {
+      success: false,
+      message: 'Insufficient permissions.'
+    };
+  }
+})

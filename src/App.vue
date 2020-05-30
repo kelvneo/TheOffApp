@@ -93,4 +93,7 @@ $loading-background-legacy: #000000;
   text-decoration: underline dotted;
   color: initial;
 }
+.user-buttons > .column {
+  padding: 0.25rem 0.75rem;
+}
 </style>

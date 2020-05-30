@@ -205,7 +205,7 @@ export default {
           temp.push(payload)
         }
         const branch = this.$store.state.user.currentUser.branch
-        this.users = temp.sort((a, b) => {
+        this.users = temp.filter(val => !val.disabled).sort((a, b) => {
           if ((a.branch === branch && b.branch === branch)) {
             return a.name > b.name ? 1 : -1
           } else if (a.branch === branch) {

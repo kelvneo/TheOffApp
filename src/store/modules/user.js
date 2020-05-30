@@ -1,5 +1,6 @@
 import firebase from 'firebase/app'
 import 'firebase/firestore'
+import 'firebase/functions'
 
 const state = {
   currentUser: null,
@@ -176,6 +177,16 @@ const actions = {
    */
   updateUser (context, data) {
     return firebase.firestore().collection('users').doc(data.id).update(data.data)
+  },
+  /**
+   * Change the status of an approved user.
+   *
+   * Used for disabling or enabling a user.
+   * @param {*} context Vuex Context
+   * @param {*} data Payload, consisting of `{id: string, disabled: boolean}`
+   */
+  changeUserStatus (context, data) {
+    return firebase.functions().httpsCallable('changeUserStatus')(data)
   },
   /**
    * Get the permissions assigned to a user

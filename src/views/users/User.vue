@@ -13,8 +13,11 @@
         </ul>
       </nav>
       <h2 class="title">
-        <router-link :to="{ name: 'UserDetailsRoot', params: { id: this.id } }" aria-current="page" class="has-text-info">
-          <template v-if="details">{{ details.name }}</template>
+        <router-link :to="{ name: 'UserDetailsRoot', params: { id: this.id } }" aria-current="page" :class="{
+            'has-text-danger': details && details.disabled,
+            'has-text-info': details && !details.disabled
+          }">
+          <template v-if="details">{{ details.name }} <b-tag type="is-danger" v-if="details && details.disabled"><b-icon type="is-white" icon="ban" size="is-small"></b-icon></b-tag></template>
           <b-skeleton :active="!details"></b-skeleton>
         </router-link>
       </h2>
@@ -86,6 +89,4 @@ export default {
   margin-left: 0.5rem
 .id
   text-overflow: ellipsis
-.user-buttons > .column
-  padding: 0.25rem 0.75rem
 </style>

@@ -10,9 +10,14 @@
           </b-field>
         </div>
         <div class="column is-full">
-          <b-field>
+          <b-field class="is-marginless">
             <b-switch v-model="branchOnly">
               Show Branch Only
+            </b-switch>
+          </b-field>
+          <b-field>
+            <b-switch v-model="showDetails">
+              Show ID
             </b-switch>
           </b-field>
         </div>
@@ -22,7 +27,7 @@
         <div class="column is-half" v-for="user of filteredUsers" :key="user.id">
           <UserListItemCard :user.sync="user" :loading="loading" :showDetails="showDetails"></UserListItemCard>
         </div>
-        <div class="column" v-if="users.length === 0 ">
+        <div class="column" v-if="filteredUsers.length === 0 ">
           <div class="box">
             <h4 class="title is-4 has-text-centered has-text-grey">No Users Found</h4>
           </div>
@@ -74,7 +79,9 @@ export default {
         }
         const branch = this.$store.state.user.currentUser.branch
         this.users = temp.sort((a, b) => {
-          if ((a.branch === branch && b.branch === branch)) {
+          if (!!a.disabled !== !!b.disabled) {
+            return a.disabled ? 1 : -1
+          } else if ((a.branch === branch && b.branch === branch)) {
             return a.name > b.name ? 1 : -1
           } else if (a.branch === branch) {
             return -1

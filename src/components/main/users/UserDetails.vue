@@ -11,16 +11,14 @@
         <a :href="'tel:' + details.phoneNumber" class="detail" v-else>{{ details.phoneNumber }}</a>
       </div>
     </div>
-    <b-message type="is-warning" role="alert" title="Work In Progress" :closable="false" size="is-small">
-      This page is a work-in-progress. Do check back for more details.
-    </b-message>
-    <h4 class="title is-4">Actions</h4>
+    <!-- <h4 class="title is-4">Actions</h4> -->
     <div class="columns buttons" v-if="hasPerm('approve_users')">
       <div class="column">
         <b-button type="is-warning" tag="router-link" expanded icon-left="edit" :to="{ name: 'UserDetailsEdit', params: { id: this.id } }">Edit Details</b-button>
       </div>
       <div class="column">
-        <b-button type="is-danger" expanded icon-left="user-slash" disabled>Delete User</b-button>
+        <b-button type="is-danger" :disabled="loading || isCurrentUser" :loading="loading" expanded icon-left="user-slash" v-if="details && !details.disabled" @click="changeUserStatus">Disable User</b-button>
+        <b-button type="is-success" :disabled="loading || isCurrentUser" :loading="loading" expanded icon-left="user" v-else-if="details" @click="changeUserStatus">Enable User</b-button>
       </div>
     </div>
     <div class="columns user-buttons">
@@ -52,15 +50,46 @@ export default {
     }
   },
   computed: {
+    isCurrentUser () {
+      return this.id === this.$store.getters['credentials/id']
+    },
     ...mapGetters({
       hasPerm: 'user/hasPermission'
       // ...
     })
   },
   methods: {
-    reset () {
+    changeUserStatus () {
       this.loading = true
-      this.$store.dispatch('common/getUser', this.id).then((val) => {
+      this.$store.dispatch('user/changeUserStatus', {
+        id: this.id,
+        disabled: !this.details.disabled
+      }).then((val) => {
+        if (val.data.success === false) {
+          this.$buefy.notification.open({
+            message: 'Unable to change user status',
+            type: 'is-danger'
+          })
+          console.error(val)
+        } else {
+          this.$buefy.notification.open({
+            message: 'Successfully changed user status',
+            type: 'is-success'
+          })
+        }
+        this.reset(true)
+      }).catch((err) => {
+        console.error(err)
+        this.$buefy.notification.open({
+          message: 'Unable to change user status',
+          type: 'is-danger'
+        })
+        this.reset()
+      })
+    },
+    reset (reset) {
+      this.loading = true
+      this.$store.dispatch(reset ? 'common/updateUser' : 'common/getUser', this.id).then((val) => {
         this.loading = false
         if (val) {
           this.details = val

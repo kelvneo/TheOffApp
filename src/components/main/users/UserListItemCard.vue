@@ -6,16 +6,20 @@
           <p class="subtitle is-7">
             <template v-if="user">
               <b-taglist attached>
+                <b-tag rounded type="is-danger" class="is-light" v-if="user.disabled"><b-icon type="is-white" icon="ban" size="is-small"></b-icon></b-tag>
                 <b-tag rounded type="is-primary" class="is-light">{{ user.depot }}</b-tag>
                 <b-tag rounded type="is-info" class="is-light">{{ user.branch }}</b-tag>
               </b-taglist>
             </template>
             <b-skeleton :active="!user"></b-skeleton>
           </p>
-          <p class="title is-4">
+          <p class="title is-4 less-mb" :class="{
+            'has-text-grey-lighter': user && user.disabled
+          }">
             <template v-if="user">{{ user.name }}</template>
             <b-skeleton :active="!user"></b-skeleton>
           </p>
+          <b-tag v-if="showDetails" type="is-grey" class="is-light" size="is-small">{{ user.id }}</b-tag>
         </div>
         <div class="column is-narrow">
           <div class="level-item has-text-centered">
