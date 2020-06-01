@@ -55,7 +55,7 @@
             </b-radio-button>
           </b-field>
           <b-field label="Location" class="column is-full" horizontal>
-            <b-input v-model="location" :disabled="submitting || pmOnly" placeholder="Changi General Hospital"></b-input>
+            <b-input v-model="location" :disabled="submitting" placeholder="Changi General Hospital"></b-input>
           </b-field>
           <b-field label="Recommending" class="column is-full" horizontal>
             <b-autocomplete
