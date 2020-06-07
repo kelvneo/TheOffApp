@@ -9,12 +9,14 @@
             Please fill in some information for us.
         </h2>
         <form action=""  v-on:submit.prevent>
-          <b-field :type="error ? 'is-danger' : ''"  :message="error" label="Rank and Name" custom-class="has-text-light" horizontal>
+          <b-field :type="error ? 'is-danger' : ''"  :message="error" label="Name / Initials" custom-class="has-text-light" horizontal>
             <b-field class="columns is-mobile is-gapless">
-              <b-autocomplete v-model="rank" placeholder="3SG" :open-on-focus="true" :data="filteredRankArray"
+              <!-- <b-autocomplete v-model="rank" placeholder="3SG" :open-on-focus="true" :data="filteredRankArray"
               @select="option => rank = option" :keep-first="true" :disabled="loading" :loading="loading" class="column is-4">
-              </b-autocomplete>
-              <b-input placeholder="John Tan" v-model="name" expanded focus :disabled="loading" :loading="loading" class="column is-8">
+              </b-autocomplete> -->
+              <b-input placeholder="John Tan" v-model="name" expanded focus :disabled="loading" :loading="loading" class="column is-7">
+              </b-input>
+              <b-input placeholder="A G Tan" v-model="initials" expanded focus :disabled="loading" :loading="loading" class="column is-5">
               </b-input>
             </b-field>
           </b-field>
@@ -59,11 +61,11 @@ export default {
   },
   data () {
     return {
-      ranks: [
-        'MR.', 'MRS.', 'MS.', 'MDM.', 'DR.', 'GEN', 'ADM', 'LG', 'VADM', 'MG', 'RADM2', 'BG', 'RADM1', 'ME8', 'COL', 'ME7', 'SLTC', 'LTC', 'ME6', 'MAJ', 'ME5',
-        'CPT', 'ME4', 'LTA', '2LT', 'CWO', 'SWO', 'MWO', '1WO', 'ME3', '2WO', '3WO', 'MSG', 'ME2', 'SSG', '1SG', '2SG', 'ME1',
-        '3SG', 'CFC', 'CPL', 'LCP', 'PFC', 'PTE', 'REC'
-      ].reverse(),
+      // ranks: [
+      //   'MR.', 'MRS.', 'MS.', 'MDM.', 'DR.', 'GEN', 'ADM', 'LG', 'VADM', 'MG', 'RADM2', 'BG', 'RADM1', 'ME8', 'COL', 'ME7', 'SLTC', 'LTC', 'ME6', 'MAJ', 'ME5',
+      //   'CPT', 'ME4', 'LTA', '2LT', 'CWO', 'SWO', 'MWO', '1WO', 'ME3', '2WO', '3WO', 'MSG', 'ME2', 'SSG', '1SG', '2SG', 'ME1',
+      //   '3SG', 'CFC', 'CPL', 'LCP', 'PFC', 'PTE', 'REC'
+      // ].reverse(),
       depots: {
         'HQ GSAB': ['MP/Logs', 'S3', 'CO/RSM', 'TAD']
         // 'PAD': ['TSU', 'Cluster', 'DCC', 'Orderly'],
@@ -71,8 +73,9 @@ export default {
         // 'PYAD': ['Storage', 'DCC', 'Orderly'],
         // 'RO': ['Hendon', 'Tekong', 'Nee Soon']
       },
-      rank: '',
+      // rank: '',
       name: '',
+      initials: '',
       depot: '',
       branch: '',
       loading: false,
@@ -80,22 +83,22 @@ export default {
     }
   },
   computed: {
-    filteredRankArray () {
-      return this.ranks.filter(option => !this.rank || option
-        .toString()
-        .toUpperCase()
-        .indexOf(this.rank.toUpperCase()) >= 0)
-    }
+    // filteredRankArray () {
+    //   return this.ranks.filter(option => !this.rank || option
+    //     .toString()
+    //     .toUpperCase()
+    //     .indexOf(this.rank.toUpperCase()) >= 0)
+    // }
   },
   methods: {
     submit () {
       this.loading = true
       this.error = ''
-      if (this.rank && this.name && this.depot && this.branch) {
+      if (this.initials && this.name && this.depot && this.branch) {
         this.$store.dispatch('user/createTempUser', {
           id: this.$store.state.credentials.user.uid,
           data: {
-            rank: this.rank,
+            initials: this.initials,
             name: this.name,
             depot: this.depot,
             branch: this.branch,

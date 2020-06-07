@@ -6,9 +6,6 @@
         <b-progress size="is-small" v-if="loading"></b-progress>
         <b-table :data="tempUsers" :loading="loading">
           <template slot-scope="props">
-            <b-table-column field="rank" label="Rank">
-              {{ props.row.rank }}
-            </b-table-column>
             <b-table-column field="name" label="Name">
               {{ props.row.name }}
             </b-table-column>
@@ -76,7 +73,6 @@ export default {
         const payload = {
           id: user.row.id,
           data: {
-            rank: user.row.rank,
             name: user.row.name,
             depot: user.row.depot,
             branch: user.row.branch,
@@ -136,7 +132,6 @@ export default {
       snapshot.forEach(doc => {
         const data = doc.data()
         data['id'] = doc.id
-        data['initials'] = ''
         this.tempUsers.push(data)
       })
       this.loading = false

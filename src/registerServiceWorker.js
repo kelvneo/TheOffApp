@@ -5,11 +5,30 @@ import { ToastProgrammatic as Toast } from 'buefy'
 
 if (process.env.NODE_ENV === 'production') {
   register(`${process.env.BASE_URL}service-worker.js`, {
-    ready () {
+    ready (registered) {
       console.log(
         'App is being served from cache by a service worker.\n' +
         'For more details, visit https://goo.gl/AFskqB'
       )
+      registered.addEventListener('notificationclick', function (event) {
+        console.log('On notification click: ', event.notification.tag)
+        event.notification.close()
+        // This looks to see if the current is already open and
+        // focuses if it is
+        event.waitUntil(registered.clients.matchAll({
+          type: 'window'
+        }).then(function (clientList) {
+          for (var i = 0; i < clientList.length; i++) {
+            var client = clientList[i]
+            if (registered.client.url === '/' && 'focus' in client) {
+              return registered.client.focus()
+            }
+          }
+          if (registered.clients.openWindow) {
+            return registered.clients.openWindow('/')
+          }
+        }))
+      })
     },
     registered () {
       console.log('Service worker has been registered.')
