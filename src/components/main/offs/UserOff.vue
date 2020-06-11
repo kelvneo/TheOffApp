@@ -2,9 +2,9 @@
   <div class="container">
     <section class="section">
       <h2 class="title">Your Off Stockcard</h2>
-      <div class="columns">
-        <OverallUserOffs class="column" v-on:off-applied="reset(true)" v-on:click-item="activeTab = $event"></OverallUserOffs>
-        <OverallUserMAs class="column" v-on:ma-applied="reset(true)" v-on:click-item="activeTab = $event"></OverallUserMAs>
+      <div class="columns is-centered">
+        <OverallUserOffs class="column is-8" v-on:off-applied="reset(true)" v-on:click-item="activeTab = $event"></OverallUserOffs>
+        <!-- <OverallUserMAs class="column" v-on:ma-applied="reset(true)" v-on:click-item="activeTab = $event"></OverallUserMAs> -->
       </div>
       <div class="columns is-gapless">
         <div class="field column">
@@ -244,14 +244,12 @@
 <script>
 import moment from 'moment'
 import OverallUserOffs from './OverallUserOffs.vue'
-import OverallUserMAs from './OverallUserMAs.vue'
 import AwardedOffCard from './AwardedOffCard.vue'
 
 export default {
   name: 'UserOff',
   components: {
     OverallUserOffs,
-    OverallUserMAs,
     AwardedOffCard
   },
   data () {

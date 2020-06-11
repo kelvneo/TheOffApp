@@ -23,8 +23,8 @@
           <off-pass-card :users="user" :showDetails="showDetails"></off-pass-card>
         </div>
         <div class="column is-one-third" v-else-if="!offPass.length">
-          <div class="card">
-            <div class="card-content">
+          <div class="box">
+            <div class="">
               <div class="content has-text-grey has-text-centered">
                 <p><b-icon icon="frown" size="is-large"></b-icon></p>
                 <p>No Off Pass Found</p>

@@ -57,8 +57,3 @@ export default {
   }
 }
 </script>
-
-<style lang="sass">
-.less-mb
-  margin-bottom: 0.75rem!important
-</style>

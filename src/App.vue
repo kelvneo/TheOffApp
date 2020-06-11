@@ -96,4 +96,7 @@ $loading-background-legacy: #000000;
 .user-buttons > .column {
   padding: 0.25rem 0.75rem;
 }
+.less-mb {
+  margin-bottom: 0.75rem !important;
+}
 </style>

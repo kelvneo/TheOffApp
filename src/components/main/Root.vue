@@ -37,16 +37,22 @@
             </div>
           </div>
           <hr/>
-          <div class="columns is-centered mb">
-            <div class="column">
+          <div class="columns is-centered">
+            <div class="column is-8 mb">
+              <div class="level is-mobile">
+                <h4 class="level-item title is-4">Your Offs / MAs</h4>
+              </div>
+              <OverallUserOffs></OverallUserOffs>
+            </div>
+            <div class="column is-4 mb">
               <div class="level is-mobile">
                 <h4 class="level-item title is-4">Upcoming Off Pass</h4>
               </div>
               <div v-if="loadingOffPass">
                 <off-pass-card :user="currentUser" :users="user"></off-pass-card>
               </div>
-              <div class="card" v-else-if="currentOffPass === null">
-                <div class="card-content">
+              <div class="box" v-else-if="currentOffPass === null">
+                <div class="">
                   <div class="content has-text-grey has-text-centered">
                     <p><b-icon icon="frown" size="is-large"></b-icon></p>
                     <p>No Off Pass Found</p>
@@ -54,7 +60,7 @@
                 </div>
               </div>
               <div v-else>
-                <off-pass-card :user="currentUser" :users="user" :offPass="currentOffPass" ></off-pass-card>
+                <off-pass-card :user="currentUser" :users="user" :offPass="currentOffPass" class="less-mb"></off-pass-card>
                 <div class="columns is-mobile is-gapless">
                   <div class="column">
                     <b-button expanded :disabled="!offPassCount || offPassIndex <= 0" @click="offPassIndex--">
@@ -69,8 +75,7 @@
                 </div>
               </div>
             </div>
-            <OverallUserOffs class="column"></OverallUserOffs>
-            <OverallUserMAs class="column"></OverallUserMAs>
+            <!-- <OverallUserMAs class="column"></OverallUserMAs> -->
           </div>
         </div>
       </div>
@@ -80,7 +85,6 @@
 
 <script>
 import OverallUserOffs from './offs/OverallUserOffs.vue'
-import OverallUserMAs from './offs/OverallUserMAs.vue'
 import OffPassCard from './offs/OffPassCard.vue'
 import { mapGetters } from 'vuex'
 
@@ -88,7 +92,6 @@ export default {
   name: 'Root',
   components: {
     OverallUserOffs,
-    OverallUserMAs,
     OffPassCard
   },
   data () {

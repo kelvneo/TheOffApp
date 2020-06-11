@@ -1,6 +1,6 @@
 <template>
-  <div class="card">
-    <div class="card-content">
+  <div class="box">
+    <div class="">
       <div class="content">
         <p class="has-text-centered">
           <span class="title is-4">
