@@ -4,22 +4,28 @@
       <div class="columns is-centered no-mb">
         <div class="column is-7">
           <div class="columns is-mobile is-vcentered no-mb">
-            <div class="column">
-              <p class="heading has-text-weight-bold is-size-6">
+            <div @click="overallClick(0)" class="column">
+              <p class="heading has-text-weight-semibold is-size-5 has-text-grey-dark">
                 Available
               </p>
             </div>
-            <div class="column is-narrow">
+            <router-link :to="{ path: '/off' }" @click.native="overallClick(0)" class="column is-narrow">
               <div class="level-item has-text-centered">
                 <div>
-                  <p class="title">
-                    <template v-if="availableOffs !== null">{{ availableOffs }}</template>
+                  <p class="title has-text-weight-bold is-size-2" :class="{
+                    'has-text-success': availableOffs,
+                    'has-text-grey-light': !availableOffs
+                  }">
+                    <template v-if="availableOffs !== null">{{ availableOffs ? (availableOffs + "").padStart(2, "0") : 0 }}</template>
                     <b-skeleton :active="availableOffs === null" width="3rem"></b-skeleton>
                   </p>
-                  <p class="heading">Off</p>
+                  <p class="heading has-text-weight-semibold" :class="{
+                    'has-text-success': availableOffs,
+                    'has-text-grey-light': !availableOffs
+                  }">Off</p>
                 </div>
               </div>
-            </div>
+            </router-link>
           </div>
           <b-button class="level-item" aria-controls="contentIdForA11y1" outlined
             :type="applyOffOpen ? 'is-danger' : 'is-primary'" :icon-left="applyOffOpen ? 'chevron-up' : 'chevron-down'"
@@ -91,11 +97,11 @@
       <hr/>
       <div class="columns is-mobile is-multiline is-centered">
         <div class="column is-full">
-          <p class="heading has-text-weight-bold is-size-6 has-text-centered has-text-grey-light">
+          <p class="heading has-text-weight-bold is-size-6 has-text-centered has-text-grey-dark">
             Pending Approval
           </p>
         </div>
-        <router-link :to="{ path: '/off', query: { t: 1 } }"  class="column is-half has-text-centered has-text-grey level-item"
+        <router-link :to="{ path: '/off', query: { t: 1 } }" class="column is-half has-text-centered has-text-grey level-item"
           replace @click.native="overallClick(1)">
           <div>
             <p class="title has-text-grey-light">
