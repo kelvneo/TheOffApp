@@ -1,12 +1,11 @@
 <template>
   <div>
-    <b-message type="is-info" role="alert" title="How To Award Offs" :closable="false" size="is-small">
-      Provide an <strong>Expiry Date</strong>, and provide a <strong>Description</strong> for the off. <br/>
-      Find the personnel to award offs, then key in the amount you wish to recommend, then scroll up and press <strong>"Award Off"</strong>.
-    </b-message>
     <form action="" v-on:submit.prevent>
       <b-steps v-model="activeStep" :has-navigation="false">
         <b-step-item icon="list" label="Details">
+          <b-message type="is-info" role="alert" title="How To Award Offs" :closable="false" size="is-small">
+            Give a name or description for awarding the off, and set the expiry date if needed.
+          </b-message>
           <div class="columns">
             <div class="column is-half-desktop is-full-mobile">
               <b-field label="Description" :type="awardOffForm.error ? 'is-danger' : ''"  :message="awardOffForm.error">
@@ -26,6 +25,9 @@
           </div>
         </b-step-item>
         <b-step-item icon="users" label="Choose Personnel">
+          <b-message type="is-info" role="alert" title="How To Award Offs" :closable="false" size="is-small">
+            Press the checkbox on the users you wish to give offs to.
+          </b-message>
           <div class="columns is-multiline">
             <div class="column is-full">
               <b-field label="Search">
@@ -46,7 +48,7 @@
           </div> -->
           <div class="columns is-multiline user-list">
             <div class="column is-half" v-for="user of filteredUsers" :key="user.id">
-              <AwardOffFormCard :user.sync="user" :loading="loading"></AwardOffFormCard>
+              <ToAwardOffCard :user.sync="user" :loading="loading"></ToAwardOffCard>
             </div>
             <div class="column" v-if="filteredUsers.length === 0 ">
               <div class="box">
@@ -57,6 +59,32 @@
           <div class="columns is-mobile">
             <div class="column is-narrow">
               <b-button @click="activeStep = 0" icon-right="chevron-left"></b-button>
+            </div>
+            <div class="column">
+              <b-button type="is-success" icon-left="users" expanded @click="checkOffCount()" :disabled="loading" :loading="loading">Award Off</b-button>
+            </div>
+          </div>
+        </b-step-item>
+        <b-step-item icon="check" label="Award Offs">
+          <b-message type="is-info" role="alert" title="How To Award Offs" :closable="false" size="is-small">
+            State the amount of offs to award. The maximum each user can hold at a time is <strong>5</strong>.
+          </b-message>
+          <!-- <div class="buttons">
+            <b-button type="is-success" icon-left="check" expanded @click="submit()" :disabled="loading" :loading="loading">Recommend Off</b-button>
+          </div> -->
+          <div class="columns is-multiline user-list">
+            <div class="column is-half" v-for="user of chosenUsers" :key="user.id">
+              <AwardOffFormCard :user.sync="user" :loading="loading"></AwardOffFormCard>
+            </div>
+            <div class="column" v-if="chosenUsers.length === 0 ">
+              <div class="box">
+                <h4 class="title is-4 has-text-centered has-text-grey">No Users Found</h4>
+              </div>
+            </div>
+          </div>
+          <div class="columns is-mobile">
+            <div class="column is-narrow">
+              <b-button @click="activeStep = 1" icon-right="chevron-left"></b-button>
             </div>
             <div class="column">
               <b-button type="is-success" icon-left="check" expanded @click="submit()" :disabled="loading" :loading="loading">Award Off</b-button>
@@ -101,11 +129,13 @@
 </template>
 
 <script>
+import ToAwardOffCard from '../ToAwardOffCard.vue'
 import AwardOffFormCard from '../AwardOffFormCard.vue'
 
 export default {
   name: 'AwardOff',
   components: {
+    ToAwardOffCard,
     AwardOffFormCard
   },
   props: {
@@ -130,9 +160,32 @@ export default {
     filteredUsers () {
       const branch = this.$store.state.user.currentUser.branch
       return this.users.filter(val => (!this.search || val.name.toLowerCase().indexOf(this.search.toLowerCase()) !== -1) && (!this.branchOnly || val.branch === branch))
+    },
+    chosenUsers () {
+      return this.users.filter(val => val.awarding)
     }
   },
   methods: {
+    checkOffCount () {
+      this.loading = true
+      if (this.chosenUsers.length === 0) {
+        this.loading = false
+      } else {
+        Promise.all(this.chosenUsers.map((x) => this.$store.dispatch('user/getUserAwardedOffs', x.id).then((snapshot) => {
+          x.remaining = snapshot.size / 2
+          return snapshot.size / 2
+        }))).then((val) => {
+          this.loading = false
+          this.activeStep = 2
+        }).catch((err) => {
+          console.error(err)
+          this.$buefy.notification.open({
+            message: 'Unable to check user offs',
+            type: 'is-danger'
+          })
+        })
+      }
+    },
     /**
      * Submit the form to award offs.
      */
@@ -141,7 +194,7 @@ export default {
       // Check if the form is filled.
       if (this.awardOffForm.description && this.awardOffForm.endDate) {
         this.loading = true
-        const toCredit = this.users.filter((val) => val.count > 0)
+        const toCredit = this.chosenUsers.filter((val) => val.count > 0)
         // Check if there are any offs to credit.
         if (toCredit.length === 0) {
           this.loading = false
@@ -190,6 +243,7 @@ export default {
     },
     reset (reset) {
       this.loading = true
+      this.activeStep = 0
       this.awardOffForm = {
         description: '',
         endDate: new Date()
@@ -201,6 +255,7 @@ export default {
           // Shallow clone the object, becuase you don't want to edit the master data
           const payload = Object.assign({}, data[key])
           payload['id'] = key
+          payload['awarding'] = false
           payload['count'] = 0
           temp.push(payload)
         }

@@ -6,7 +6,7 @@
     </p>
     <p><router-link :to="{ path: '/about' }">About</router-link></p>
     <p>
-      <span class="has-text-grey-light">20.06.11.2-beta</span>
+      <span class="has-text-grey-light">20.06.17.1-beta</span>
     </p>
   </div>
 </footer>

@@ -34,6 +34,9 @@
           </div>
         </b-step-item>
         <b-step-item icon="users" label="Choose Personnel">
+          <b-message type="is-info" role="alert" title="How To Award Offs" :closable="false" size="is-small">
+            Press the checkbox on the users you wish to give offs to.
+          </b-message>
           <div class="columns is-multiline">
             <div class="column is-full">
               <b-field label="Search">
@@ -54,7 +57,7 @@
           </div> -->
           <div class="columns is-multiline user-list">
             <div class="column is-half" v-for="user of filteredUsers" :key="user.id">
-              <AwardOffFormCard :user.sync="user" :loading="loading"></AwardOffFormCard>
+              <ToAwardOffCard :user.sync="user" :loading="loading"></ToAwardOffCard>
             </div>
             <div class="column" v-if="filteredUsers.length === 0 ">
               <div class="box">
@@ -67,7 +70,33 @@
               <b-button @click="activeStep = 0" icon-right="chevron-left"></b-button>
             </div>
             <div class="column">
-              <b-button type="is-success" icon-left="check" expanded @click="submit()" :disabled="loading" :loading="loading">Recommend Off</b-button>
+              <b-button type="is-success" icon-left="users" expanded @click="checkOffCount()" :disabled="loading" :loading="loading">Award Off</b-button>
+            </div>
+          </div>
+        </b-step-item>
+        <b-step-item icon="check" label="Award Offs">
+          <b-message type="is-info" role="alert" title="How To Award Offs" :closable="false" size="is-small">
+            State the amount of offs to award. The maximum each user can hold at a time is <strong>5</strong>.
+          </b-message>
+          <!-- <div class="buttons">
+            <b-button type="is-success" icon-left="check" expanded @click="submit()" :disabled="loading" :loading="loading">Recommend Off</b-button>
+          </div> -->
+          <div class="columns is-multiline user-list">
+            <div class="column is-half" v-for="user of chosenUsers" :key="user.id">
+              <AwardOffFormCard :user.sync="user" :loading="loading"></AwardOffFormCard>
+            </div>
+            <div class="column" v-if="chosenUsers.length === 0 ">
+              <div class="box">
+                <h4 class="title is-4 has-text-centered has-text-grey">No Users Found</h4>
+              </div>
+            </div>
+          </div>
+          <div class="columns is-mobile">
+            <div class="column is-narrow">
+              <b-button @click="activeStep = 1" icon-right="chevron-left"></b-button>
+            </div>
+            <div class="column">
+              <b-button type="is-success" icon-left="check" expanded @click="submit()" :disabled="loading" :loading="loading">Award Off</b-button>
             </div>
           </div>
         </b-step-item>
@@ -105,11 +134,13 @@
 </template>
 
 <script>
+import ToAwardOffCard from '../ToAwardOffCard.vue'
 import AwardOffFormCard from '../AwardOffFormCard.vue'
 
 export default {
   name: 'recommend-off-component',
   components: {
+    ToAwardOffCard,
     AwardOffFormCard
   },
   props: {
@@ -143,9 +174,32 @@ export default {
     filteredUsers () {
       const branch = this.$store.state.user.currentUser.branch
       return this.users.filter(val => (!this.search || val.name.toLowerCase().indexOf(this.search.toLowerCase()) !== -1) && (!this.branchOnly || val.branch === branch))
+    },
+    chosenUsers () {
+      return this.users.filter(val => val.awarding)
     }
   },
   methods: {
+    checkOffCount () {
+      this.loading = true
+      if (this.chosenUsers.length === 0) {
+        this.loading = false
+      } else {
+        Promise.all(this.chosenUsers.map((x) => this.$store.dispatch('user/getUserAwardedOffs', x.id).then((snapshot) => {
+          x.remaining = snapshot.size / 2
+          return snapshot.size / 2
+        }))).then((val) => {
+          this.loading = false
+          this.activeStep = 2
+        }).catch((err) => {
+          console.error(err)
+          this.$buefy.notification.open({
+            message: 'Unable to check user offs',
+            type: 'is-danger'
+          })
+        })
+      }
+    },
     submit () {
       this.awardOffForm.error = ''
       if (this.awardOffForm.description && this.awardOffForm.endDate) {
