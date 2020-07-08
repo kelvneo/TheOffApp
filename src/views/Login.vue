@@ -1,5 +1,5 @@
 <template>
-  <section class="hero is-fullheight is-info is-bold">
+  <section class="hero is-fullheight is-primary is-bold">
     <transition :name="transition">
       <router-view class="child-view"/>
     </transition>

@@ -9,10 +9,10 @@ messaging.setBackgroundMessageHandler(function (payload) {
     const title = payload.notifcation.title
     const options = {
       body: payload.notifcation.body,
-      icon: '/img/icons/android-chrome-192x192.png',
-      badge: '/img/icons/android-chrome-192x192.png',
-      image: '/img/icons/android-chrome-192x192.png',
-      vibrate: [200, 100, 200]
+      icon: './img/icons/android-chrome-192x192.png',
+      badge: './img/icons/favicon-96x96.png',
+      image: './img/icons/android-chrome-512x512.png',
+      vibrate: [200, 100, 300, 100, 200]
     }
 
     return self.registration.showNotification(title, options)

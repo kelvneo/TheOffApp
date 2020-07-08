@@ -23,6 +23,11 @@
         <b-tag type="is-success">Moment.js</b-tag>
       </b-taglist>
     </section>
+    <section class="mb">
+      <a href="https://fontawesome.com/icons/hiking?style=solid" target="_blank">
+      <h4 class="title is-6">Icons by FontAwesome</h4>
+      </a>
+    </section>
   </div>
 </div>
 </template>
