@@ -2,66 +2,98 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
   	match /users/{uid} {
+    	// Let the user read all their own data.
     	match /{multiSegment=**} {
     		allow read: if request.auth.uid == uid;
       }
+      // The user can modify anything in the /users/{uid}/updates/ path
       match /updates/{uid} {
         allow read, write: if request.auth.uid == uid || exists(/databases/$(database)/documents/users/$(request.auth.uid)/perms/cos)
       }
+      // For sending notifications to the user.
       match /notification_tokens/{nid} {
         allow read, write: if request.auth.uid == uid
       }
+      // The unused offs that the user has (including unused expired ones).
+      // Users who can recommend offs are allowed to read, while users that can approve offs can modify them.
       match /offs/{uid} {
         allow read: if exists(/databases/$(database)/documents/users/$(request.auth.uid)/perms/recommend_off)
         allow read, write: if exists(/databases/$(database)/documents/users/$(request.auth.uid)/perms/approve_off)
       }
+      // The user's cancelled off passes.
+      // Users who can recommend offs are allowed to read, while users that can approve offs can modify them.
       match /cancelled_offs/{uid} {
         allow read: if exists(/databases/$(database)/documents/users/$(request.auth.uid)/perms/recommend_off)
         allow read, write: if exists(/databases/$(database)/documents/users/$(request.auth.uid)/perms/approve_off)
       }
+      // The user's approved off passes.
+      // Users who can recommend offs are allowed to read, while users that can approve offs can modify them.
       match /off_pass/{uid} {
         allow read: if exists(/databases/$(database)/documents/users/$(request.auth.uid)/perms/cos)
         allow read, write: if exists(/databases/$(database)/documents/users/$(request.auth.uid)/perms/approve_off)
       }
+      // Modify the user's permissions such as allowing them to approve or recommend offs.
       match /perms/{perm} {
       	allow read, write: if request.auth.uid != null && exists(/databases/$(database)/documents/users/$(request.auth.uid)/perms/approve_users);
       }
+      // Allow the creation of the document if the user can approve users
       allow write: if request.auth.uid != null && exists(/databases/$(database)/documents/users/$(request.auth.uid)/perms/approve_users);
+      // This rule is for users who has the "cos" permission to list other user's information.
       allow read: if exists(/databases/$(database)/documents/users/$(request.auth.uid)/perms/cos);
+      // If the user knows the UID, let them read the basic information.
       allow get: if request.auth.uid != null;
     }
+    // Create a temporary user for admins to approve.
     match /temp/{uid} {
       allow create, read: if request.auth.uid == uid && request.auth.uid != null;
       allow delete, update, read: if request.auth.uid != null && exists(/databases/$(database)/documents/users/$(request.auth.uid)/perms/approve_users);
     }
+    // Used for tracking who can approve or recommend offs.
     match /constants/{multiSegment=**} {
     	allow read: if isVerified();
     	allow read, write: if request.auth.uid != null && exists(/databases/$(database)/documents/users/$(request.auth.uid)/perms/approve_users);
     }
+    // This path is for users who wish to apply for offs.
+    // Any user with recommending permission can read, and the specified recommender can update or delete the entry.
+    // The user that applied the off can only read or delete the off request.
     match /pending_offs/{uid} {
     		allow create: if request.auth.uid != null && request.auth.uid == request.resource.data.requester;
         allow read: if exists(/databases/$(database)/documents/users/$(request.auth.uid)/perms/recommend_off);
         allow read, delete: if request.auth.uid == resource.data.requester;
         allow read, update, delete: if request.auth.uid == resource.data.recommender && exists(/databases/$(database)/documents/users/$(request.auth.uid)/perms/recommend_off);
     }
+    // This path is for users whose off have been recommended.
+    // Any user with recommending permission can read, and the specified recommender can delete the entry.
+    // The specified approver can update or delete the entry.
+    // The user that applied the off can only read or delete the off request.
     match /recommended_offs/{uid} {
         allow create: if request.auth.uid != null && request.auth.uid == request.resource.data.recommender && exists(/databases/$(database)/documents/users/$(request.auth.uid)/perms/recommend_off);
         allow read: if exists(/databases/$(database)/documents/users/$(request.auth.uid)/perms/recommend_off);
         allow read, delete: if request.auth.uid == resource.data.requester || request.auth.uid == resource.data.recommender;
         allow read, update, delete: if request.auth.uid == resource.data.approver && exists(/databases/$(database)/documents/users/$(request.auth.uid)/perms/approve_off);
     }
+    // This path is for users who wish to apply for MAs.
+    // Any user with recommending permission can read, and the specified recommender can update or delete the entry.
+    // The user that applied the off can only read or delete the MA request.
     match /pending_mas/{uid} {
     		allow create: if request.auth.uid != null && request.auth.uid == request.resource.data.requester;
         allow read: if exists(/databases/$(database)/documents/users/$(request.auth.uid)/perms/recommend_off);
         allow read, delete: if request.auth.uid == resource.data.requester;
         allow read, update, delete: if request.auth.uid == resource.data.recommender && exists(/databases/$(database)/documents/users/$(request.auth.uid)/perms/recommend_off);
     }
+    // This path is for users whose MAs have been recommended.
+    // Any user with recommending permission can read, and the specified recommender can delete the entry.
+    // The specified approver can update or delete the entry.
+    // The user that applied the off can only read or delete the MA request.
     match /recommended_mas/{uid} {
         allow create: if request.auth.uid != null && request.auth.uid == request.resource.data.recommender && exists(/databases/$(database)/documents/users/$(request.auth.uid)/perms/recommend_off);
         allow read: if exists(/databases/$(database)/documents/users/$(request.auth.uid)/perms/recommend_off);
         allow read, delete: if request.auth.uid == resource.data.requester || request.auth.uid == resource.data.recommender;
         allow read, update, delete: if request.auth.uid == resource.data.approver && exists(/databases/$(database)/documents/users/$(request.auth.uid)/perms/approve_off);
     }
+    // This path is for approvers to approve awarding of offs.
+    // Any user with recommending permission can read, and the specified recommender can delete the entry.
+    // The specified approver can update or delete the entry.
     match /recommended_awards/{uid} {
         allow create: if request.auth.uid != null && request.auth.uid == request.resource.data.recommender && exists(/databases/$(database)/documents/users/$(request.auth.uid)/perms/recommend_off);
         allow read: if exists(/databases/$(database)/documents/users/$(request.auth.uid)/perms/recommend_off);
@@ -80,6 +112,7 @@ service cloud.firestore {
         allow read, delete: if request.auth.uid == resource.data.requester || request.auth.uid == resource.data.recommender;
         allow read, update, delete: if request.auth.uid == resource.data.approver && exists(/databases/$(database)/documents/users/$(request.auth.uid)/perms/approve_off);
     }
+    // For logging purposes
     match /logs/{multiSegment=**} {
     	allow create: if request.auth.uid != null;
       allow read: if request.auth.uid != null && exists(/databases/$(database)/documents/users/$(request.auth.uid)/perms/read_logs);
@@ -108,10 +141,11 @@ service cloud.firestore {
 //       	allow create: if isVisitor() && request.resource.data.checkedIn == null;
 //       }
 //     }
+		// Catch all, deny anything else.
     match /{document=**} {
       allow read, write: if false;
     }
-    
+    // Check if the user has an account verified.
     function isVerified() {
     	return request.auth.uid != null && exists(/databases/$(database)/documents/users/$(request.auth.uid));
     }

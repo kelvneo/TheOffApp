@@ -674,6 +674,18 @@ const actions = {
       batch.set(firebase.firestore().collection('recommended_mas').doc(id), off)
     }
     return batch.commit()
+  },
+  /**
+   * Delete a user's off pass.
+   * @param {*} context The vuex context.
+   * @param {*} payload The payload should contain {uid, offPass, reason}
+   */
+  async deleteOffPass (context, payload) {
+    const batch = firebase.firestore().batch()
+    batch.delete(firebase.firestore().collection('users').doc(payload.uid).collection('off_pass').doc(payload.offPass.id))
+    payload.offPass.reason = payload.reason
+    batch.set(firebase.firestore().collection('users').doc(payload.uid).collection('cancelled_offs').doc(payload.offPass.id), payload.offPass)
+    return batch.commit()
   }
 }
 

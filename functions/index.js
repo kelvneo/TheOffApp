@@ -293,3 +293,61 @@ exports.changeUserStatus = functions.https.onCall(async (data, context) => {
     };
   }
 })
+
+exports.sendOffPassCancelledNotification = functions.firestore.document('users/{uid}/off_pass/{offId}').onDelete(async (snap, context) => {
+  const uid = context.params.uid;
+  const offId = context.params.offId;
+
+  const deviceTokens = await db.collection('users').doc(uid).collection('notification_tokens').get();
+  if (deviceTokens.empty) {
+    return console.log('Unable to send notification to:', uid, 'as they do not have tokens.');
+  }
+  console.log(deviceTokens.size, 'tokens found for:', uid);
+
+  const payload = {
+    notification: {
+      title: 'Off Pass has been deleted.',
+      body: 'Please check The Off App for details.'
+    }
+  };
+
+  const tokenIDs = deviceTokens.docs.map(val => val.id);
+  const response = await admin.messaging().sendToDevice(tokenIDs, payload);
+  const removeTokenPromises = [];
+
+  response.results.forEach((result, index) => {
+    const error = result.error;
+    if (error) {
+      console.error('Failed to send notification to', tokenIDs[index], error)
+      if (error.code === 'messaging/invalid-registration-token' ||
+      error.code === 'messaging/registration-token-not-registered') {
+        removeTokenPromises.push(db.collection('users').doc(uid)
+          .collection('notification_tokens').doc(tokenIDs[index]).delete());
+      }
+    }
+  })
+  return Promise.all(removeTokenPromises);
+})
+
+// exports.sendOffApprovedNotification = functions.https.onCall(async (data, context) => {
+//   const uid = context.auth.uid;
+//   const perm = await db.collection('users').doc(uid).collection('perms').doc('approve_off').get();
+//   if (perm.exists) {
+//     if (data.id && data.awarded) {
+//       const id = data.id;
+//       const awarded = data.awarded;
+
+
+//     } else {
+//       return {
+//         success: false,
+//         message: 'Invalid payload.'
+//       }
+//     }
+//   } else {
+//     return {
+//       success: false,
+//       message: 'Insufficient permissions.'
+//     };
+//   }
+// })

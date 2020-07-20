@@ -35,7 +35,7 @@
         <div class="column is-one-third" v-else v-for="pass of offPass" :key="pass.id">
           <off-pass-card :user="currentUser" :users="user" :offPass="pass" :class="{
             'has-background-white-ter':  pass.endDate.toMillis() < Date.now()
-          }" :showDetails="showDetails"></off-pass-card>
+          }" :showDetails="showDetails" @deleted="reset(true)"></off-pass-card>
         </div>
       </div>
       <div class="buttons">

@@ -49,7 +49,7 @@
                 <h4 class="level-item title is-4">Upcoming Off Pass</h4>
               </div>
               <div v-if="loadingOffPass">
-                <off-pass-card :user="currentUser" :users="user"></off-pass-card>
+                <off-pass-card :user="currentUser" :users="user" @deleted="reset()"></off-pass-card>
               </div>
               <div class="box" v-else-if="currentOffPass === null">
                 <div class="">
@@ -126,15 +126,18 @@ export default {
     })
   },
   methods: {
-  },
-  mounted () {
-    this.$store.dispatch('user/getCurrentUserOffPass').then((val) => {
-      [...new Set(val.flatMap(val => [val.recommender, val.approver]))].forEach((val) => {
-        this.$store.dispatch('common/getUser', val).then((userData) => {
-          this.$set(this.user, val, userData)
+    reset () {
+      this.$store.dispatch('user/getCurrentUserOffPass').then((val) => {
+        [...new Set(val.flatMap(val => [val.recommender, val.approver]))].forEach((val) => {
+          this.$store.dispatch('common/getUser', val).then((userData) => {
+            this.$set(this.user, val, userData)
+          })
         })
       })
-    })
+    }
+  },
+  mounted () {
+    this.reset()
   },
   created () {
     // this.rank = this.$store.state.user.currentUser.rank

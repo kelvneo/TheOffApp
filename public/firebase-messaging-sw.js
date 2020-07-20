@@ -1,8 +1,8 @@
-importScripts('https://www.gstatic.com/firebasejs/7.14.6/firebase-app.js');
-importScripts('https://www.gstatic.com/firebasejs/7.14.6/firebase-messaging.js');
-importScripts('/__/firebase/init.js');
+importScripts('https://www.gstatic.com/firebasejs/7.14.6/firebase-app.js')
+importScripts('https://www.gstatic.com/firebasejs/7.14.6/firebase-messaging.js')
+importScripts('/__/firebase/init.js')
 
-const messaging = firebase.messaging();
+const messaging = firebase.messaging()
 
 messaging.setBackgroundMessageHandler(function (payload) {
   if (payload.notifcation) {

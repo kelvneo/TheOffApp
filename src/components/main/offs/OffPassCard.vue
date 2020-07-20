@@ -46,13 +46,36 @@
           <b-skeleton :active="!offPass" :count="showDetails ? 5 : 2"></b-skeleton>
         </p>
         <div v-if="isApprover">
-          <template v-if="offPass">
+          <template v-if="offPass && user">
             <div class="columns buttons">
               <div class="column" v-if="!offPass.description.startsWith('MA')">
                 <b-button type="is-success" outlined size="is-small" expanded icon-left="donate" disabled>Cancel & Refund</b-button>
               </div>
               <div class="column">
-                <b-button type="is-danger" outlined size="is-small" expanded icon-left="trash" disabled>Delete Off Pass</b-button>
+                <b-button type="is-danger" outlined size="is-small" expanded icon-left="trash" @click="confirmDelete = true">Delete Off Pass</b-button>
+                <b-modal :active.sync="confirmDelete" has-modal-card trap-focus aria-modal aria-role="dialog" :can-cancel="!loading">
+                  <div class="modal-card" style="width: auto">
+                    <header class="modal-card-head">
+                      <p class="modal-card-title">Deleting {{ name }}'s Off Pass</p>
+                    </header>
+                    <section class="modal-card-body">
+                      <p>
+                        You are about to delete {{ name }}'s off pass on <span class="has-text-weight-bold">{{ momentSeconds(offPass.startDate.seconds) }}</span>
+                        and <span class="has-text-danger has-text-weight-bold">are not providing a refund.</span>
+                      </p>
+                      <p>
+                        Please provide a reason below.
+                      </p>
+                      <b-field label="Reason">
+                        <b-input type="textarea" maxlength="200" v-model="reason" :disabled="loading"></b-input>
+                      </b-field>
+                    </section>
+                    <footer class="modal-card-foot">
+                      <button class="button" type="button" @click="confirmDelete = false" :disabled="loading">Close</button>
+                      <button class="button is-danger" @click="deleteOffPass" :disabled="loading" :loading="loading">Delete</button>
+                    </footer>
+                  </div>
+                </b-modal>
               </div>
             </div>
           </template>
@@ -83,6 +106,13 @@ export default {
       default: false
     }
   },
+  data () {
+    return {
+      reason: '',
+      confirmDelete: false,
+      loading: false
+    }
+  },
   computed: {
     name () {
       return this.user.name
@@ -103,6 +133,31 @@ export default {
     },
     momentSeconds (seconds) {
       return moment.unix(seconds).format('DD MMM YY, HHmm\\h\\r\\s')
+    },
+    deleteOffPass () {
+      if (this.reason) {
+        this.loading = true
+        this.$store.dispatch('user/deleteOffPass', {
+          uid: this.user.id,
+          reason: this.reason,
+          offPass: this.offPass
+        }).then(() => {
+          this.$emit('deleted', true)
+          this.$buefy.notification.open({
+            message: 'Successfully Cancelled Off Pass!',
+            type: 'is-success'
+          })
+          this.loading = false
+          this.confirmDelete = false
+        }).catch((err) => {
+          console.error(err)
+          this.$buefy.notification.open({
+            message: 'Unable to cancel off pass: ' + err.message,
+            type: 'is-danger'
+          })
+          this.loading = false
+        })
+      }
     }
   }
 }
