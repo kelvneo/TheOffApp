@@ -41,7 +41,7 @@
       </div>
     </div>
     <div class="buttons">
-      <b-button type="is-success" icon-left="angle-down" expanded @click="loadMore()" :disabled="loading" :loading="loading" v-if="canLoadMore">Load More</b-button>
+      <b-button type="is-success" icon-left="angle-down" expanded @click="loadMore()" :disabled="loading" :loading="loadingMore || loading" v-if="canLoadMore">Load More</b-button>
     </div>
   </div>
 </template>
@@ -64,6 +64,7 @@ export default {
   data () {
     return {
       loading: true,
+      loadingMore: false,
       showDetails: false,
       user: {},
       offPass: [],
@@ -101,7 +102,7 @@ export default {
       }
     },
     loadMore () {
-      this.loading = true
+      this.loadingMore = true
 
       const promise = this.offPassCursor ? this.offPassCursor
         : firebase.firestore().collection('users').doc(this.id).collection('off_pass').orderBy('endDate', 'desc').limit(10)
@@ -113,6 +114,7 @@ export default {
 
       promise.get().then((snapshot) => {
         this.loading = false
+        this.loadingMore = false
         if (snapshot.docs.length && snapshot.docs.length >= 10) {
           const lastVisible = snapshot.docs[snapshot.docs.length - 1]
           this.offPassCursor = firebase.firestore().collection('users').doc(this.id)

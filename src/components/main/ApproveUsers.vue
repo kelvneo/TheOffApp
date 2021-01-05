@@ -78,7 +78,8 @@ export default {
             branch: user.row.branch,
             phoneNumber: user.row.phoneNumber,
             initials: user.row.initials,
-            perm: true
+            perm: true,
+            disabled: false
           }
         }
         this.loading = true

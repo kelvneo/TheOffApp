@@ -15,6 +15,11 @@
               Show Branch Only
             </b-switch>
           </b-field>
+          <b-field class="is-marginless">
+            <b-switch v-model="showInactiveUsers" :disabled="showInactiveUsers" @input="reset">
+              Show Inactive Users
+            </b-switch>
+          </b-field>
           <b-field>
             <b-switch v-model="showDetails">
               Show ID
@@ -57,6 +62,7 @@ export default {
       tableForm: false,
       users: null,
       branchOnly: false,
+      showInactiveUsers: false,
       search: ''
     }
   },
@@ -69,7 +75,11 @@ export default {
   methods: {
     reset () {
       this.loading = true
-      this.$store.dispatch('common/updateAllUsers').then((data) => {
+      this.$store.dispatch(this.showInactiveUsers ? 'common/updateAllUsers' : 'common/updateAllActiveUsers').then((data) => {
+        // console.log(this.$store.state.common.allUsersCollected)
+        if (this.$store.state.common.allUsersCollected) {
+          this.showInactiveUsers = true
+        }
         const temp = []
         for (const key in data) {
           // Shallow clone the object, becuase you don't want to edit the master data
@@ -94,7 +104,7 @@ export default {
     }
   },
   mounted () {
-    this.$store.dispatch('common/updateAllUsers').then((users) => {
+    this.$store.dispatch('common/updateAllActiveUsers').then((users) => {
       this.reset()
     })
   }

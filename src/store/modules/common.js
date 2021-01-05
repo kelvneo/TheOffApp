@@ -18,11 +18,11 @@ const getters = {
 }
 
 const actions = {
-  async updateAllUsers (context) {
+  async updateAllActiveUsers (context) {
     if (context.state.allUsersCollected) {
       return Promise.resolve(context.state.allUsers)
     }
-    const promise = (firebase.firestore().collection('users').get())
+    const promise = (firebase.firestore().collection('users').where('disabled', '==', false).get())
     context.commit('setAllUsers', promise)
     const val = await promise
     const returnVal = {}
@@ -31,6 +31,26 @@ const actions = {
       data.id = doc.id
       returnVal[doc.id] = data
     })
+    // context.commit('setAllUsersCollected', true)
+    context.commit('setAllUsers', returnVal)
+    return returnVal
+  },
+  async updateAllUsers (context) {
+    if (context.state.allUsersCollected) {
+      return Promise.resolve(context.state.allUsers)
+    }
+    const promise = (firebase.firestore().collection('users').get())
+    context.commit('setAllUsers', promise)
+    const val = await promise
+    const returnVal = {}
+    // const batch = firebase.firestore().batch()
+    val.forEach((doc) => {
+      const data = doc.data()
+      data.id = doc.id
+      returnVal[doc.id] = data
+      // batch.update(firebase.firestore().collection('users').doc(data.id), { disabled: !!data.disabled })
+    })
+    // batch.commit()
     context.commit('setAllUsersCollected', true)
     context.commit('setAllUsers', returnVal)
     return returnVal

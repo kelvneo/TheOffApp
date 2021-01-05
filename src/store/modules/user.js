@@ -292,10 +292,12 @@ const actions = {
     if (context.state.pendingOffPromise) {
       return context.state.pendingOffPromise
     }
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
     context.commit('setPendingOffs', null)
     const promise = firebase.firestore().collection('pending_offs')
       .where('requester', '==', context.rootGetters['credentials/id'])
-      .where('endDate', '>=', new Date()).get().then((snapshot) => {
+      .where('endDate', '>=', today).get().then((snapshot) => {
         if (snapshot.empty) {
           context.commit('setPendingOffs', [])
           context.commit('setPendingOffPromise', null)
@@ -327,10 +329,12 @@ const actions = {
     if (context.state.recommendedOffPromise) {
       return context.state.recommendedOffPromise
     }
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
     context.commit('setRecommendedOffs', null)
     const promise = firebase.firestore().collection('recommended_offs')
       .where('requester', '==', context.rootGetters['credentials/id'])
-      .where('endDate', '>=', new Date()).get().then((snapshot) => {
+      .where('endDate', '>=', today).get().then((snapshot) => {
         if (snapshot.empty) {
           context.commit('setRecommendedOffs', [])
           context.commit('setRecommendedOffPromise', null)
@@ -362,9 +366,11 @@ const actions = {
     if (context.state.offPassPromise) {
       return context.state.offPassPromise
     }
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
     context.commit('setOffPass', null)
     const promise = firebase.firestore().collection('users').doc(context.rootGetters['credentials/id'])
-      .collection('off_pass').where('endDate', '>=', new Date()).get().then((snapshot) => {
+      .collection('off_pass').where('endDate', '>=', today).get().then((snapshot) => {
         if (snapshot.empty) {
           context.commit('setOffPass', [])
           context.commit('setOffPassPromise', null)
@@ -386,6 +392,7 @@ const actions = {
     const promise = context.state.totalOffPassCursor ? context.state.totalOffPassCursor
       : firebase.firestore().collection('users').doc(context.rootGetters['credentials/id']).collection('off_pass').orderBy('endDate', 'desc').limit(limit)
 
+    // If the cursor is already set and the length of the off pass is 0, just return an empty array.
     if (context.state.totalOffPass.length && !context.state.totalOffPassCursor) {
       return []
     }
@@ -399,7 +406,7 @@ const actions = {
         context.commit('setTotalOffPassCursor', null)
       }
 
-      if (snapshot.empty) {
+      if (snapshot.empty && !context.state.totalOffPass.length) {
         context.commit('setTotalOffPass', [])
         return []
       } else {
@@ -430,7 +437,9 @@ const actions = {
     return firebase.firestore().collection('users').doc(id).collection('offs').get()
   },
   getUserPendingOffs (context, id) {
-    return firebase.firestore().collection('pending_offs').where('requester', '==', id).where('endDate', '>=', new Date()).get()
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
+    return firebase.firestore().collection('pending_offs').where('requester', '==', id).where('endDate', '>=', today).get()
   },
   getUserTotalPendingOffs (context, id) {
     return firebase.firestore().collection('pending_offs').where('requester', '==', id).get()
@@ -446,7 +455,9 @@ const actions = {
     return batch.commit()
   },
   getUserPendingApprovalOffs (context, id) {
-    return firebase.firestore().collection('recommended_offs').where('requester', '==', id).where('endDate', '>=', new Date()).get()
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
+    return firebase.firestore().collection('recommended_offs').where('requester', '==', id).where('endDate', '>=', today).get()
   },
   getUserTotalPendingApprovalOffs (context, id) {
     return firebase.firestore().collection('recommended_offs').where('requester', '==', id).get()
@@ -556,10 +567,12 @@ const actions = {
     if (context.state.pendingMAPromise) {
       return context.state.pendingMAPromise
     }
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
     context.commit('setPendingMAs', null)
     const promise = firebase.firestore().collection('pending_mas')
       .where('requester', '==', context.rootGetters['credentials/id'])
-      .where('useDate', '>=', new Date()).get().then((snapshot) => {
+      .where('useDate', '>=', today).get().then((snapshot) => {
         if (snapshot.empty) {
           context.commit('setPendingMAs', [])
           context.commit('setPendingMAPromise', null)
@@ -591,10 +604,12 @@ const actions = {
     if (context.state.recommendedMAPromise) {
       return context.state.recommendedMAPromise
     }
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
     context.commit('setRecommendedMAs', null)
     const promise = firebase.firestore().collection('recommended_mas')
       .where('requester', '==', context.rootGetters['credentials/id'])
-      .where('useDate', '>=', new Date()).get().then((snapshot) => {
+      .where('useDate', '>=', today).get().then((snapshot) => {
         if (snapshot.empty) {
           context.commit('setRecommendedMAs', [])
           context.commit('setRecommendedMAPromise', null)
@@ -613,7 +628,9 @@ const actions = {
     return promise
   },
   getUserPendingMAs (context, id) {
-    return firebase.firestore().collection('pending_mas').where('requester', '==', id).where('useDate', '>=', new Date()).get()
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
+    return firebase.firestore().collection('pending_mas').where('requester', '==', id).where('useDate', '>=', today).get()
   },
   getUserTotalPendingMAs (context, id) {
     return firebase.firestore().collection('pending_mas').where('requester', '==', id).get()
@@ -629,7 +646,9 @@ const actions = {
     return batch.commit()
   },
   getUserPendingApprovalMAs (context, id) {
-    return firebase.firestore().collection('recommended_mas').where('requester', '==', id).where('useDate', '>=', new Date()).get()
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
+    return firebase.firestore().collection('recommended_mas').where('requester', '==', id).where('useDate', '>=', today).get()
   },
   getUserTotalPendingApprovalMAs (context, id) {
     return firebase.firestore().collection('recommended_mas').where('requester', '==', id).get()

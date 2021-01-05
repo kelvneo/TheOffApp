@@ -39,7 +39,7 @@
         </div>
       </div>
       <div class="buttons">
-        <b-button type="is-success" icon-left="angle-down" expanded @click="loadMore()" :disabled="loading" :loading="loading" v-if="canLoadMore">Load More</b-button>
+        <b-button type="is-success" icon-left="angle-down" expanded @click="loadMore()" :disabled="loading || loadingMore" :loading="loading || loadingMore" v-if="canLoadMore">Load More</b-button>
       </div>
     </section>
   </div>
@@ -57,6 +57,7 @@ export default {
   data () {
     return {
       loading: false,
+      loadingMore: false,
       showDetails: false,
       user: {}
     }
@@ -95,8 +96,9 @@ export default {
       }
     },
     loadMore () {
-      this.loading = true
+      this.loadingMore = true
       this.$store.dispatch('user/nextTotalOffPass').then((data) => {
+        this.loadingMore = false
         this.loading = false
         if (data.length) {
           const comds = new Set(data.flatMap(val => [val.recommender, val.approver]))
