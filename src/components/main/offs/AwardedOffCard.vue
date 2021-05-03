@@ -47,7 +47,7 @@
 </template>
 
 <script>
-import moment from 'moment'
+import dayjs from 'dayjs'
 
 export default {
   name: 'AwardedOffCard',
@@ -61,16 +61,16 @@ export default {
       if (!this.offData) {
         return false
       }
-      const endDate = moment.unix(this.offData.endDate.seconds)
-      return endDate.diff(moment(), 'days') <= 7
+      const endDate = dayjs.unix(this.offData.endDate.seconds)
+      return endDate.diff(dayjs(), 'days') <= 7
     }
   },
   methods: {
     momentSecondsDate (seconds) {
-      return moment.unix(seconds).format('DD MMM YY')
+      return dayjs.unix(seconds).format('DD MMM YY')
     },
     momentSeconds (seconds) {
-      return moment.unix(seconds).format('DD MMM YY, hhmm\\h\\r\\s')
+      return dayjs.unix(seconds).format('DD MMM YY, hhmm\\h\\r\\s')
     }
   }
 }

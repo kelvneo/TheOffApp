@@ -46,7 +46,7 @@
 </template>
 
 <script>
-import moment from 'moment'
+import dayjs from 'dayjs'
 import OffPassCard from './OffPassCard.vue'
 
 export default {
@@ -75,7 +75,7 @@ export default {
   },
   methods: {
     momentSeconds (seconds) {
-      return moment.unix(seconds).format('DD MMM YY, hh:mmA')
+      return dayjs.unix(seconds).format('DD MMM YY, hh:mmA')
     },
     reset (reset) {
       if (reset) {

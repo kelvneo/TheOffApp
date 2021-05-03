@@ -93,7 +93,7 @@
 </template>
 
 <script>
-import moment from 'moment'
+import dayjs from 'dayjs'
 
 export default {
   name: 'OffPassCard',
@@ -132,7 +132,7 @@ export default {
       return this.users[val] ? this.users[val].initials : '...'
     },
     momentSeconds (seconds) {
-      return moment.unix(seconds).format('DD MMM YY, HHmm\\h\\r\\s')
+      return dayjs.unix(seconds).format('DD MMM YY, HHmm[hrs]')
     },
     deleteOffPass () {
       if (this.reason) {

@@ -47,7 +47,7 @@
 </template>
 
 <script>
-import moment from 'moment'
+import dayjs from 'dayjs'
 import firebase from 'firebase/app'
 import 'firebase/firestore'
 
@@ -79,7 +79,7 @@ export default {
   },
   methods: {
     momentSeconds (seconds) {
-      return moment.unix(seconds).format('DD MMM YY, hhmm\\h\\r\\s')
+      return dayjs.unix(seconds).format('DD MMM YY, hhmm[hrs]')
     },
     nextTotalOffPass (limit = 10) {
     },

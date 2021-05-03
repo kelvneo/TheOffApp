@@ -126,7 +126,7 @@
 </template>
 
 <script>
-import moment from 'moment'
+import dayjs from 'dayjs'
 
 export default {
   name: 'UserMARecords',
@@ -153,7 +153,7 @@ export default {
   },
   methods: {
     momentUsingDate (seconds) {
-      return moment.unix(seconds).format('DD MMM YY, hhmm\\h\\r\\s')
+      return dayjs.unix(seconds).format('DD MMM YY, hhmm[hrs]')
     },
     overallClick (tab) {
       this.activeTab = tab

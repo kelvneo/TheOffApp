@@ -60,7 +60,7 @@
 </template>
 
 <script>
-import moment from 'moment'
+import dayjs from 'dayjs'
 
 export default {
   name: 'pending-ma-recommendation',
@@ -79,7 +79,7 @@ export default {
   },
   methods: {
     momentUsingDate (seconds) {
-      return moment.unix(seconds).format('DD MMM YY / A')
+      return dayjs.unix(seconds).format('DD MMM YY / A')
     },
     deletePendingMAs (MA) {
       this.$buefy.dialog.confirm({
